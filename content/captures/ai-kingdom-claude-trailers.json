@@ -1,0 +1,13 @@
+{
+  "id": "ai-kingdom-claude-trailers",
+  "repo": "phcaradanai/AI_Kingdom",
+  "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+  "cwd": ".",
+  "command": "git shortlog -sn --group=trailer:co-authored-by cc498040b57bd4dd177cff08f7bb05f326ddbace",
+  "capturedAt": "2026-10-24T12:24:27.527Z",
+  "exitCode": 0,
+  "durationMs": 315,
+  "output": "    47\tClaude Sonnet 4.6\n    45\tClaude Opus 4.8",
+  "truncated": false,
+  "environment": "macOS 26.5.2, git 2.55.0; read-only git; git status --porcelain empty before and after"
+}

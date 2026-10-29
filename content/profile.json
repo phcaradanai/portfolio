@@ -1,0 +1,25 @@
+{
+  "name": "Phatcharadanai Kanyapan",
+  "role": "Programmer & Developer",
+  "city": "Bangkok, Thailand",
+  "email": "phcaradanai@gmail.com",
+  "github": "https://github.com/phcaradanai",
+  "education": [
+    {
+      "school": "SPU Dynamic University",
+      "degree": "Bachelor of Engineering",
+      "start": "2016",
+      "end": "2020",
+      "source": "Owner's published CV (PDF, downloaded 2026-10-24)"
+    }
+  ],
+  "skills": [
+    { "group": "Front end", "items": ["React JS/TS", "Vue JS/TS", "HTML, CSS, JS", "Flutter (Dart)"], "source": "Owner's published CV" },
+    { "group": "Back end and systems", "items": ["Node.js", "Go", "C# .NET Core / .NET Framework", "Console apps in C# and Python"], "source": "Owner's published CV" },
+    { "group": "Data and delivery", "items": ["SQL / MySQL", "Docker"], "source": "Owner's published CV" },
+    { "group": "Practice", "items": ["Web and app design", "Development and SEO", "Implementing projects independently", "Time management"], "source": "Owner's published CV" }
+  ],
+  "cvProjectLabels": ["PTT UI concept", "SCG web management", "SIPH auto dispense machine", "ETRAN web management", "AOT kiosk"],
+  "cvSource": "Owner's published CV, section 'Experience & Projects'. Listed as written; no roles, dates or details are claimed.",
+  "lastVerified": "2026-10-24"
+}

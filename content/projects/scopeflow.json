@@ -1,0 +1,1444 @@
+{
+  "slug": "scopeflow",
+  "accession": "PK-2026-005",
+  "title": "ScopeFlow Thai",
+  "kind": "tool",
+  "tier": "A",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Local-first Tauri desktop app that turns vague client requests into Brief, Scope, quote, change-request and acceptance documents.",
+  "summary": "ScopeFlow Thai is a local-first desktop app for freelancers and small Thai software teams: a React and TypeScript front end in a Tauri 2 shell with a small Rust file layer. A workspace is a folder of Markdown and YAML files per client and project. The app walks a project from a client request to Brief, Scope, quotation, follow-up questions, change requests and acceptance. The README labels the state V0.8, a local desktop baseline, and says it is not a cloud or production product.",
+  "period": {
+    "start": "2026-06-23",
+    "end": "2026-07-02"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/ScopeFlow",
+    "pinnedSha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+    "ownerCommits": 518,
+    "totalCommits": 518,
+    "languages": {
+      "TypeScript": 1592466,
+      "Rust": 48099,
+      "CSS": 24176,
+      "JavaScript": 947,
+      "HTML": 674
+    },
+    "checkedAt": "2026-10-25"
+  },
+  "stack": [
+    "React 19",
+    "TypeScript 5.8",
+    "Vite 7",
+    "Tauri 2",
+    "Rust (edition 2021, zip and walkdir crates)",
+    "Tailwind CSS 4",
+    "yaml, marked, react-markdown, sanitize-html",
+    "Vitest 4 and cargo test",
+    "Markdown files with YAML frontmatter",
+    "Optional Ollama or OpenAI-compatible AI providers"
+  ],
+  "aiRole": {
+    "summary": "Development tooling: the repository holds one agent guidance file, .agents/AGENTS.md, which gives coding agents UI design rules. No commit message carries a Co-Authored-By trailer (see the capture), and the tree has no CLAUDE.md, prompt-history folder or generator pipeline. The repository does not tie any AI use to its checks, so nothing here says the work was directed and verified; what exists is a unit-test suite, manual QA checklists and release notes. Separately, the app itself offers optional AI-assisted analysis through providers the user configures. That is a product feature, listed below because it is how AI appears in the code.",
+    "tools": [
+      {
+        "name": ".agents/AGENTS.md agent rules",
+        "use": "UI design rules addressed to coding agents: card grids instead of basic forms, visual steppers for workflow state, a centred page container for document editing.",
+        "evidence": "E49"
+      },
+      {
+        "name": "Optional AI providers inside the app (product feature, not development tooling)",
+        "use": "Ollama and OpenAI-compatible endpoints set per workspace; used for Brief and Scope quality, follow-up answer decisions and document merging, each with a deterministic fallback.",
+        "evidence": "E43"
+      }
+    ]
+  },
+  "narrative": {
+    "problem": "The README states the problem as four questions a freelancer or small team cannot answer once client requests arrive as vague messages: is the project ready to move on, which customer answers or evidence are still missing, which document to create next, and whether an approved Scope is safe from silent edits.\n\nThe product-scope document gives the background: Thai freelance developers and small agencies lose money and trust when scope, changes and approvals are not documented, so there is no evidence of what was agreed. Its target user works from a laptop, often offline, with clients who write on LINE or email.",
+    "approach": "The planning documents choose files over a database. A workspace is a folder, documents are Markdown with a YAML frontmatter block, and the docs state that those files are the only source of truth. Approval is manual: the user records a signed PDF, a screenshot or a typed note, because the non-goals document rules out online approval links.\n\nV0.8 adds a guided flow on top of the files. The project page works out the next action from the documents that exist, and a readiness gate withholds 'ready to quote' and 'ready to hand over' until the required items and approval fields are present. AI is optional, sits behind providers the user configures, and every AI path has a deterministic fallback.",
+    "architecture": "The front end is React 19 and TypeScript built with Vite, shown in a Tauri 2 window. Every file operation goes through wrappers in src/lib/tauri-commands.ts that call 17 Rust commands in src-tauri. The Rust code is a small filesystem layer: it creates workspace, client and project folders, reads and writes files, builds a workspace tree, copies evidence files and makes zip backups. It holds no document rules.\n\nThe rules are TypeScript functions in src/lib. State is derived rather than stored: document-scanner.ts reads each Markdown file's frontmatter with the yaml package into a ProjectDocument, and the guided stages and the readiness gate are pure functions over that list. AI calls go through a provider router (Ollama or OpenAI-compatible endpoints) that callers wrap in a deterministic fallback.",
+    "implementation": "Documents come from template functions that emit a frontmatter block (type, version, status, locked, previous_version, approved_by and others) plus a Thai Markdown body. Locking and approval are line-wise patches of that block, and a new version is a copy with status draft and the lock and approval fields cleared.\n\nProtection of an approved Scope is layered, and parts of it are advisory. Decision functions route a scope change on a locked or approved Scope to a Change Request and keep their guardrails outside the model's reach. The editor refuses to save text that contains 'locked: true'. The readiness gate counts a quote as approved only when approval fields exist. Two weaker spots are visible in the source: the conflict dialog's protectedUpdate flag is never set, and the Rust update and write commands apply no lock check.\n\nThe export is an HTML approval pack (marked plus a sanitize-html allowlist, print CSS, a blank signature box). There is no PDF engine.",
+    "outcome": "At the pinned commit the repository holds 518 commits by one author name between 2026-06-23 and 2026-07-02, 213 of them dated 2026-06-27. The tree has 106 files matching *.test.ts or *.test.tsx, 495 lines that begin with it( or test(, and 13 Rust test attributes in two files, plus V0.8 release notes and QA checklists.\n\nThe README calls V0.8 a baseline for local desktop use and says it is not a production cloud product. This review did not build the app or run its tests, and the repository commits no screenshots of the running app.",
+    "lessons": "What the repo's records say is still open or was learned.\n\nOpen: cloud sync, multi-user work, a client portal, legal-grade e-signature, a PDF engine, accounting and an automated Tauri end-to-end harness are not covered. The stabilization document defers a Playwright or E2E run until a Tauri test harness exists, so the full flow rests on unit tests and manual checklists. The next wave named in the release notes is approval-evidence capture, that harness, and export polish.\n\nLearned, as recorded: the stabilization pass hardened the gate so a quote is not treated as approved from status or lock alone. The planning documents said no AI, an SQLite index and PDF export; V0.8 shipped optional AI and neither SQLite nor a PDF engine, and a release test now checks that the README no longer carries the old no-AI message."
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src-tauri/src/lib.rs",
+      "lines": [
+        12,
+        30
+      ],
+      "note": "invoke_handler registers 17 Tauri commands."
+    },
+    {
+      "id": "E2",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src-tauri/src/commands.rs",
+      "lines": [
+        43,
+        76
+      ],
+      "note": "create_workspace: clients/, templates/, .scopeflow/, scopeflow.yaml, state.json."
+    },
+    {
+      "id": "E3",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src-tauri/src/commands.rs",
+      "lines": [
+        200,
+        213
+      ],
+      "note": "Project subfolders created by create_project."
+    },
+    {
+      "id": "E4",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src-tauri/src/commands.rs",
+      "lines": [
+        287,
+        304
+      ],
+      "note": "create_document returns an error when the file already exists."
+    },
+    {
+      "id": "E5",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src-tauri/src/commands.rs",
+      "lines": [
+        93,
+        101
+      ],
+      "note": "write_file_content creates parent folders and writes without any lock check."
+    },
+    {
+      "id": "E6",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src-tauri/src/file_commands.rs",
+      "lines": [
+        11,
+        24
+      ],
+      "note": "update_file_content overwrites an existing file; no lock check."
+    },
+    {
+      "id": "E7",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src-tauri/src/commands.rs",
+      "lines": [
+        587,
+        655
+      ],
+      "note": "backup_workspace: zip with exclusions."
+    },
+    {
+      "id": "E8",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src-tauri/src/commands.rs",
+      "lines": [
+        657,
+        718
+      ],
+      "note": "restore_workspace: archive check, non-empty destination, entry-name checks."
+    },
+    {
+      "id": "E9",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src-tauri/Cargo.toml",
+      "lines": [
+        15,
+        22
+      ],
+      "note": "Rust dependencies: tauri, two plugins, serde, serde_json, zip, walkdir."
+    },
+    {
+      "id": "E10",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "package.json",
+      "lines": [
+        19,
+        31
+      ],
+      "note": "npm dependencies; no database package and no zod."
+    },
+    {
+      "id": "E11",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/__tests__/architecture.test.ts",
+      "lines": [
+        1,
+        63
+      ],
+      "note": "Forbidden npm and Cargo dependency lists."
+    },
+    {
+      "id": "E12",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/tauri-commands.ts",
+      "lines": [
+        1,
+        4
+      ],
+      "note": "Header: all file I/O goes through these wrappers to Rust."
+    },
+    {
+      "id": "E13",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/document-scanner.ts",
+      "lines": [
+        129,
+        145
+      ],
+      "note": "Frontmatter parsed with YAML.parse; locked is yaml.locked === true."
+    },
+    {
+      "id": "E14",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/templates.ts",
+      "lines": [
+        119,
+        141
+      ],
+      "note": "generateScopeDocument frontmatter fields."
+    },
+    {
+      "id": "E15",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/templates.ts",
+      "lines": [
+        792,
+        899
+      ],
+      "note": "updateDocumentApprovalStatus and lockDocument: line-wise frontmatter patches."
+    },
+    {
+      "id": "E16",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/__tests__/locks.test.ts",
+      "lines": [
+        4,
+        29
+      ],
+      "note": "lockDocument test: fields preserved, locked replaced not duplicated."
+    },
+    {
+      "id": "E17",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/__tests__/approvals.test.ts",
+      "lines": [
+        53,
+        79
+      ],
+      "note": "updateDocumentApprovalStatus test."
+    },
+    {
+      "id": "E18",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/revisions.ts",
+      "lines": [
+        41,
+        109
+      ],
+      "note": "generateRevisionDocument: resets status, lock and approval fields."
+    },
+    {
+      "id": "E19",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/components/MarkdownEditor.tsx",
+      "lines": [
+        123,
+        136
+      ],
+      "note": "isLocked is content.includes('locked: true'); save shortcut skipped when locked."
+    },
+    {
+      "id": "E20",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/components/MarkdownEditor.tsx",
+      "lines": [
+        440,
+        445
+      ],
+      "note": "Banner: the document is locked, create a new version to edit."
+    },
+    {
+      "id": "E21",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/components/MarkdownEditor.tsx",
+      "lines": [
+        546,
+        546
+      ],
+      "note": "Textarea disabled when locked."
+    },
+    {
+      "id": "E22",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/project-readiness-gate.ts",
+      "lines": [
+        97,
+        113
+      ],
+      "note": "hasApprovalEvidenceFor: field presence or an approval record."
+    },
+    {
+      "id": "E23",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/project-readiness-gate.ts",
+      "lines": [
+        155,
+        181
+      ],
+      "note": "Blockers: brief, scope, quote evidence, follow-ups, change requests, acceptance."
+    },
+    {
+      "id": "E24",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/project-readiness-gate.ts",
+      "lines": [
+        251,
+        252
+      ],
+      "note": "canQuote and canDeliver."
+    },
+    {
+      "id": "E25",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/project-readiness-gate.ts",
+      "lines": [
+        140,
+        153
+      ],
+      "note": "buildProjectReadinessGate takes ProjectDocument[] and picks the best brief, scope, quote and acceptance."
+    },
+    {
+      "id": "E26",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/project-readiness-gate.ts",
+      "lines": [
+        4,
+        42
+      ],
+      "note": "Stage and blocker types and the result shape."
+    },
+    {
+      "id": "E27",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/guided-operating-mode.ts",
+      "lines": [
+        43,
+        45
+      ],
+      "note": "Guided stage isApproved accepts status approved, locked or approval_ref."
+    },
+    {
+      "id": "E28",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/ai/follow-up/followUpAnswerDecision.ts",
+      "lines": [
+        108,
+        125
+      ],
+      "note": "Scope change on a locked or approved Scope returns create_change_request."
+    },
+    {
+      "id": "E29",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/ai/follow-up/followUpAnswerDecision.ts",
+      "lines": [
+        187,
+        225
+      ],
+      "note": "sanitizeAiDecision keeps deterministic guardrails; decideFollowUpAnswer falls back on error."
+    },
+    {
+      "id": "E30",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/ai/customer-change/briefScopeDeltaAnalyzer.ts",
+      "lines": [
+        155,
+        162
+      ],
+      "note": "update_scope becomes create_change_request when the Scope is approved or locked."
+    },
+    {
+      "id": "E31",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/skills/brief-scope-evolution-skill.ts",
+      "lines": [
+        89,
+        105
+      ],
+      "note": "zod parse, guardrail override, flags recomputed from the action."
+    },
+    {
+      "id": "E32",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/skills/brief-scope-evolution-schema.ts",
+      "lines": [
+        1,
+        3
+      ],
+      "note": "Imports zod and defines the output schema."
+    },
+    {
+      "id": "E33",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/ai/documentMergeAssistant.ts",
+      "lines": [
+        41,
+        55
+      ],
+      "note": "Merge prompt rules for approved or locked documents."
+    },
+    {
+      "id": "E34",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/ai/documentMergeAssistant.ts",
+      "lines": [
+        79,
+        85
+      ],
+      "note": "mergeDocumentDeterministically appends under a heading."
+    },
+    {
+      "id": "E35",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/components/ProjectOverview.tsx",
+      "lines": [
+        45,
+        51
+      ],
+      "note": "GuidedConflictState declares protectedUpdate."
+    },
+    {
+      "id": "E36",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/components/ProjectOverview.tsx",
+      "lines": [
+        263,
+        268
+      ],
+      "note": "The setGuidedConflict call that opens the dialog sets four fields."
+    },
+    {
+      "id": "E37",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/components/ProjectOverview.tsx",
+      "lines": [
+        321,
+        358
+      ],
+      "note": "runConflictAction: protectedUpdate check, version, replace, update."
+    },
+    {
+      "id": "E38",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/components/project/FriendlyDocumentConflictModal.tsx",
+      "lines": [
+        26,
+        66
+      ],
+      "note": "Five actions offered; the modal receives no lock input."
+    },
+    {
+      "id": "E39",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/components/project/ScopeWorkshop.tsx",
+      "lines": [
+        157,
+        173
+      ],
+      "note": "Accept scope and Close loop set in-memory session state only."
+    },
+    {
+      "id": "E40",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/__tests__/scopeflow-real-user-flow.test.ts",
+      "lines": [
+        94,
+        143
+      ],
+      "note": "Regression test over the decision, merge and gate functions."
+    },
+    {
+      "id": "E41",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/__tests__/release-qa-v0.8.test.ts",
+      "lines": [
+        49,
+        55
+      ],
+      "note": "Test that the README no longer carries the old no-AI messaging."
+    },
+    {
+      "id": "E42",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/ai/providers/providerSecrets.ts",
+      "lines": [
+        5,
+        30
+      ],
+      "note": "API keys read and written as YAML in .scopeflow/secrets.local.yaml."
+    },
+    {
+      "id": "E43",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/ai/providers/aiProviderRouter.ts",
+      "lines": [
+        53,
+        100
+      ],
+      "note": "generateJsonWithTrace: candidates in order, attempt trace, error after all fail."
+    },
+    {
+      "id": "E44",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/export.ts",
+      "lines": [
+        22,
+        62
+      ],
+      "note": "generateApprovalPackHtml: marked then sanitize-html allowlist."
+    },
+    {
+      "id": "E45",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src/lib/export.ts",
+      "lines": [
+        237,
+        272
+      ],
+      "note": "exportApprovalPack writes HTML under exports/ with a numeric suffix."
+    },
+    {
+      "id": "E46",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src-tauri/tauri.conf.json",
+      "lines": [
+        22,
+        24
+      ],
+      "note": "security.csp is null."
+    },
+    {
+      "id": "E47",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "src-tauri/capabilities/default.json",
+      "lines": [
+        6,
+        12
+      ],
+      "note": "Main-window permissions."
+    },
+    {
+      "id": "E48",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "package-lock.json",
+      "lines": [
+        7198,
+        7198
+      ],
+      "note": "Lockfile entry for node_modules/zod."
+    },
+    {
+      "id": "E49",
+      "level": "source",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": ".agents/AGENTS.md",
+      "lines": [
+        1,
+        12
+      ],
+      "note": "UI design rules for coding agents."
+    },
+    {
+      "id": "E50",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "README.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "ScopeFlow Thai คือ local-first desktop app สำหรับช่วยฟรีแลนซ์และทีมพัฒนาซอฟต์แวร์ไทยเปลี่ยนคำขอลูกค้าที่คลุมเครือให้เป็น Brief, Scope, ใบเสนอราคา, Change Request, Follow-up และเอกสารส่งมอบ/ตรวจรับที่ควบคุมขอบเขตงานได้จริง",
+      "note": "Thai: a local-first desktop app that helps Thai freelancers and software teams turn vague client requests into Brief, Scope, quotation, Change Request, Follow-up and handover or acceptance documents that control scope."
+    },
+    {
+      "id": "E51",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "README.md",
+      "lines": [
+        36,
+        36
+      ],
+      "quote": "ScopeFlow V0.8 รองรับ AI-assisted flow แบบ optional ผ่าน provider ที่ผู้ใช้ตั้งค่าเอง ถ้า AI ใช้ไม่ได้ ระบบต้อง fallback เป็น deterministic/basic logic และไม่ block flow หลัก",
+      "note": "Thai: V0.8 supports an optional AI-assisted flow through a provider the user configures; if AI is unavailable the system must fall back to deterministic logic and not block the main flow."
+    },
+    {
+      "id": "E52",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "README.md",
+      "lines": [
+        46,
+        46
+      ],
+      "quote": "AI ห้ามสร้าง approval, evidence หรือ customer confirmation เอง",
+      "note": "Thai: AI must not create approval, evidence or customer confirmation itself."
+    },
+    {
+      "id": "E53",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "README.md",
+      "lines": [
+        47,
+        47
+      ],
+      "quote": "Scope ที่ approved/locked ต้องเสนอเป็น version ใหม่หรือ Change Request แทนการเขียนทับเงียบ ๆ",
+      "note": "Thai: an approved or locked Scope must be proposed as a new version or a Change Request instead of being silently overwritten."
+    },
+    {
+      "id": "E54",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "README.md",
+      "lines": [
+        52,
+        52
+      ],
+      "quote": "V0.8 ยังไม่ใช่ production cloud/deploy product และยังไม่ใช่ระบบ portal สำหรับลูกค้าโดยตรง",
+      "note": "Thai: V0.8 is not a production cloud or deploy product and not a direct client portal."
+    },
+    {
+      "id": "E55",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "README.md",
+      "lines": [
+        59,
+        59
+      ],
+      "quote": "Direct PDF engine ในแอป",
+      "note": "Thai: a direct PDF engine inside the app is listed as not covered."
+    },
+    {
+      "id": "E56",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "README.md",
+      "lines": [
+        61,
+        61
+      ],
+      "quote": "E2E Tauri harness แบบอัตโนมัติครบ flow",
+      "note": "Thai: a fully automated Tauri end-to-end harness is listed as not covered."
+    },
+    {
+      "id": "E57",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "docs/RELEASE_NOTES_V0.8.md",
+      "lines": [
+        53,
+        53
+      ],
+      "quote": "approved/locked Scope ต้องไม่ถูก overwrite เงียบ ๆ",
+      "note": "Thai: an approved or locked Scope must not be silently overwritten (listed under data-safety checks for the baseline)."
+    },
+    {
+      "id": "E58",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "docs/RELEASE_NOTES_V0.8.md",
+      "lines": [
+        111,
+        111
+      ],
+      "quote": "Approval Evidence Capture UX",
+      "note": "First item of the next wave."
+    },
+    {
+      "id": "E59",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "docs/scopeflow-stabilization-v1-real-user-flow.md",
+      "lines": [
+        89,
+        89
+      ],
+      "quote": "Readiness Gate ไม่ถือว่า Quote approved จาก status/locked อย่างเดียว ต้องมี approval/customer confirmation/evidence",
+      "note": "Thai: the gate does not treat a quote as approved from status or lock alone; approval, customer confirmation or evidence is needed."
+    },
+    {
+      "id": "E60",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "docs/scopeflow-stabilization-v1-real-user-flow.md",
+      "lines": [
+        96,
+        96
+      ],
+      "quote": "เพิ่ม Playwright/E2E จริงเมื่อ app มี test harness สำหรับ Tauri/Web shell พร้อม fixture workspace",
+      "note": "Thai: add real Playwright or E2E when the app has a test harness for the Tauri or web shell with a fixture workspace (listed as next wave)."
+    },
+    {
+      "id": "E61",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "docs/non-goals.md",
+      "lines": [
+        12,
+        12
+      ],
+      "quote": "No AI-powered writing, summarization, or suggestion features.",
+      "note": "MVP non-goal; V0.8 later added optional AI."
+    },
+    {
+      "id": "E62",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "docs/product-scope.md",
+      "lines": [
+        169,
+        169
+      ],
+      "quote": "[ ] SQLite index built from workspace files",
+      "note": "Unchecked MVP-D item."
+    },
+    {
+      "id": "E63",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "docs/workspace-structure.md",
+      "lines": [
+        314,
+        314
+      ],
+      "quote": "Markdown and YAML files are the only source of truth.",
+      "note": "Source-of-truth rule."
+    },
+    {
+      "id": "E64",
+      "level": "reported",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "path": "docs/product-scope.md",
+      "lines": [
+        9,
+        9
+      ],
+      "quote": "Thai freelance developers and small agencies lose money and trust because project scope, changes, and approvals are not properly documented.",
+      "note": "Problem statement."
+    },
+    {
+      "id": "E65",
+      "level": "ran",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "captureId": "scopeflow-git-history",
+      "note": "518 commits, one author name, 2026-06-23 to 2026-07-02."
+    },
+    {
+      "id": "E66",
+      "level": "ran",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "captureId": "scopeflow-commit-days",
+      "note": "Commits per calendar day."
+    },
+    {
+      "id": "E67",
+      "level": "ran",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "captureId": "scopeflow-test-files",
+      "note": "Counts of test files, test-case lines and Rust test attributes."
+    },
+    {
+      "id": "E68",
+      "level": "ran",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "captureId": "scopeflow-protected-update-refs",
+      "note": "git grep: protectedUpdate appears on three lines in src."
+    },
+    {
+      "id": "E69",
+      "level": "ran",
+      "repo": "phcaradanai/ScopeFlow",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "captureId": "scopeflow-coauthor-trailers",
+      "note": "Count of distinct Co-Authored-By trailer names."
+    }
+  ],
+  "claims": [
+    {
+      "text": "The Rust side is a filesystem layer. lib.rs registers 17 Tauri commands (workspace, client, project and document creation, file read, write, update and delete, a workspace tree, evidence copy, backup and restore), and React reaches them only through wrappers in src/lib/tauri-commands.ts.",
+      "evidence": [
+        "E1",
+        "E12"
+      ]
+    },
+    {
+      "text": "A workspace is a plain folder. create_workspace writes scopeflow.yaml, .scopeflow/state.json and clients/ and templates/ folders; create_project adds baseline, change-requests, support-requests, approvals, acceptance, exports and attachments. The docs state that Markdown and YAML files are the only source of truth.",
+      "evidence": [
+        "E2",
+        "E3",
+        "E63"
+      ]
+    },
+    {
+      "text": "No database is used. package.json and Cargo.toml list no SQLite or ORM package, and an architecture test fails if one is added (sqlite, prisma, typeorm, sequelize, rusqlite, sqlx, diesel and others). The planning docs had listed an SQLite search index as a later stage.",
+      "evidence": [
+        "E9",
+        "E10",
+        "E11",
+        "E62"
+      ]
+    },
+    {
+      "text": "Project state is derived from the files each time: document-scanner.ts parses each Markdown file's frontmatter with the yaml package into a ProjectDocument (type, status, locked, approval fields), and the readiness gate takes that list as its only input.",
+      "evidence": [
+        "E13",
+        "E25"
+      ]
+    },
+    {
+      "text": "Documents come from template functions that return Markdown with a YAML frontmatter block. The scope template writes type, version, status, locked, locked_date, previous_version, approved_by and approved_date, which the lock, revision and gate code read later.",
+      "evidence": [
+        "E14",
+        "E13"
+      ]
+    },
+    {
+      "text": "Locking and approving patch the frontmatter line by line (lockDocument, updateDocumentApprovalStatus) rather than round-tripping YAML. Unit tests check that other fields survive and that locked and status are replaced, not duplicated.",
+      "evidence": [
+        "E15",
+        "E16",
+        "E17"
+      ]
+    },
+    {
+      "text": "A new version is made by generateRevisionDocument: status reset to draft, locked set to false, locked_date dropped, approved_by, approved_date and approval_ref emptied, previous_version set. Filenames bump -vX.Y or gain -revN.",
+      "evidence": [
+        "E18"
+      ]
+    },
+    {
+      "text": "MarkdownEditor decides a document is locked by searching its text for 'locked: true'. A locked document opens in preview, shows a banner asking for a new version, ignores the save shortcut, and has its save button and textarea disabled. The scanner reads a parsed locked boolean instead.",
+      "evidence": [
+        "E19",
+        "E20",
+        "E21",
+        "E13"
+      ]
+    },
+    {
+      "text": "In Rust, create_document returns an error if the target file exists, so a create cannot overwrite. write_file_content and update_file_content write whatever they are given and check no lock.",
+      "evidence": [
+        "E4",
+        "E5",
+        "E6"
+      ]
+    },
+    {
+      "text": "When a customer answer reads as a scope change and the Scope is locked or approved, the deterministic decision returns create_change_request with can_update_scope false; an unlocked Scope gets update_scope with can_update_scope true.",
+      "evidence": [
+        "E28"
+      ]
+    },
+    {
+      "text": "AI output for a follow-up answer passes an allowlist for action and confidence, and the guardrails object is always the deterministic one. Any AI error returns the deterministic decision marked ai-fallback.",
+      "evidence": [
+        "E29"
+      ]
+    },
+    {
+      "text": "Two other analysers rewrite an AI recommendation of update-scope into create-change-request in code when the Scope is approved or locked. The evolution skill parses AI JSON with a zod schema and recomputes its boolean flags from the chosen action.",
+      "evidence": [
+        "E30",
+        "E31",
+        "E32"
+      ]
+    },
+    {
+      "text": "The AI merge prompt tells the model to keep approval, lock and evidence fields and to append a proposed-update section for locked or approved documents. That is an instruction to the model; the code does not check the returned Markdown.",
+      "evidence": [
+        "E33"
+      ]
+    },
+    {
+      "text": "The fallback merge never edits existing text: it appends the new draft under a heading with a note to review before treating it as approved customer scope. A regression test asserts that approval_ref survives it.",
+      "evidence": [
+        "E34",
+        "E40"
+      ]
+    },
+    {
+      "text": "For an existing document the conflict dialog offers open, merge, update, new version and replace, with no lock input. ProjectOverview declares a protectedUpdate flag that would limit the choices to a new version and checks it before acting, but the only code that opens the dialog sets four fields without it. Replace asks for confirmation; update does not.",
+      "evidence": [
+        "E35",
+        "E36",
+        "E37",
+        "E38",
+        "E68"
+      ]
+    },
+    {
+      "text": "buildProjectReadinessGate is a pure function over the scanned documents. It returns a stage (ready_for_brief, ready_for_scope, ready_for_quote, ready_for_approval, ready_for_delivery_acceptance or blocked), blockers with severity, and canQuote and canDeliver flags.",
+      "evidence": [
+        "E25",
+        "E26",
+        "E24"
+      ]
+    },
+    {
+      "text": "The gate blocks on a missing or thin Brief, a Scope without deliverables or acceptance criteria, a quote without approval evidence, an open follow-up, an open change request, and a missing acceptance checklist.",
+      "evidence": [
+        "E23"
+      ]
+    },
+    {
+      "text": "A quote or acceptance counts as having approval evidence only if its frontmatter has approval_ref, approved_by or approved_date, or an approval record that mentions its type has an approval number, approver, date or evidence file list. The test is that fields exist; nothing in the function opens an evidence file.",
+      "evidence": [
+        "E22",
+        "E59"
+      ]
+    },
+    {
+      "text": "The guided stage model uses a looser test than the gate: its isApproved accepts status approved, locked or an approval_ref, while the gate requires approval fields or an approval record.",
+      "evidence": [
+        "E27",
+        "E22"
+      ]
+    },
+    {
+      "text": "A regression test drives these functions with fixtures: a change request on a locked Scope routes to create_change_request, a deterministic merge keeps approval_ref, and the gate moves from ready_for_quote to blocked on an open follow-up, then ready_for_approval, then ready_for_delivery_acceptance once an approval record exists. Not run here.",
+      "evidence": [
+        "E40"
+      ]
+    },
+    {
+      "text": "In the Scope Workshop, Accept scope and Close loop change in-memory session status only; they write no approval record or file.",
+      "evidence": [
+        "E39"
+      ]
+    },
+    {
+      "text": "backup_workspace zips the workspace but skips symlinks, dependency and build folders (node_modules, target, build, dist, .git), .scopeflow cache, tmp and index paths, and files that look like local secrets.",
+      "evidence": [
+        "E7"
+      ]
+    },
+    {
+      "text": "restore_workspace needs scopeflow.yaml (or .scopeflow/config.yaml) in the archive, returns DIR_NOT_EMPTY for a non-empty destination unless forced, and skips entries whose names contain '..' or start with a slash or backslash.",
+      "evidence": [
+        "E8"
+      ]
+    },
+    {
+      "text": "AI provider API keys are stored as plain YAML in .scopeflow/secrets.local.yaml inside the workspace folder; the Rust backup skips files with that name.",
+      "evidence": [
+        "E42",
+        "E7"
+      ]
+    },
+    {
+      "text": "The AI router tries the active provider, then the other usable providers by priority (Ollama and OpenAI-compatible endpoints), keeps an attempt trace, and throws only when every provider fails; callers catch that and fall back to deterministic logic.",
+      "evidence": [
+        "E43",
+        "E29"
+      ]
+    },
+    {
+      "text": "tauri.conf.json sets the content security policy to null, and the main-window capability grants core, opener and dialog (open and save) permissions.",
+      "evidence": [
+        "E46",
+        "E47"
+      ]
+    },
+    {
+      "text": "The approval pack export converts each document body with marked, filters it through a sanitize-html allowlist, wraps it in A4 print CSS with a cover page and a blank signature box, and saves an HTML file under exports/ with a numeric suffix if the name exists. The README lists a PDF engine as not covered.",
+      "evidence": [
+        "E44",
+        "E45",
+        "E55"
+      ]
+    },
+    {
+      "text": "The MVP planning documents state no AI and plan an SQLite index and PDF export. V0.8 ships optional AI providers, and a release test checks that the README no longer carries the old no-AI message.",
+      "evidence": [
+        "E61",
+        "E62",
+        "E41",
+        "E51"
+      ]
+    },
+    {
+      "text": "The README says AI must not create approval, evidence or customer confirmation, that AI is optional through providers the user configures, and that the app must fall back to deterministic logic when AI is unavailable.",
+      "evidence": [
+        "E51",
+        "E52",
+        "E53"
+      ]
+    },
+    {
+      "text": "The README and release notes list what V0.8 does not cover: a production cloud product, a client portal, a PDF engine and a fully automated Tauri end-to-end harness. The release notes name approval-evidence capture as the first item of the next wave.",
+      "evidence": [
+        "E54",
+        "E55",
+        "E56",
+        "E58",
+        "E60"
+      ]
+    },
+    {
+      "text": "src/lib/skills/brief-scope-evolution-schema.ts imports zod. package.json lists no zod dependency, and package-lock.json has an entry for node_modules/zod.",
+      "evidence": [
+        "E32",
+        "E10",
+        "E48"
+      ]
+    },
+    {
+      "text": "The repository has 518 commits, all by one author name, from 2026-06-23 to 2026-07-02; 213 are dated 2026-06-27.",
+      "evidence": [
+        "E65",
+        "E66"
+      ]
+    },
+    {
+      "text": "The tree has 106 files matching *.test.ts or *.test.tsx and 495 lines that begin with it( or test(; commands.rs has 10 #[test] attributes and file_commands.rs has 3. These are file and line counts, not test results.",
+      "evidence": [
+        "E67"
+      ]
+    },
+    {
+      "text": "No commit message carries a Co-Authored-By trailer. The only agent guidance file is .agents/AGENTS.md, which sets UI design rules for coding agents.",
+      "evidence": [
+        "E69",
+        "E49"
+      ]
+    },
+    {
+      "text": "The product-scope document names the pain it targets: scope, changes and approvals that are not documented, so nobody can show what was agreed.",
+      "evidence": [
+        "E64",
+        "E50"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "locked-scope-routes-to-cr",
+      "title": "A scope change on a locked Scope becomes a Change Request",
+      "path": "src/lib/ai/follow-up/followUpAnswerDecision.ts",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "startLine": 108,
+      "endLine": 125,
+      "language": "typescript",
+      "code": "  if (scopeChange && approvedOrLocked) {\n    return {\n      recommended_action: 'create_change_request',\n      confidence: 'high',\n      source: 'deterministic',\n      summary: 'คำตอบนี้ดูเป็นการเปลี่ยนงานหลัง Scope ถูกล็อกหรืออนุมัติแล้ว',\n      impact_summary: 'ควรสร้าง Change Request แทนการแก้ Scope เดิม เพื่อคุม version, ราคา และ approval',\n      changed_items: extractChangedItems(answer),\n      suggested_update: `นำคำตอบลูกค้านี้ไปเปิด Change Request:\\n${answer}`,\n      follow_up_questions: [],\n      guardrails: {\n        can_update_brief: true,\n        can_update_scope: false,\n        should_create_change_request: true,\n        reason: 'Scope approved/locked แล้ว ห้ามเขียนทับเงียบ ๆ ต้องเสนอเป็น Change Request หรือเวอร์ชันใหม่',\n      },\n    };\n  }",
+      "why": "When the answer reads as a scope change and the Scope is approved or locked, the result is create_change_request with can_update_scope false and a reason string. The same function returns update_scope with can_update_scope true only when the Scope is not locked. It is the rule the README states, written as a pure function a test can call.",
+      "claimIndexes": [
+        9
+      ]
+    },
+    {
+      "id": "ai-cannot-change-guardrails",
+      "title": "AI output is filtered; the guardrails stay deterministic",
+      "path": "src/lib/ai/follow-up/followUpAnswerDecision.ts",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "startLine": 187,
+      "endLine": 203,
+      "language": "typescript",
+      "code": "function sanitizeAiDecision(value: any, fallback: FollowUpAnswerDecision): FollowUpAnswerDecision {\n  const allowed: FollowUpAnswerAction[] = ['update_brief', 'update_scope', 'create_change_request', 'ask_more_questions', 'no_action'];\n  const action = allowed.includes(value?.recommended_action) ? value.recommended_action : fallback.recommended_action;\n  const confidence = ['low', 'medium', 'high'].includes(value?.confidence) ? value.confidence : fallback.confidence;\n  return {\n    ...fallback,\n    recommended_action: action,\n    confidence,\n    source: 'ai',\n    summary: typeof value?.summary === 'string' && value.summary.trim() ? value.summary.trim() : fallback.summary,\n    impact_summary: typeof value?.impact_summary === 'string' && value.impact_summary.trim() ? value.impact_summary.trim() : fallback.impact_summary,\n    changed_items: Array.isArray(value?.changed_items) ? unique(value.changed_items.map(String)) : fallback.changed_items,\n    suggested_update: typeof value?.suggested_update === 'string' ? value.suggested_update.trim() : fallback.suggested_update,\n    follow_up_questions: Array.isArray(value?.follow_up_questions) ? unique(value.follow_up_questions.map(String)) : fallback.follow_up_questions,\n    guardrails: fallback.guardrails,\n  };\n}",
+      "why": "The model may pick an action from a fixed list and supply text, but guardrails is copied from the deterministic result, so the model cannot declare a locked Scope editable. On any AI failure the caller returns the deterministic decision marked ai-fallback (lines 205 to 225).",
+      "claimIndexes": [
+        10
+      ]
+    },
+    {
+      "id": "new-version-resets-approval",
+      "title": "A new version starts as an unapproved draft",
+      "path": "src/lib/revisions.ts",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "startLine": 78,
+      "endLine": 105,
+      "language": "typescript",
+      "code": "    if (inFrontmatter) {\n      if (line.startsWith('status:')) {\n        output.push(`status: \"draft\"`);\n      } else if (line.startsWith('locked:')) {\n        output.push(`locked: false`);\n      } else if (line.startsWith('locked_date:')) {\n        // Drop or set empty\n      } else if (line.startsWith('approved_by:')) {\n        output.push(`approved_by: \"\"`);\n      } else if (line.startsWith('approved_date:')) {\n        output.push(`approved_date: \"\"`);\n      } else if (line.startsWith('approval_ref:')) {\n        output.push(`approval_ref: \"\"`);\n      } else if (line.startsWith('previous_version:')) {\n        output.push(`previous_version: \"${previousFilename}\"`);\n        hasPreviousVersion = true;\n      } else if (line.startsWith('updated:')) {\n        output.push(`updated: \"${todayStr}\"`);\n        hasUpdated = true;\n      } else if (line.startsWith('created:')) {\n        output.push(`created: \"${todayStr}\"`);\n        hasCreated = true;\n      } else {\n        output.push(line);\n      }\n    } else {\n      output.push(line);\n    }",
+      "why": "Inside the frontmatter, status goes back to draft, locked to false, the lock date is dropped and the approval fields are emptied, so approval never carries over to the new file. The patch is line-wise (startsWith) rather than a YAML parse.",
+      "claimIndexes": [
+        6
+      ]
+    },
+    {
+      "id": "editor-lock",
+      "title": "The editor treats text containing 'locked: true' as read-only",
+      "path": "src/components/MarkdownEditor.tsx",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "startLine": 123,
+      "endLine": 136,
+      "language": "tsx",
+      "code": "  const isLocked = content.includes('locked: true');\n  const isApproved = content.includes('status: \"approved\"');\n  const isApprovalRecord = content.includes('type: \"approval-record\"') || content.includes('type: approval-record');\n\n  useEffect(() => {\n    function handleKeyDown(e: KeyboardEvent) {\n      if ((e.metaKey || e.ctrlKey) && e.key === 's') {\n        e.preventDefault();\n        if (hasChanges && !isLocked) handleSave();\n      }\n    }\n    window.addEventListener('keydown', handleKeyDown);\n    return () => window.removeEventListener('keydown', handleKeyDown);\n  }, [handleSave, hasChanges, isLocked]);",
+      "why": "isLocked is a substring test on the whole file, not a parsed field, and the save shortcut is skipped while it is true. Lines 406 and 546 also disable the save button and the textarea. The scanner (document-scanner.ts line 144) uses a parsed boolean instead, so the two tests can disagree.",
+      "claimIndexes": [
+        7
+      ]
+    },
+    {
+      "id": "conflict-dialog",
+      "title": "Conflict dialog actions and the unset protectedUpdate flag",
+      "path": "src/components/ProjectOverview.tsx",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "startLine": 321,
+      "endLine": 358,
+      "language": "tsx",
+      "code": "  const runConflictAction = async (mode: FriendlyConflictAction) => {\n    if (!guidedConflict) return;\n    if (mode === 'open') {\n      onOpenDocument(guidedConflict.existingPath);\n      setGuidedConflict(null);\n      return;\n    }\n\n    if (guidedConflict.protectedUpdate && mode !== 'version') {\n      setGuidedNotice('เอกสารนี้ approved/locked แล้ว จึงไม่สามารถเขียนทับเดิมได้ กรุณาเลือก “สร้างเวอร์ชันใหม่” หรือสร้าง Change Request แทน');\n      return;\n    }\n\n    try {\n      setGuidedBusy(true);\n      setGuidedNotice('');\n\n      if (mode === 'version') {\n        await createDocument(guidedConflict.newVersionPath, guidedConflict.newContent);\n        setGuidedConflict(null);\n        await openAndRefresh(guidedConflict.newVersionPath);\n        return;\n      }\n\n      if (mode === 'replace') {\n        if (!window.confirm('ยืนยันแทนที่เอกสารเดิม? ใช้เมื่อมั่นใจว่าไม่ต้องเก็บฉบับเดิมแล้ว')) return;\n        await updateFileContent(guidedConflict.existingPath, guidedConflict.newContent);\n        setGuidedConflict(null);\n        await openAndRefresh(guidedConflict.existingPath);\n        return;\n      }\n\n      if (mode === 'update') {\n        await updateFileContent(guidedConflict.existingPath, guidedConflict.newContent);\n        setGuidedConflict(null);\n        await openAndRefresh(guidedConflict.existingPath);\n        return;\n      }",
+      "why": "Line 329 would stop every action except a new version when protectedUpdate is true. The only call that opens the dialog (line 263) passes four fields and not that flag, so at this commit the branch is not reached from there. Update writes straight over the existing file; replace asks window.confirm first.",
+      "claimIndexes": [
+        14
+      ]
+    },
+    {
+      "id": "approval-evidence-test",
+      "title": "What counts as approval evidence for the readiness gate",
+      "path": "src/lib/project-readiness-gate.ts",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "startLine": 97,
+      "endLine": 113,
+      "language": "typescript",
+      "code": "function approvalDocs(documents: ProjectDocument[]) {\n  return documents.filter(doc => doc.type === 'approval-record' || doc.folder === 'approvals');\n}\n\nfunction approvalReferences(doc: ProjectDocument, needle: string) {\n  const haystack = [doc.document_type, doc.approved_document, doc.file_name, doc.title, doc.markdown].filter(Boolean).join(' ').toLowerCase();\n  return haystack.includes(needle.toLowerCase());\n}\n\nfunction hasApprovalEvidenceFor(documents: ProjectDocument[], type: string, doc?: ProjectDocument) {\n  if (!doc) return false;\n  if (doc.approval_ref || doc.approved_by || doc.approved_date) return true;\n  return approvalDocs(documents).some(approval => {\n    const hasEvidence = Boolean(approval.approval_number || approval.approved_by || approval.approved_date || (approval.evidence_files && approval.evidence_files.length > 0));\n    return hasEvidence && approvalReferences(approval, type);\n  });\n}",
+      "why": "Evidence means fields: approval_ref, approved_by or approved_date on the document, or an approval record that names the document type and carries an approval number, approver, date or evidence list. Matching is a substring test of the type name over the record's text. Status or lock alone is not evidence here.",
+      "claimIndexes": [
+        17
+      ]
+    },
+    {
+      "id": "append-only-merge",
+      "title": "AI merge request and the append-only fallback",
+      "path": "src/lib/ai/documentMergeAssistant.ts",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "startLine": 69,
+      "endLine": 85,
+      "language": "typescript",
+      "code": "  const routed = await generateJsonWithTrace(workspacePath, prompt);\n  const normalized = normalizeMergeResponse(routed.result);\n\n  return {\n    ...normalized,\n    provider: routed.providerName,\n    model: routed.model,\n  };\n}\n\nexport function mergeDocumentDeterministically(existingMarkdown: string, newDraftMarkdown: string, label = 'Generated update') {\n  const timestamp = new Date().toISOString();\n  const trimmedExisting = existingMarkdown.trimEnd();\n  const trimmedDraft = newDraftMarkdown.trim();\n\n  return `${trimmedExisting}\\n\\n---\\n\\n## ${label}\\n\\n> Added by ScopeFlow on ${timestamp}. Review before treating this as approved customer scope.\\n\\n${trimmedDraft}\\n`;\n}",
+      "why": "The AI path sends the merge prompt (its rules are at lines 46 to 54) and normalises the reply. The deterministic fallback leaves the existing text untouched and appends the new draft under a heading with a review warning. A regression test asserts that approval_ref survives this merge.",
+      "claimIndexes": [
+        12,
+        13
+      ]
+    },
+    {
+      "id": "backup-excludes-secrets",
+      "title": "Backup skips symlinks, caches and local secrets",
+      "path": "src-tauri/src/commands.rs",
+      "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "startLine": 615,
+      "endLine": 640,
+      "language": "rust",
+      "code": "        // Security: Prevent symlink escape\n        if entry.path_is_symlink() {\n            continue;\n        }\n\n        let name = path.strip_prefix(workspace).unwrap();\n        let name_str = name.to_string_lossy().replace(\"\\\\\", \"/\");\n\n        if name_str.is_empty() {\n            continue;\n        }\n\n        // Exclude rebuildable/temp .scopeflow artifacts\n        if name_str.starts_with(\".scopeflow/cache\") ||\n           name_str.starts_with(\".scopeflow/tmp\") ||\n           name_str.starts_with(\".scopeflow/index\") ||\n           name_str.ends_with(\".lock\") {\n            continue;\n        }\n\n        // Exclude secrets from backup\n        if name_str.ends_with(\"secrets.local.yaml\") ||\n           name_str.contains(\".secret\") ||\n           name_str.ends_with(\".local-secret.yaml\") {\n            continue;\n        }",
+      "why": "The zip walk skips symlinks, so a link cannot pull in files from outside the workspace, then skips rebuildable .scopeflow cache, tmp and index paths and any name that looks like a local secret, which includes the AI keys file secrets.local.yaml.",
+      "claimIndexes": [
+        21,
+        23
+      ]
+    }
+  ],
+  "captures": [
+    "scopeflow-git-history",
+    "scopeflow-commit-days",
+    "scopeflow-test-files",
+    "scopeflow-protected-update-refs",
+    "scopeflow-coauthor-trailers"
+  ],
+  "assets": [
+    {
+      "id": "logo",
+      "file": "logo.svg",
+      "alt": "Indigo-to-violet S-shaped line running from a small dot at lower left to a larger dot ringed by a dashed circle at upper right, crossing a pale lavender ring.",
+      "title": "ScopeFlow logo",
+      "category": "project-asset",
+      "tools": [],
+      "provenance": "Ships in the project as public/logo.svg and is rendered by src/components/ui/Logo.tsx; added in commit f280f5e on 2026-06-30. The authoring tool is not recorded in the repository.",
+      "sourcePath": "public/logo.svg",
+      "sourceSha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+      "width": 100,
+      "height": 100,
+      "featured": true
+    }
+  ],
+  "diagram": {
+    "nodes": [
+      {
+        "id": "ui",
+        "label": "React UI",
+        "group": "frontend",
+        "note": "ProjectOverview, MarkdownEditor, Scope Workshop"
+      },
+      {
+        "id": "scanner",
+        "label": "document-scanner.ts",
+        "group": "frontend",
+        "note": "Frontmatter to ProjectDocument list"
+      },
+      {
+        "id": "gate",
+        "label": "Stages and readiness gate",
+        "group": "frontend",
+        "note": "Pure functions over documents"
+      },
+      {
+        "id": "templates",
+        "label": "templates.ts, revisions.ts",
+        "group": "frontend",
+        "note": "Generate, lock, approve, new version"
+      },
+      {
+        "id": "decisions",
+        "label": "src/lib/ai decisions",
+        "group": "frontend",
+        "note": "Guardrails and deterministic fallbacks"
+      },
+      {
+        "id": "providers",
+        "label": "AI provider router",
+        "group": "frontend",
+        "note": "Ollama or OpenAI-compatible, optional"
+      },
+      {
+        "id": "export",
+        "label": "export.ts",
+        "group": "frontend",
+        "note": "HTML approval pack"
+      },
+      {
+        "id": "bridge",
+        "label": "tauri-commands.ts",
+        "group": "bridge",
+        "note": "invoke wrappers"
+      },
+      {
+        "id": "rust",
+        "label": "src-tauri (Rust)",
+        "group": "native",
+        "note": "17 file and zip commands"
+      },
+      {
+        "id": "fs",
+        "label": "Workspace folder",
+        "group": "storage",
+        "note": "Markdown and YAML files"
+      },
+      {
+        "id": "tests",
+        "label": "Vitest and cargo tests",
+        "group": "verification",
+        "note": "Unit tests, release static checks"
+      }
+    ],
+    "edges": [
+      {
+        "from": "ui",
+        "to": "scanner",
+        "label": "scan project"
+      },
+      {
+        "from": "scanner",
+        "to": "gate",
+        "label": "ProjectDocument[]"
+      },
+      {
+        "from": "gate",
+        "to": "ui",
+        "label": "stage, blockers"
+      },
+      {
+        "from": "ui",
+        "to": "templates",
+        "label": "create, lock, revise"
+      },
+      {
+        "from": "ui",
+        "to": "decisions",
+        "label": "customer answer"
+      },
+      {
+        "from": "decisions",
+        "to": "providers",
+        "label": "optional call"
+      },
+      {
+        "from": "providers",
+        "to": "decisions",
+        "label": "JSON or error"
+      },
+      {
+        "from": "ui",
+        "to": "export",
+        "label": "approval pack"
+      },
+      {
+        "from": "ui",
+        "to": "bridge",
+        "label": "file operations"
+      },
+      {
+        "from": "export",
+        "to": "bridge",
+        "label": "read, write HTML"
+      },
+      {
+        "from": "bridge",
+        "to": "rust",
+        "label": "invoke"
+      },
+      {
+        "from": "rust",
+        "to": "fs",
+        "label": "read, write, zip"
+      },
+      {
+        "from": "tests",
+        "to": "gate",
+        "label": "assertions"
+      },
+      {
+        "from": "tests",
+        "to": "decisions",
+        "label": "assertions"
+      }
+    ]
+  },
+  "demo": {
+    "url": null,
+    "note": "Runs locally as a Tauri desktop app (the README gives npm run tauri dev); no public deployment. The repository commits no screenshots of the running app."
+  },
+  "limitations": [
+    "V0.8 is not a production cloud or deploy product and not a direct client portal (README).",
+    "Not covered, per the README and release notes: cloud sync, multi-user collaboration, a client portal, a production backend, legal-grade e-signature, a PDF engine, full accounting, and a fully automated Tauri end-to-end harness. Next wave: approval-evidence capture, that harness, export polish.",
+    "The stabilization document defers a Playwright or E2E run until a Tauri test harness exists. The V0.8 checks are unit tests plus manual QA checklists. This review built and ran nothing: the test figures here are file and line counts, not results.",
+    "Observed in source, not stated by the repo: the conflict dialog's protectedUpdate flag is declared and checked but never set; the Rust write and update commands overwrite without any lock check; the editor decides 'locked' by searching the text for 'locked: true'. Protection of an approved Scope rests on the TypeScript flows listed in the claims.",
+    "Observed in source: Accept scope and Close loop in the Scope Workshop change in-memory state only and write no approval record.",
+    "Observed in source: AI provider API keys are saved as plain text in .scopeflow/secrets.local.yaml in the workspace folder (the Rust backup skips that file), and the Tauri content security policy is null.",
+    "Observed in source: src/lib/skills/brief-scope-evolution-schema.ts imports zod, which package.json does not list (the lockfile has an entry for it).",
+    "The MVP planning documents (non-goals.md, product-scope.md) say no AI and plan an SQLite index and PDF export; they describe the MVP plan, not V0.8.",
+    "No screenshots of the running app are committed; the one image used here is the project logo."
+  ],
+  "contribution": "The git captures show 518 commits, all with the author name phcaradanai, from 2026-06-23 to 2026-07-02; 213 are dated 2026-06-27. No other author name appears, and no commit message carries a Co-Authored-By trailer.",
+  "lastVerified": "2026-10-25"
+}

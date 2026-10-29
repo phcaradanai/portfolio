@@ -1,0 +1,13 @@
+{
+  "id": "cursed-market-bots-secure-economy",
+  "repo": "phcaradanai/Cursed-Market",
+  "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+  "cwd": ".",
+  "command": "for d in src/simulation src/game/appraisal; do printf '%s: ' $d; git grep -E 'theft-start|vault-deposit|loan-propose|seal-offer|crime-clear' b34c5e59816cb6606bb7f98cd264b6d399e25c30 -- $d | wc -l; done",
+  "capturedAt": "2026-10-24T17:16:01Z",
+  "exitCode": 0,
+  "durationMs": 3768,
+  "output": "src/simulation:        0\nsrc/game/appraisal:       20",
+  "truncated": false,
+  "environment": "macOS Darwin 25.5.0 (uname -m x86_64), git 2.55.0, /bin/sh"
+}

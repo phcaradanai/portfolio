@@ -1,0 +1,61 @@
+{
+  "slug": "storage-rust-command-service",
+  "accession": "PK-2026-018",
+  "title": "Command service (Rust)",
+  "kind": "system",
+  "tier": "C",
+  "maturity": "prototype",
+  "visibility": "private-redacted",
+  "tagline": "A private central-command service written mainly in Rust, with TypeScript and JavaScript front-end code.",
+  "summary": "A private service developed between September and October 2026. GitHub's language statistics show mostly Rust, with TypeScript, JavaScript and PowerShell. Its purpose, client and code are withheld.",
+  "period": {
+    "start": "2026-09-15",
+    "end": "2026-10-21"
+  },
+  "repo": null,
+  "stack": [
+    "Rust",
+    "TypeScript",
+    "JavaScript",
+    "PowerShell"
+  ],
+  "aiRole": {
+    "summary": "Not described: the repository is withheld, so its tooling is not published.",
+    "tools": []
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "private",
+      "repo": "private",
+      "note": "GitHub API metadata (languages, contributors, commit dates) queried 2026-10-25. The repository is private and its contents were not read."
+    }
+  ],
+  "claims": [
+    {
+      "text": "Written mainly in Rust (about 3.4 MB), with about 1.1 MB each of TypeScript and JavaScript, according to GitHub's language statistics.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "text": "127 commits between 15 September and 21 October 2026, all from the owner's account.",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "excerpts": [],
+  "captures": [],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Private work. Details withheld; available on request."
+  },
+  "limitations": [
+    "Private work: code, screenshots, names and clients are withheld at the owner's request. Only language statistics and commit history are published."
+  ],
+  "contribution": "127 of 127 commits by phcaradanai, 2026-09-15 to 2026-10-21.",
+  "lastVerified": "2026-10-25"
+}

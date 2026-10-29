@@ -1,0 +1,317 @@
+{
+  "slug": "platform-control-plane",
+  "accession": "PK-2026-014",
+  "title": "Platform Control Plane (Backstage App Factory)",
+  "kind": "system",
+  "tier": "B",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Backstage control plane that generates React apps from one template, with a shared UI package and an SDK whose adapters fail closed.",
+  "summary": "A Backstage-based control plane and App Factory for a shared frontend standard. A scaffolder template generates a React 19, Vite and TypeScript app that vendors two packages: @platform/ui (tokens, accessible primitives, a Storybook design-system portal) and @platform/sdk (app identity, runtime mode, navigation, auth, permissions and tenant adapters). The README is in Thai. docs/status.md lists what is supported and what is not shipped, such as a tenant backend and an identity-provider service.",
+  "period": {
+    "start": "2026-08-06",
+    "end": "2026-08-21"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/platform-control-plane",
+    "pinnedSha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+    "ownerCommits": 30,
+    "totalCommits": 30,
+    "languages": {
+      "TypeScript": 618511,
+      "JavaScript": 12236,
+      "CSS": 3543,
+      "Dockerfile": 3116,
+      "HTML": 2276
+    },
+    "checkedAt": "2026-10-25"
+  },
+  "stack": [
+    "TypeScript",
+    "Backstage",
+    "React 19",
+    "Vite",
+    "Storybook",
+    "Yarn 4",
+    "Jest",
+    "Playwright"
+  ],
+  "aiRole": {
+    "summary": "oh-my-claudecode, an add-on for Claude Code, appears only as an ignored local-session folder in .gitignore (E14), and ADR 0003 refers to a CLAUDE.md file (E15) that is not in the committed tree. No prompts, agent briefs or review records are committed. The phased report files are project reports; who or what wrote them is not recorded.",
+    "tools": [
+      {
+        "name": "Claude Code (oh-my-claudecode)",
+        "use": ".gitignore excludes the add-on's .omc/ local session state; ADR 0003 mentions a CLAUDE.md.",
+        "evidence": "E14"
+      }
+    ]
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "reported",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "README.md",
+      "lines": [
+        20,
+        21
+      ],
+      "quote": "Control plane นี้ไม่ใช่ runtime ของ product application และไม่ได้สร้าง backend ของ product ให้โดยอัตโนมัติ",
+      "note": "Thai: this control plane is not a product application's runtime and does not create the product's backend automatically."
+    },
+    {
+      "id": "E2",
+      "level": "source",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "README.md",
+      "lines": [
+        13,
+        18
+      ],
+      "note": "Component table: @platform/ui, @platform/sdk, Backstage control plane, generated application."
+    },
+    {
+      "id": "E3",
+      "level": "reported",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "docs/status.md",
+      "lines": [
+        54,
+        54
+      ],
+      "quote": "Standalone mode fails closed: `can()` returns `false`."
+    },
+    {
+      "id": "E4",
+      "level": "source",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "packages/platform-sdk/src/adapters/standalone.ts",
+      "lines": [
+        12,
+        49
+      ],
+      "note": "Standalone auth, permissions and tenant adapters report unavailable instead of faking a session."
+    },
+    {
+      "id": "E5",
+      "level": "source",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "packages/platform-sdk/src/runtime/resolve.ts",
+      "lines": [
+        26,
+        47
+      ],
+      "note": "resolvePlatformRuntime: standalone, platform-mfe and standalone-and-mfe handling."
+    },
+    {
+      "id": "E6",
+      "level": "reported",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "docs/status.md",
+      "lines": [
+        66,
+        66
+      ],
+      "quote": "Not shipped by this repository today:"
+    },
+    {
+      "id": "E7",
+      "level": "reported",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "docs/status.md",
+      "lines": [
+        71,
+        71
+      ],
+      "quote": "Tenant backend and resource-scoped authorization enforcement for products."
+    },
+    {
+      "id": "E8",
+      "level": "reported",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "docs/status.md",
+      "lines": [
+        57,
+        57
+      ],
+      "quote": "the repository does not generate a business backend."
+    },
+    {
+      "id": "E9",
+      "level": "source",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": ".github/workflows/ci.yml",
+      "lines": [
+        24,
+        43
+      ],
+      "note": "CI verify job: lint, typecheck, portal typecheck and build, tests, build, docker compose config."
+    },
+    {
+      "id": "E10",
+      "level": "source",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "templates/platform-mfe-app/template.yaml",
+      "note": "The Backstage scaffolder template behind the App Factory."
+    },
+    {
+      "id": "E11",
+      "level": "ran",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "captureId": "platform-control-plane-git-facts"
+    },
+    {
+      "id": "E12",
+      "level": "reported",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "docs/status.md",
+      "lines": [
+        9,
+        9
+      ],
+      "quote": "Supported and verified on the current `main` implementation:"
+    },
+    {
+      "id": "E13",
+      "level": "reported",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "docs/status.md",
+      "lines": [
+        4,
+        5
+      ],
+      "quote": "It is intentionally more authoritative than older phase reports."
+    },
+    {
+      "id": "E14",
+      "level": "source",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": ".gitignore",
+      "lines": [
+        46,
+        47
+      ],
+      "note": "oh-my-claudecode local session state (.omc/) is ignored."
+    },
+    {
+      "id": "E15",
+      "level": "reported",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "docs/adr/0003-identity-and-access-foundation.md",
+      "lines": [
+        19,
+        20
+      ],
+      "quote": "explicitly flagged in `CLAUDE.md`"
+    },
+    {
+      "id": "E16",
+      "level": "source",
+      "repo": "phcaradanai/platform-control-plane",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "path": "docs/status.md",
+      "lines": [
+        40,
+        41
+      ],
+      "note": "tenant, desktop-ready and mobile-ready are recorded-only selections."
+    }
+  ],
+  "claims": [
+    {
+      "text": "The repo is a Backstage control plane with an App Factory scaffolder template plus two shared packages, @platform/ui and @platform/sdk. The README says the control plane is not a product's runtime, and docs/status.md says the repository does not generate a business backend.",
+      "evidence": [
+        "E1",
+        "E2",
+        "E8",
+        "E10"
+      ]
+    },
+    {
+      "text": "The SDK's standalone adapters fail closed: sign-in and sign-out reject with PlatformCapabilityUnavailableError, and permissions and tenant return no snapshot, which status.md says makes can() return false. resolvePlatformRuntime picks standalone or hosted from the app's mode and throws when a platform-mfe app has no host.",
+      "evidence": [
+        "E3",
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "text": "docs/status.md separates 'supported and verified' items from integration boundaries and unshipped work, listing a tenant backend among the unshipped items. CI runs lint, typecheck, the portal build, tests, the build and compose validation, then an e2e job; no CI output is stored in the repo.",
+      "evidence": [
+        "E6",
+        "E7",
+        "E9",
+        "E12"
+      ]
+    },
+    {
+      "text": "Repository facts from a git run: 30 commits, all under the owner's account, between 2026-08-06 and 2026-08-21, and 6 ADR files under docs/adr.",
+      "evidence": [
+        "E11"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "standalone-adapters",
+      "title": "Standalone adapters report 'unavailable' instead of faking a capability",
+      "path": "packages/platform-sdk/src/adapters/standalone.ts",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "startLine": 12,
+      "endLine": 49,
+      "language": "typescript",
+      "code": "/**\n * Default adapters for standalone mode (no platform-hosted shell). Auth,\n * permissions, and tenant are real capabilities this phase deliberately does\n * not implement (no Keycloak, RBAC backend, or tenant system yet), so they\n * report \"unavailable\" rather than fabricating a fake session/grant/tenant.\n * Navigation has no such backend dependency, so it works standalone via the\n * browser's own History API.\n */\nexport function createStandaloneAuthAdapter(\n  reason = AUTH_UNAVAILABLE,\n): AuthAdapter {\n  return {\n    getSnapshot: () => null,\n    subscribe: () => () => {},\n    signIn: () =>\n      Promise.reject(\n        new PlatformCapabilityUnavailableError('auth', reason),\n      ),\n    signOut: () =>\n      Promise.reject(\n        new PlatformCapabilityUnavailableError('auth', reason),\n      ),\n  };\n}\n\nexport function createStandalonePermissionsAdapter(): PermissionsAdapter {\n  return {\n    getSnapshot: () => null,\n    subscribe: () => () => {},\n  };\n}\n\nexport function createStandaloneTenantAdapter(): TenantAdapter {\n  return {\n    getSnapshot: () => null,\n    subscribe: () => () => {},\n  };\n}",
+      "why": "The comment says auth, permissions and tenant are capabilities this phase deliberately does not implement. Sign-in and sign-out reject with a typed error, and permissions and tenant return a null snapshot, so a generated app without a provider cannot appear signed in or authorised.",
+      "claimIndexes": [
+        1
+      ]
+    },
+    {
+      "id": "resolve-runtime",
+      "title": "One function gives the scaffold-time mode a runtime meaning",
+      "path": "packages/platform-sdk/src/runtime/resolve.ts",
+      "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+      "startLine": 26,
+      "endLine": 47,
+      "language": "typescript",
+      "code": "export function resolvePlatformRuntime(\n  mode: PlatformAppIdentity['mode'],\n  host: PlatformHostContext | null,\n): ResolvedPlatformRuntime {\n  switch (mode) {\n    case 'standalone':\n      return { runtimeMode: 'standalone' };\n    case 'platform-mfe':\n      if (!host) {\n        throw new PlatformRuntimeUnavailableError(mode);\n      }\n      return { runtimeMode: 'hosted', adapters: host.adapters };\n    case 'standalone-and-mfe':\n      return host\n        ? { runtimeMode: 'hosted', adapters: host.adapters }\n        : { runtimeMode: 'standalone' };\n    default:\n      // platform-app.json is hand-editable after generation, so this is a\n      // real boundary against a malformed/unknown mode, not a can't-happen branch.\n      throw new Error(`Unknown platform-app.json mode: \"${String(mode)}\"`);\n  }\n}",
+      "why": "standalone ignores any host, platform-mfe requires one and throws otherwise, and standalone-and-mfe uses a host only if present. The default branch throws on an unknown mode because platform-app.json can be edited by hand.",
+      "claimIndexes": [
+        1
+      ]
+    }
+  ],
+  "captures": [
+    "platform-control-plane-git-facts"
+  ],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Runs locally (Backstage backend and app dev servers, plus a Storybook design-system portal); no public deployment is documented."
+  },
+  "limitations": [
+    "docs/status.md says what is not shipped: a platform-owned identity-provider service or enterprise SSO deployment, tenant backend and resource-scoped authorization, provider and backend services behind the feature packs (profile, dashboard, settings, report, history and audit persistence), and a Super App host runtime with Module Federation loading (E6, E7). tenant, desktop-ready and mobile-ready are recorded-only selections (E16).",
+    "'Supported and verified' in docs/status.md (E12) is the repo's own statement. No test, CI or e2e output is stored in the repo, and nothing was run here except the git facts in the capture.",
+    "status.md calls itself more authoritative than older phase reports (E13); the ADRs and BACKSTAGE_APP_FACTORY_PHASE reports are historical records and may not describe current behaviour.",
+    "App Factory publishing needs a GitHub token supplied by the operator (per the README); this entry did not exercise it.",
+    "The README is in Thai and embeds a screenshot from a local run; no images are shown here."
+  ],
+  "contribution": "All 30 commits are attributed to the owner's account, 2026-08-06 to 2026-08-21 (see capture platform-control-plane-git-facts). No other contributors.",
+  "lastVerified": "2026-10-25"
+}

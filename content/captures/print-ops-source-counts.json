@@ -1,0 +1,13 @@
+{
+  "id": "print-ops-source-counts",
+  "repo": "phcaradanai/print_ops",
+  "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+  "cwd": ".",
+  "command": "printf 'TypeScript test files: '; git ls-tree -r --name-only 4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51 | grep -c '\\.test\\.tsx\\{0,1\\}$'; printf 'Go test files: '; git ls-tree -r --name-only 4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51 | grep -c '_test\\.go$'; printf 'files in docs/architecture: '; git ls-tree -r --name-only 4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51 -- docs/architecture | wc -l; printf 'files in docs/decisions: '; git ls-tree -r --name-only 4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51 -- docs/decisions | wc -l; printf 'files in .impeccable/critique: '; git ls-tree -r --name-only 4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51 -- .impeccable/critique | wc -l",
+  "capturedAt": "2026-10-25T05:18:29.053Z",
+  "exitCode": 0,
+  "durationMs": 304,
+  "output": "TypeScript test files: 135\nGo test files: 22\nfiles in docs/architecture:       24\nfiles in docs/decisions:        4\nfiles in .impeccable/critique:        9",
+  "truncated": false,
+  "environment": "macOS (Darwin 25.5.0) arm64, git 2.55.0, /bin/sh; read-only git; git status --porcelain empty before and after"
+}

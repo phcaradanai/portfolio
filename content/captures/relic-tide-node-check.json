@@ -1,0 +1,13 @@
+{
+  "id": "relic-tide-node-check",
+  "repo": "phcaradanai/relic-tide",
+  "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+  "cwd": ".",
+  "command": "git diff --quiet HEAD -- web/serve.mjs tests/web_smoke_test.mjs tests/network_delay_proxy.mjs && node --check web/serve.mjs && node --check tests/web_smoke_test.mjs && node --check tests/network_delay_proxy.mjs && echo ok",
+  "capturedAt": "2026-10-24T12:21:37.145Z",
+  "exitCode": 0,
+  "durationMs": 6154,
+  "output": "ok",
+  "truncated": false,
+  "environment": "macOS (Darwin 25.5.0) arm64, node v26.12.0, git 2.55.0, zsh"
+}

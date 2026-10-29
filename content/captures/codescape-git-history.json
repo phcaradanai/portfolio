@@ -1,0 +1,13 @@
+{
+  "id": "codescape-git-history",
+  "repo": "phcaradanai/Project-Explorer",
+  "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+  "cwd": ".",
+  "command": "git rev-list --count HEAD && git shortlog -sn HEAD && git log --format=%ad --date=short | sort | uniq -c",
+  "capturedAt": "2026-10-24T12:24:51.057Z",
+  "exitCode": 0,
+  "durationMs": 8491,
+  "output": "19\n    19\tphcaradanai\n   9 2026-07-30\n  10 2026-07-31",
+  "truncated": false,
+  "environment": "macOS 26.5.2 x86_64, node v26.12.0, git version 2.55.0"
+}

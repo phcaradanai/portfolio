@@ -1,0 +1,1833 @@
+{
+  "slug": "codescape",
+  "accession": "PK-2026-006",
+  "title": "CodeScape",
+  "kind": "tool",
+  "tier": "A",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Developer portal and knowledge graph: every detected technology, capability and relationship carries file, method and confidence.",
+  "summary": "CodeScape is a developer portal, software catalog and project knowledge graph for code spread across many repositories. A Go API scans local repositories with deterministic parsers and stores entities and relationships in PostgreSQL. A React host loads separately built micro frontends (catalog, 2D graph, 3D universe) at runtime from a plugin registry. The README says nothing detected is shown without provenance, and lists its limits: single node, no authentication, no source-level analysis.",
+  "period": {
+    "start": "2026-07-30",
+    "end": "2026-07-31"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/Project-Explorer",
+    "pinnedSha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+    "ownerCommits": 19,
+    "totalCommits": 19,
+    "languages": {
+      "TypeScript": 620149,
+      "Go": 595262,
+      "CSS": 74616,
+      "JavaScript": 10162,
+      "Shell": 5992,
+      "HTML": 2667,
+      "Dockerfile": 2564
+    },
+    "checkedAt": "2026-10-25"
+  },
+  "stack": [
+    "Go 1.25 (chi, pgx, goose, yaml.v3)",
+    "PostgreSQL",
+    "React and TypeScript",
+    "Vite with Module Federation",
+    "React Flow (2D graph)",
+    "React Three Fiber (3D universe)",
+    "pnpm workspaces and Turborepo",
+    "Vitest, Go test and Playwright",
+    "Docker Compose and GitHub Actions"
+  ],
+  "aiRole": {
+    "summary": "AI tooling is documented in the repository. CLAUDE.md is a guidance file for Claude Code (stack, architecture rules, conventions, verification levels), and 18 of the 19 commit messages carry a Co-Authored-By trailer naming Claude Opus 5. The original specification (init-prompt.md) and the PE-01 and PE-01.1 milestone briefs are written as prompts to an AI agent, with rules such as not claiming a test passes unless it was run. skills-lock.json records one third-party browser-automation skill. The repository also keeps the milestone reports with commands, counts and a capability matrix that separates code existing, unit tests, end-to-end runs and browser UX checks, so verification steps are documented. That supports 'directed, with documented verification'; this review re-ran none of those checks.",
+    "tools": [
+      {
+        "name": "CLAUDE.md (Claude Code guidance)",
+        "use": "Repository guidance for Claude Code: stack, architectural rules, UI conventions and four verification levels.",
+        "evidence": "E47"
+      },
+      {
+        "name": "Claude Opus 5 (commit co-author trailer)",
+        "use": "Named in a Co-Authored-By trailer on 18 of the 19 commits.",
+        "evidence": "E94"
+      },
+      {
+        "name": "init-prompt.md (original specification as a prompt)",
+        "use": "A prompt that opens 'You are a Principal Software Architect...' and specifies the whole system.",
+        "evidence": "E48"
+      },
+      {
+        "name": "PE-01 milestone brief",
+        "use": "Security, product identity and UX foundation milestone, written with an 'Agent Prompt' section and working rules.",
+        "evidence": "E49"
+      },
+      {
+        "name": "PE-01.1 milestone brief",
+        "use": "Runtime and UX truth-gate milestone, also written as an agent prompt.",
+        "evidence": "E50"
+      },
+      {
+        "name": "ego-browser skill (third party)",
+        "use": "A browser-automation skill installed from citrolabs/ego-lite and pinned by hash in skills-lock.json.",
+        "evidence": "E51"
+      }
+    ]
+  },
+  "narrative": {
+    "problem": "The README frames the problem as code that has outgrown one repository: which projects exist and what each does, which technologies are in use and where knowledge is concentrated, which capabilities were built more than once, and what could be reused or connected. The original specification (init-prompt.md) asks for a developer portal, software catalog, project knowledge graph, micro-frontend platform and 3D portfolio in one system, with working code rather than a mock dashboard.\n\nThe trust problem is named in ADR 0005: a catalog that quietly guesses is worse than none, so every claim the tool makes has to be checkable.",
+    "approach": "Evidence is part of the domain model, not a display detail. Every detected technology, capability and relationship stores a source, a detection method, a banded confidence and at least one piece of evidence (file, line, snippet, an explanatory sentence). Suggestions are typed apart from observed facts and are never confirmed automatically, and a rejected suggestion is kept so the next scan does not raise it again.\n\nScanning is deterministic and read-only: parsers read manifests, lockfiles, Dockerfiles, OpenAPI and protobuf documents and directory layout, and never execute repository code. Opportunities come from pure rules. The report lists AI features last, on the ground that the deterministic engine must stay the authority.\n\nDecisions are recorded as seven ADRs: monorepo, a relational graph in PostgreSQL, Module Federation with a runtime registry, local-first scanning, an evidence-first domain, a shared React bridge, and a plugin origin allowlist.",
+    "architecture": "A Go API (chi, pgx, goose migrations, PostgreSQL) holds the domain types, the scanner and normalizer, the analysis rules, the catalog and graph stores and the plugin registry, behind REST under /api/v1 with an OpenAPI document. A React host (apps/web) serves the core pages and loads three separately built remotes at runtime through Module Federation: a catalog, a 2D graph explorer on React Flow and a 3D universe on React Three Fiber. Shared TypeScript packages carry the contracts (types, API client, plugin contract), the design system with its provenance components, and a React bridge for remotes.\n\nThe split follows one rule from the micro-frontend doc: anything the product cannot function without belongs in the host, and remotes only add views. The catalog pages, scanning and graph data therefore work with every remote down.",
+    "implementation": "The scanner is an ordered registry of 16 stateless parsers behind a small interface. Findings come from a constructor that requires evidence, snippets are truncated and redacted after credential-shaped keys, and the engine turns a parser panic into a warning. Findings from several parsers are merged with their evidence (capped at five), and the normalizer writes catalog and graph rows only after a scan succeeds. Paths pass one guard that resolves symlinks before testing containment, and git history is read by parsing .git files, never by running git.\n\nThe registry is enforced twice. The API checks a remote's origin against an allowlist on register, update and health check. The host checks it again before downloading the code, then checks the host-version range, loads the module with an 8-second timeout, validates the exported shape and collects failures instead of throwing. A failed load is not cached, so Retry refetches. The version-range logic exists once in TypeScript and once in Go.\n\nThe graph explorer uses a deterministic layout so a focus command can be tested, and draws unconfirmed edges dashed. The 3D universe keeps camera arithmetic outside React and three.js and renders a list of the same projects beside the canvas.",
+    "outcome": "At the pinned commit the repository holds 19 commits across 2026-07-30 and 2026-07-31, and 18 of them carry a Co-Authored-By trailer naming Claude Opus 5. The tree contains 9 Playwright spec files, 18 Go test files under apps/api and 13 TypeScript test files under apps, remotes and packages.\n\nThe PE-01.1 report records 188 unit tests, 148 Go tests, 95 Playwright tests and 208 viewport-and-theme passes against a real stack, with one green CI run. Those are the report's figures; this review re-ran none of them. The repository commits no screenshots, because the audit images are gitignored.",
+    "lessons": "What the repo's records say is still open or was learned.\n\nOpen: incremental rescanning is the first roadmap item, followed by a per-project world, source-level analysis (call graphs, cross-language AST), scheduled rescans, authentication and team scoping, public GitHub tree scanning and Backstage-compatible export. The API is unauthenticated and single-node, and the threat model calls a parser bug the most plausible vulnerability class. The report's own limits: Chromium only, no assertion on WebGL pixels, one scan at a time, and a small scan fixture.\n\nLearned, as recorded: the PE-01.1 milestone exists because the end-to-end suite described an interface that no longer existed and broke CI on every push while local commands stayed green, and because UI wording did not match behaviour. Universe search removed every unmatched planet while its placeholder promised to focus the camera. A length check counted bytes, so a Thai project name was refused at about 66 characters while an English one was allowed 200."
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/domain/domain.go",
+      "lines": [
+        171,
+        200
+      ],
+      "note": "Evidence struct and Confidence bands."
+    },
+    {
+      "id": "E2",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/domain/domain.go",
+      "lines": [
+        205,
+        239
+      ],
+      "note": "Relationship with evidence, confidence, method, isConfirmed, rejectedAt; Status()."
+    },
+    {
+      "id": "E3",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/domain/domain.go",
+      "lines": [
+        111,
+        120
+      ],
+      "note": "Speculative relationship types."
+    },
+    {
+      "id": "E4",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/domain/domain.go",
+      "lines": [
+        122,
+        169
+      ],
+      "note": "Five sources and fifteen detection methods."
+    },
+    {
+      "id": "E5",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/domain/domain.go",
+      "lines": [
+        68,
+        88
+      ],
+      "note": "Nineteen relationship types."
+    },
+    {
+      "id": "E6",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/parser.go",
+      "lines": [
+        15,
+        50
+      ],
+      "note": "Parser interface and the ordered registry of 16 parsers."
+    },
+    {
+      "id": "E7",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/parser.go",
+      "lines": [
+        52,
+        69
+      ],
+      "note": "finding() takes an Evidence argument."
+    },
+    {
+      "id": "E8",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/parser.go",
+      "lines": [
+        92,
+        116
+      ],
+      "note": "sanitizeSnippet and secret markers."
+    },
+    {
+      "id": "E9",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/parse_node.go",
+      "lines": [
+        86,
+        106
+      ],
+      "note": "Certain confidence for exact dependencies, medium for capability hints."
+    },
+    {
+      "id": "E10",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/engine.go",
+      "lines": [
+        186,
+        201
+      ],
+      "note": "runParser recovers from a panic."
+    },
+    {
+      "id": "E11",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/engine.go",
+      "lines": [
+        315,
+        378
+      ],
+      "note": "dedupeFindings merges evidence and caps it at five."
+    },
+    {
+      "id": "E12",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/engine.go",
+      "lines": [
+        51,
+        62
+      ],
+      "note": "Run re-validates the root path."
+    },
+    {
+      "id": "E13",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/shared/safepath/safepath.go",
+      "lines": [
+        57,
+        106
+      ],
+      "note": "Guard.Resolve."
+    },
+    {
+      "id": "E14",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/shared/safepath/safepath.go",
+      "lines": [
+        119,
+        138
+      ],
+      "note": "within(): separator-aware containment."
+    },
+    {
+      "id": "E15",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/walker.go",
+      "lines": [
+        144,
+        172
+      ],
+      "note": "Directory skips, depth limit, symlink containment per file."
+    },
+    {
+      "id": "E16",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/walker.go",
+      "lines": [
+        262,
+        300
+      ],
+      "note": "readFile reads at most limit+1 bytes."
+    },
+    {
+      "id": "E17",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/gitinfo.go",
+      "lines": [
+        27,
+        39
+      ],
+      "note": "Doc comment: the git binary is not invoked."
+    },
+    {
+      "id": "E18",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/gitinfo.go",
+      "lines": [
+        119,
+        121
+      ],
+      "note": "Packed objects are not read."
+    },
+    {
+      "id": "E19",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/normalize.go",
+      "lines": [
+        30,
+        56
+      ],
+      "note": "Apply clears scanned links, keeps manual ones, runs only after a scan produced findings."
+    },
+    {
+      "id": "E20",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/scan/normalize.go",
+      "lines": [
+        95,
+        98
+      ],
+      "note": "Maturity is never inferred from a parser."
+    },
+    {
+      "id": "E21",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/analysis/rules.go",
+      "lines": [
+        1,
+        17
+      ],
+      "note": "Package comment: deterministic, explainable rules."
+    },
+    {
+      "id": "E22",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/analysis/rules.go",
+      "lines": [
+        83,
+        107
+      ],
+      "note": "Run: five rules, stable ordering."
+    },
+    {
+      "id": "E23",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "packages/contracts/src/plugin.ts",
+      "lines": [
+        64,
+        82
+      ],
+      "note": "CodeScapePlugin interface."
+    },
+    {
+      "id": "E24",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "packages/contracts/src/plugin.ts",
+      "lines": [
+        89,
+        123
+      ],
+      "note": "isHostVersionCompatible and the comment saying it is shared with the API."
+    },
+    {
+      "id": "E25",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/web/src/lib/pluginLoader.ts",
+      "lines": [
+        59,
+        77
+      ],
+      "note": "isOriginAllowed; an empty allowlist denies everything."
+    },
+    {
+      "id": "E26",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/web/src/lib/pluginLoader.ts",
+      "lines": [
+        98,
+        147
+      ],
+      "note": "Module cache, 8 s timeout, failed loads not cached."
+    },
+    {
+      "id": "E27",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/web/src/lib/pluginLoader.ts",
+      "lines": [
+        175,
+        203
+      ],
+      "note": "validatePluginModule."
+    },
+    {
+      "id": "E28",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/web/src/lib/pluginLoader.ts",
+      "lines": [
+        213,
+        317
+      ],
+      "note": "loadPlugins: per-remote checks and collected failures."
+    },
+    {
+      "id": "E29",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/plugins/service.go",
+      "lines": [
+        37,
+        56
+      ],
+      "note": "NewService requires an origin guard; nil becomes deny-all."
+    },
+    {
+      "id": "E30",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/plugins/service.go",
+      "lines": [
+        120,
+        160
+      ],
+      "note": "Register validates fields and the remote origin."
+    },
+    {
+      "id": "E31",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/plugins/service.go",
+      "lines": [
+        223,
+        236
+      ],
+      "note": "Update applies the same origin rule."
+    },
+    {
+      "id": "E32",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/plugins/service.go",
+      "lines": [
+        259,
+        281
+      ],
+      "note": "Delete refuses built-in plugins."
+    },
+    {
+      "id": "E33",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/plugins/service.go",
+      "lines": [
+        289,
+        341
+      ],
+      "note": "HealthCheck re-validates the stored URL before fetching."
+    },
+    {
+      "id": "E34",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/plugins/service.go",
+      "lines": [
+        414,
+        460
+      ],
+      "note": "Service.compatible: Go implementation of the range check."
+    },
+    {
+      "id": "E35",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/internal/plugins/compat_test.go",
+      "lines": [
+        5,
+        28
+      ],
+      "note": "Sixteen-case table test for the Go range check."
+    },
+    {
+      "id": "E36",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/web/src/lib/versions.test.ts",
+      "lines": [
+        1,
+        19
+      ],
+      "note": "Version-consistency test across remotes and host."
+    },
+    {
+      "id": "E37",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "e2e/tests/platform.spec.ts",
+      "lines": [
+        72,
+        99
+      ],
+      "note": "Degraded-state test: a remote that fails to load."
+    },
+    {
+      "id": "E38",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "e2e/tests/platform.spec.ts",
+      "lines": [
+        12,
+        28
+      ],
+      "note": "Remote entries must be served as JavaScript, not the SPA fallback."
+    },
+    {
+      "id": "E39",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "remotes/graph-explorer/src/graph/layout.ts",
+      "lines": [
+        1,
+        9
+      ],
+      "note": "Why the layout is deterministic."
+    },
+    {
+      "id": "E40",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "remotes/graph-explorer/src/graph/layout.ts",
+      "lines": [
+        154,
+        169
+      ],
+      "note": "Edge styling by confirmation status."
+    },
+    {
+      "id": "E41",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "remotes/graph-explorer/src/graph/search.ts",
+      "lines": [
+        98,
+        115
+      ],
+      "note": "focusCommand returns null for an unknown node; zero duration under reduced motion."
+    },
+    {
+      "id": "E42",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "remotes/graph-explorer/src/graph/search.ts",
+      "lines": [
+        38,
+        80
+      ],
+      "note": "Ranked search: exact, prefix, substring, then degree."
+    },
+    {
+      "id": "E43",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "remotes/portfolio-universe/src/universe/layout.ts",
+      "lines": [
+        5,
+        50
+      ],
+      "note": "placeNodes: domains as galaxies, size from degree."
+    },
+    {
+      "id": "E44",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "remotes/portfolio-universe/src/universe/camera.ts",
+      "lines": [
+        32,
+        50
+      ],
+      "note": "cameraGoalFor."
+    },
+    {
+      "id": "E45",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "apps/api/go.mod",
+      "lines": [
+        5,
+        12
+      ],
+      "note": "Direct Go dependencies."
+    },
+    {
+      "id": "E46",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": ".github/workflows/ci.yml",
+      "lines": [
+        17,
+        91
+      ],
+      "note": "Jobs: frontend, api, docker, e2e."
+    },
+    {
+      "id": "E47",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "CLAUDE.md",
+      "lines": [
+        1,
+        3
+      ],
+      "note": "Guidance file addressed to Claude Code."
+    },
+    {
+      "id": "E48",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "init-prompt.md",
+      "lines": [
+        1,
+        1
+      ],
+      "note": "Specification written as a prompt to an AI agent."
+    },
+    {
+      "id": "E49",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "PE-01-security-product-ux-foundation-closure.md",
+      "lines": [
+        19,
+        29
+      ],
+      "note": "Agent Prompt section of the PE-01 brief."
+    },
+    {
+      "id": "E50",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "PE-01.1-runtime-ux-truth-gate.md",
+      "lines": [
+        21,
+        30
+      ],
+      "note": "Agent Prompt section of the PE-01.1 brief."
+    },
+    {
+      "id": "E51",
+      "level": "source",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "skills-lock.json",
+      "lines": [
+        3,
+        9
+      ],
+      "note": "One skill: ego-browser from citrolabs/ego-lite, with a hash."
+    },
+    {
+      "id": "E52",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "README.md",
+      "lines": [
+        16,
+        18
+      ],
+      "quote": "Every technology, capability and relationship carries the file it came from, the method that found it, and a confidence level."
+    },
+    {
+      "id": "E53",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "README.md",
+      "lines": [
+        388,
+        389
+      ],
+      "quote": "Scans run in an in-process worker pool. Two API instances against one database would duplicate work; there is no distributed lock."
+    },
+    {
+      "id": "E54",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "README.md",
+      "lines": [
+        390,
+        391
+      ],
+      "quote": "The API is unauthenticated and assumes a trusted network. Do not expose it to the internet as-is."
+    },
+    {
+      "id": "E55",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "README.md",
+      "lines": [
+        406,
+        407
+      ],
+      "quote": "reconstruct architecture from source, build a call graph, or perform AST analysis across languages"
+    },
+    {
+      "id": "E56",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "README.md",
+      "lines": [
+        371,
+        373
+      ],
+      "quote": "Git history is read by parsing `.git` directly rather than invoking `git`, because a repository controls its own `.git/config` and can make git run commands."
+    },
+    {
+      "id": "E57",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "README.md",
+      "lines": [
+        396,
+        397
+      ],
+      "quote": "Commit timestamps fall back to the ref file's modification time, and the UI marks those as approximate."
+    },
+    {
+      "id": "E58",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "README.md",
+      "lines": [
+        398,
+        398
+      ],
+      "quote": "GitHub import catalogs metadata; it does not scan."
+    },
+    {
+      "id": "E59",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "README.md",
+      "lines": [
+        418,
+        419
+      ],
+      "quote": "It falls back to a 2D list automatically, and the accessible project list renders alongside it either way."
+    },
+    {
+      "id": "E60",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "README.md",
+      "lines": [
+        421,
+        422
+      ],
+      "quote": "Repository folder districts, source-level call graphs and a navigable per-project 3D world are not implemented."
+    },
+    {
+      "id": "E61",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "README.md",
+      "lines": [
+        432,
+        434
+      ],
+      "quote": "hash file contents and skip unchanged files, so scanning a large monorepo is proportional to what changed."
+    },
+    {
+      "id": "E62",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "README.md",
+      "lines": [
+        207,
+        209
+      ],
+      "quote": "`@originjs/vite-plugin-federation` only emits `remoteEntry.js` during a build, so a remote served by `vite dev` hands the host an HTML fallback page where it expected a module."
+    },
+    {
+      "id": "E63",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "CLAUDE.md",
+      "lines": [
+        70,
+        70
+      ],
+      "quote": "`internal/transport/openapi_test.go` fails the build if a registered route is undocumented"
+    },
+    {
+      "id": "E64",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "CLAUDE.md",
+      "lines": [
+        89,
+        89
+      ],
+      "quote": "Never claim something works unless it was actually executed."
+    },
+    {
+      "id": "E65",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "CLAUDE.md",
+      "lines": [
+        112,
+        112
+      ],
+      "quote": "carries the capability matrix recording which level each feature has reached"
+    },
+    {
+      "id": "E66",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/adr/0005-evidence-first-domain.md",
+      "lines": [
+        28,
+        29
+      ],
+      "quote": "`IsConfirmed` only becomes true when a human agrees."
+    },
+    {
+      "id": "E67",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/adr/0005-evidence-first-domain.md",
+      "lines": [
+        35,
+        36
+      ],
+      "quote": "Rejected relationships are retained rather than deleted, so a later scan cannot resurrect a suggestion the user has already dismissed."
+    },
+    {
+      "id": "E68",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/adr/0005-evidence-first-domain.md",
+      "lines": [
+        47,
+        48
+      ],
+      "quote": "Evidence is capped at five items per finding to stop it growing without bound."
+    },
+    {
+      "id": "E69",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/adr/0007-plugin-origin-allowlist.md",
+      "lines": [
+        73,
+        73
+      ],
+      "quote": "An empty allowlist denies everything."
+    },
+    {
+      "id": "E70",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/adr/0007-plugin-origin-allowlist.md",
+      "lines": [
+        85,
+        85
+      ],
+      "quote": "`disabled` (default) — the registry is read-only over HTTP."
+    },
+    {
+      "id": "E71",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/adr/0007-plugin-origin-allowlist.md",
+      "lines": [
+        162,
+        164
+      ],
+      "quote": "Content-Security-Policy headers on the host would enforce the origin boundary in the browser itself rather than in application code. That is complementary to this and not yet implemented."
+    },
+    {
+      "id": "E72",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/adr/0006-shared-react-bridge.md",
+      "lines": [
+        28,
+        28
+      ],
+      "quote": "Remotes do not list React under federation `shared`."
+    },
+    {
+      "id": "E73",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/architecture/micro-frontends.md",
+      "lines": [
+        40,
+        42
+      ],
+      "quote": "Unreachable, incompatible, contract-violating and disabled remotes all end up in a result bucket with a message a user can act on."
+    },
+    {
+      "id": "E74",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/architecture/micro-frontends.md",
+      "lines": [
+        18,
+        19
+      ],
+      "quote": "Remotes add capability; they never own a necessity."
+    },
+    {
+      "id": "E75",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/security/threat-model.md",
+      "lines": [
+        104,
+        105
+      ],
+      "quote": "The API is unauthenticated and assumes a trusted network. Do not expose it to the internet."
+    },
+    {
+      "id": "E76",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/security/threat-model.md",
+      "lines": [
+        109,
+        111
+      ],
+      "quote": "They are memory-safe Go with bounded input and panic recovery, but a parsing bug remains the most plausible vulnerability class here."
+    },
+    {
+      "id": "E77",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        16,
+        20
+      ],
+      "quote": "The old one asserted a `Command centre` heading, a `Catalog` navigation item and a one-page Add Project form — none of which had existed since the previous milestone. It is now 95 tests across nine spec files — 75 functional journeys, 19 accessibility scans and the UX audit — all executed against the real stack.",
+      "note": "Report of 2026-07-31; not re-run here."
+    },
+    {
+      "id": "E78",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        92,
+        93
+      ],
+      "quote": "Unit tests went from 141 → 188 and Go tests from ~135 → 148; the remotes went from zero tests to 34.",
+      "note": "Report figures; not re-run here."
+    },
+    {
+      "id": "E79",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        185,
+        185
+      ],
+      "quote": "95 passed (3.6m)",
+      "note": "Playwright result block in the report; not re-run here."
+    },
+    {
+      "id": "E80",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        67,
+        69
+      ],
+      "quote": "Everything a developer runs locally was green while the E2E suite described a product that no longer existed, both remotes had zero tests, and three claims in the UI were untrue."
+    },
+    {
+      "id": "E81",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        226,
+        228
+      ],
+      "quote": "The stale E2E suite was not merely out of date and unverified — it was breaking CI on every push, and had been for at least two commits."
+    },
+    {
+      "id": "E82",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        316,
+        316
+      ],
+      "quote": "so a Thai name was refused at ~66 characters while an English one was allowed 200"
+    },
+    {
+      "id": "E83",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        335,
+        336
+      ],
+      "quote": "`len(name) > 200` counts bytes; Thai is three bytes per codepoint."
+    },
+    {
+      "id": "E84",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        564,
+        564
+      ],
+      "quote": "Chromium only. Firefox and WebKit are untested."
+    },
+    {
+      "id": "E85",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        568,
+        569
+      ],
+      "quote": "no test asserts what a pixel in the WebGL output looks like"
+    },
+    {
+      "id": "E86",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        572,
+        572
+      ],
+      "quote": "One scan at a time, one API."
+    },
+    {
+      "id": "E87",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        573,
+        574
+      ],
+      "quote": "Scanner behaviour on a large monorepo is not exercised."
+    },
+    {
+      "id": "E88",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        35,
+        35
+      ],
+      "quote": "Fourteen real defects were found and fixed"
+    },
+    {
+      "id": "E89",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        591,
+        592
+      ],
+      "quote": "Deliberately last: the deterministic engine must stay the authority."
+    },
+    {
+      "id": "E90",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "docs/PE-01.1-report.md",
+      "lines": [
+        27,
+        28
+      ],
+      "quote": "while the implementation removed every unmatched planet from the scene."
+    },
+    {
+      "id": "E91",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "PE-01-security-product-ux-foundation-closure.md",
+      "lines": [
+        50,
+        50
+      ],
+      "quote": "Do not claim a test passes unless you actually ran it successfully."
+    },
+    {
+      "id": "E92",
+      "level": "ran",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "captureId": "codescape-git-history",
+      "note": "19 commits, one author name, 9 on 2026-07-30 and 10 on 2026-07-31."
+    },
+    {
+      "id": "E93",
+      "level": "ran",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "captureId": "codescape-test-files",
+      "note": "Counts of Playwright specs, Go test files and TypeScript test files."
+    },
+    {
+      "id": "E94",
+      "level": "ran",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "captureId": "codescape-coauthor-trailers",
+      "note": "git shortlog by Co-Authored-By trailer: 18 commits name Claude Opus 5."
+    },
+    {
+      "id": "E95",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "CLAUDE.md",
+      "lines": [
+        56,
+        56
+      ],
+      "quote": "Detected data must never render as confirmed fact."
+    },
+    {
+      "id": "E96",
+      "level": "reported",
+      "repo": "phcaradanai/Project-Explorer",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "path": "CLAUDE.md",
+      "lines": [
+        60,
+        60
+      ],
+      "quote": "Deterministic parsing is primary — AI is not the repository parser."
+    }
+  ],
+  "claims": [
+    {
+      "text": "In the domain package, Evidence holds a repository-relative file path, an optional line, a snippet and a human-readable detail. A Relationship stores evidence, source, confidence, detection method, an isConfirmed flag and an optional rejection time.",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "text": "Confidence is four fixed bands: certain 1.0, high 0.85, medium 0.6 and low 0.35.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "text": "Five sources (manual, scanner, metadata, analysis, GitHub) say who asserted a fact, and fifteen detection methods (for example dependency manifest, lockfile, Dockerfile, OpenAPI spec, directory layout, heuristic rule) say how.",
+      "evidence": [
+        "E4"
+      ]
+    },
+    {
+      "text": "Of 19 relationship types, four (COULD_REUSE, COULD_INTEGRATE_WITH, REPLACES, INSPIRED_BY) are marked speculative. The ADR says detected relationships are never auto-confirmed: isConfirmed becomes true only when a person agrees.",
+      "evidence": [
+        "E5",
+        "E3",
+        "E66"
+      ]
+    },
+    {
+      "text": "Relationship.Status reports DETECTED, CONFIRMED or REJECTED. A rejected edge is kept with a timestamp so the next scan does not raise the same suggestion again.",
+      "evidence": [
+        "E2",
+        "E67"
+      ]
+    },
+    {
+      "text": "The scanner is an ordered registry of 16 stateless parsers behind a Parser interface (name, matches, parse). Each parser sees one file; cross-file reasoning happens later, in normalization.",
+      "evidence": [
+        "E6"
+      ]
+    },
+    {
+      "text": "The finding constructor takes an Evidence argument, so every parser finding carries at least one piece of evidence. Snippets are truncated to 200 characters and cut after credential-shaped keys such as password, token and api_key.",
+      "evidence": [
+        "E7",
+        "E8"
+      ]
+    },
+    {
+      "text": "The package.json parser records an exact dependency match with certain confidence and a library that only hints at a capability with medium confidence, with a comment that an import does not prove the project implements it.",
+      "evidence": [
+        "E9"
+      ]
+    },
+    {
+      "text": "The engine runs each parser behind a recover, so a panic becomes a warning finding and a partial scan instead of an aborted one.",
+      "evidence": [
+        "E10"
+      ]
+    },
+    {
+      "text": "Findings with the same kind and key from different parsers are merged with their evidence, the highest-confidence detection supplies the value, and evidence is capped at five items.",
+      "evidence": [
+        "E11",
+        "E68"
+      ]
+    },
+    {
+      "text": "Every repository path goes through safepath.Resolve: absolute, no NUL bytes, an existing directory, symlinks resolved before the containment test, and containment by filepath.Rel so a sibling with a shared prefix is rejected. The engine re-validates the path although its callers already did.",
+      "evidence": [
+        "E13",
+        "E14",
+        "E12"
+      ]
+    },
+    {
+      "text": "The walker skips dependency, build and hidden folders (except .github and .codescape), stops at depth, file-count and file-size limits, drops symlinked files that resolve outside the allowed roots, and records a partial run with a warning instead of failing.",
+      "evidence": [
+        "E15"
+      ]
+    },
+    {
+      "text": "readFile re-checks the size and reads at most limit plus one byte, so a file that grows after discovery cannot slip past the limit and a short read cannot silently yield truncated input.",
+      "evidence": [
+        "E16"
+      ]
+    },
+    {
+      "text": "Git history is read by parsing .git files (HEAD, refs, packed-refs, loose commit objects); the git binary is never invoked because a repository controls its own .git/config. Packed objects are not read, so commit time falls back to the ref file's modification time and is marked approximate.",
+      "evidence": [
+        "E17",
+        "E18",
+        "E56",
+        "E57"
+      ]
+    },
+    {
+      "text": "The normalizer writes catalog and graph rows only after a scan produced findings. It first clears what the previous scan asserted, keeping manual assertions, and it never infers a capability's maturity from a parser.",
+      "evidence": [
+        "E19",
+        "E20"
+      ]
+    },
+    {
+      "text": "Opportunity rules are pure functions over a snapshot of the catalog, and results are sorted by impact then key so repeated runs match. The package comment says no AI or heuristic scoring is involved.",
+      "evidence": [
+        "E21",
+        "E22"
+      ]
+    },
+    {
+      "text": "A remote exports a plugin object with id, name, version and compatibleHostVersions, plus optional routes, widgets, project tabs and commands; the host passes it a context with an API client, theme and reduced-motion flag.",
+      "evidence": [
+        "E23"
+      ]
+    },
+    {
+      "text": "The host never imports a remote statically. loadPlugins checks the origin allowlist before anything is fetched, then the declared host-version range, loads the module with an 8-second timeout, validates the exported shape, re-checks the remote's own range, and collects every failure instead of throwing.",
+      "evidence": [
+        "E28",
+        "E25",
+        "E26",
+        "E27",
+        "E73"
+      ]
+    },
+    {
+      "text": "A failed remote load is not cached, so Retry refetches. Successful loads are cached by entry URL and module so a StrictMode double render does not evaluate a remote twice.",
+      "evidence": [
+        "E26"
+      ]
+    },
+    {
+      "text": "The Go registry applies the same origin guard on register, update and health check, requires a guard at construction (nil becomes deny-all), refuses to delete built-in remotes, and treats an empty allowlist as deny-all.",
+      "evidence": [
+        "E29",
+        "E30",
+        "E31",
+        "E32",
+        "E33",
+        "E69"
+      ]
+    },
+    {
+      "text": "Registry changes are authorised separately from origin checks: CODESCAPE_PLUGIN_MANAGEMENT defaults to disabled, which makes the registry read-only over HTTP. The ADR lists Content-Security-Policy headers on the host as a residual risk that is not yet implemented.",
+      "evidence": [
+        "E70",
+        "E71"
+      ]
+    },
+    {
+      "text": "Host-version compatibility exists twice: isHostVersionCompatible in TypeScript, whose comment says it is shared with the API, and Service.compatible in Go, which has its own 16-case table test.",
+      "evidence": [
+        "E24",
+        "E34",
+        "E35"
+      ]
+    },
+    {
+      "text": "A host unit test reads package.json, plugin.tsx and main.go to check that each remote's package version equals its plugin version and that its declared host range covers the API's host version.",
+      "evidence": [
+        "E36"
+      ]
+    },
+    {
+      "text": "Remotes alias react, react-dom and the JSX runtime to bridge modules in packages/mfe-runtime instead of using Module Federation's shared option, because shared cannot see require('react') inside CommonJS dependencies.",
+      "evidence": [
+        "E72"
+      ]
+    },
+    {
+      "text": "Anything the product cannot function without lives in the host. Playwright tests abort one remote, all remotes or the registry request and assert that core pages still load.",
+      "evidence": [
+        "E74",
+        "E37"
+      ]
+    },
+    {
+      "text": "The graph layout is deterministic (projects on a circle, other nodes orbiting their owner) so that a focus command can be tested; unconfirmed or speculative edges are drawn dashed and rejected ones faded.",
+      "evidence": [
+        "E39",
+        "E40"
+      ]
+    },
+    {
+      "text": "Graph search ranks exact, prefix, then substring matches and breaks ties by degree. focusCommand returns null for an unknown node so the viewport is left alone, and moves with zero duration under reduced motion.",
+      "evidence": [
+        "E41",
+        "E42"
+      ]
+    },
+    {
+      "text": "In the 3D universe each domain is a galaxy placed on a ring and each project a planet sized by connectivity, clamped to 2.6. Camera goals are plain arithmetic outside React and three.js. Without WebGL it falls back to a 2D list, and the accessible project list renders either way.",
+      "evidence": [
+        "E43",
+        "E44",
+        "E59"
+      ]
+    },
+    {
+      "text": "Go (chi, cors, pgx, goose, yaml.v3) owns scanning, graph storage, analysis and the plugin registry behind REST under /api/v1. A Go test fails the build if a registered route is missing from the OpenAPI document.",
+      "evidence": [
+        "E45",
+        "E63"
+      ]
+    },
+    {
+      "text": "CI defines four jobs: lint, typecheck, test and build for the frontend; go build, vet and test with -race; Docker image builds; and Playwright end-to-end against a real API and PostgreSQL.",
+      "evidence": [
+        "E46"
+      ]
+    },
+    {
+      "text": "The PE-01.1 report records 188 unit tests, 148 Go tests and a Playwright run of 95 tests across nine spec files, with a capability matrix. These are the report's figures; this review re-ran none of them.",
+      "evidence": [
+        "E77",
+        "E78",
+        "E79"
+      ]
+    },
+    {
+      "text": "The report gives its premise as a stale end-to-end suite that broke CI on every push for at least two commits while local commands stayed green, with three UI claims that were untrue.",
+      "evidence": [
+        "E80",
+        "E81"
+      ]
+    },
+    {
+      "text": "One recorded defect: a length check counted bytes, so a Thai project name was refused at about 66 characters while an English one was allowed 200. The report says the fix counts characters instead.",
+      "evidence": [
+        "E82",
+        "E83"
+      ]
+    },
+    {
+      "text": "The report states its own limits: Chromium only, no test asserts what a pixel in the WebGL output looks like, one scan at a time on one API, and the scan fixture is small.",
+      "evidence": [
+        "E84",
+        "E85",
+        "E86",
+        "E87"
+      ]
+    },
+    {
+      "text": "The README lists these limits: one in-process worker pool with no distributed lock, an unauthenticated API for trusted networks, a scanner that reads manifests and structure but does not build call graphs, GitHub import that catalogs metadata only, and no per-project world yet.",
+      "evidence": [
+        "E53",
+        "E54",
+        "E55",
+        "E58",
+        "E60"
+      ]
+    },
+    {
+      "text": "The threat model lists no authentication or authorization as a limit and says a parsing bug is the most plausible vulnerability class, because parsers process untrusted input.",
+      "evidence": [
+        "E75",
+        "E76"
+      ]
+    },
+    {
+      "text": "The README roadmap puts incremental rescanning first (hash file contents, skip unchanged files). The PE-01.1 report lists AI features as deliberately last.",
+      "evidence": [
+        "E61",
+        "E89"
+      ]
+    },
+    {
+      "text": "The repository has 19 commits, all by one author name, 9 on 2026-07-30 and 10 on 2026-07-31.",
+      "evidence": [
+        "E92"
+      ]
+    },
+    {
+      "text": "18 commits carry a Co-Authored-By trailer naming Claude Opus 5.",
+      "evidence": [
+        "E94",
+        "E92"
+      ]
+    },
+    {
+      "text": "The tree has 9 Playwright spec files, 18 Go test files under apps/api and 13 TypeScript test files under apps, remotes and packages. These are file counts, not test results.",
+      "evidence": [
+        "E93"
+      ]
+    },
+    {
+      "text": "CLAUDE.md addresses Claude Code. The specification (init-prompt.md) and the PE-01 and PE-01.1 briefs are written as prompts to an AI agent; the PE-01 brief says not to claim a test passes unless it was run, and CLAUDE.md says never to claim something works unless it was executed.",
+      "evidence": [
+        "E47",
+        "E48",
+        "E49",
+        "E50",
+        "E91",
+        "E64"
+      ]
+    },
+    {
+      "text": "skills-lock.json records one installed skill, ego-browser, from the public repository citrolabs/ego-lite, with a content hash.",
+      "evidence": [
+        "E51"
+      ]
+    },
+    {
+      "text": "CLAUDE.md states two rules the AI tooling works under: detected data must never render as confirmed fact, and deterministic parsing is primary with AI not the repository parser. It points to the PE-01.1 capability matrix as the record of which verification level each feature reached.",
+      "evidence": [
+        "E95",
+        "E96",
+        "E65"
+      ]
+    },
+    {
+      "text": "The federation plugin emits remoteEntry.js only during a build, so pnpm dev serves built previews of the remotes and a change inside a remote needs a rebuild. A Playwright test checks that each remote entry is served as JavaScript rather than the SPA fallback.",
+      "evidence": [
+        "E62",
+        "E38"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "domain-evidence",
+      "title": "Evidence and confidence are domain types",
+      "path": "apps/api/internal/domain/domain.go",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "startLine": 171,
+      "endLine": 200,
+      "language": "go",
+      "code": "// Evidence explains where a piece of information came from, in terms a\n// developer can verify by opening the referenced file.\n//\n// Every automatically detected technology, capability and relationship carries\n// at least one Evidence. This is the mechanism that keeps CodeScape honest:\n// nothing detected is displayed without a way to check it.\ntype Evidence struct {\n\t// FilePath is relative to the repository root, e.g. \"package.json\".\n\tFilePath string `json:\"filePath\"`\n\t// Line is 1-based; 0 means \"not line-specific\".\n\tLine int `json:\"line,omitempty\"`\n\t// Snippet is a short excerpt, truncated and stripped of secrets.\n\tSnippet string `json:\"snippet,omitempty\"`\n\t// Detail is the human-readable explanation, e.g.\n\t// `Detected React from package.json dependency \"react\"`.\n\tDetail string `json:\"detail\"`\n}\n\n// Confidence expresses how strongly a detection is believed, from 0 to 1.\n//\n// The bands are deliberately coarse — a parser reading an exact dependency\n// name is Certain; a directory-name heuristic is Low.\ntype Confidence float64\n\nconst (\n\tConfidenceCertain Confidence = 1.0\n\tConfidenceHigh    Confidence = 0.85\n\tConfidenceMedium  Confidence = 0.6\n\tConfidenceLow     Confidence = 0.35\n)",
+      "why": "Evidence carries a repository-relative path, a line, a short snippet and a sentence a developer can check. Confidence is four fixed bands, so a directory-name heuristic cannot be reported at the same level as an exact dependency match.",
+      "claimIndexes": [
+        0,
+        1
+      ]
+    },
+    {
+      "id": "relationship-status",
+      "title": "Detected, confirmed and rejected edges",
+      "path": "apps/api/internal/domain/domain.go",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "startLine": 205,
+      "endLine": 239,
+      "language": "go",
+      "code": "// Relationship is an edge in the knowledge graph.\n//\n// The evidence fields are not optional metadata — they are what makes an edge\n// reviewable. An unconfirmed edge from ANALYSIS is a suggestion; the same edge\n// with IsConfirmed=true is a decision the user has made.\ntype Relationship struct {\n\tID              uuid.UUID        `json:\"id\"`\n\tSourceEntityID  uuid.UUID        `json:\"sourceEntityId\"`\n\tTargetEntityID  uuid.UUID        `json:\"targetEntityId\"`\n\tType            RelationshipType `json:\"relationshipType\"`\n\tSource          Source           `json:\"source\"`\n\tEvidence        []Evidence       `json:\"evidence\"`\n\tConfidence      Confidence       `json:\"confidence\"`\n\tDetectionMethod DetectionMethod  `json:\"detectionMethod\"`\n\tIsConfirmed     bool             `json:\"isConfirmed\"`\n\t// RejectedAt distinguishes \"not yet reviewed\" (nil, IsConfirmed=false)\n\t// from \"reviewed and rejected\" (non-nil). Rejected edges are retained so\n\t// the same suggestion is not raised again on the next scan.\n\tRejectedAt *time.Time `json:\"rejectedAt,omitempty\"`\n\tNote       string     `json:\"note,omitempty\"`\n\tCreatedAt  time.Time  `json:\"createdAt\"`\n\tUpdatedAt  time.Time  `json:\"updatedAt\"`\n}\n\n// Status reports the review state of the edge.\nfunc (r Relationship) Status() string {\n\tswitch {\n\tcase r.RejectedAt != nil:\n\t\treturn \"REJECTED\"\n\tcase r.IsConfirmed:\n\t\treturn \"CONFIRMED\"\n\tdefault:\n\t\treturn \"DETECTED\"\n\t}\n}",
+      "why": "A relationship stores its evidence, source, confidence and method next to isConfirmed. RejectedAt separates 'not yet reviewed' from 'reviewed and rejected', and Status() derives the label, so a dismissed suggestion is retained rather than deleted.",
+      "claimIndexes": [
+        3,
+        4
+      ]
+    },
+    {
+      "id": "parser-registry",
+      "title": "Parser interface and ordered registry",
+      "path": "apps/api/internal/scan/parser.go",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "startLine": 15,
+      "endLine": 50,
+      "language": "go",
+      "code": "// Parser turns one file into evidence-backed findings.\n//\n// Parsers are intentionally independent and stateless: each one looks at a\n// single file and reports what it can prove. Cross-file reasoning happens\n// later, during normalization, where the full finding set is available.\ntype Parser interface {\n\t// Name identifies the parser in logs and warnings.\n\tName() string\n\t// Matches reports whether this parser handles the file.\n\tMatches(f File) bool\n\t// Parse extracts findings. It must not panic on malformed input; a file\n\t// that cannot be understood yields no findings, not an error.\n\tParse(f File, content []byte) []domain.ScanFinding\n}\n\n// defaultParsers is the ordered parser registry.\nfunc defaultParsers() []Parser {\n\treturn []Parser{\n\t\t&codescapeMetadataParser{},\n\t\t&packageJSONParser{},\n\t\t&lockfileParser{},\n\t\t&workspaceParser{},\n\t\t&goModParser{},\n\t\t&pythonParser{},\n\t\t&rustParser{},\n\t\t&dartParser{},\n\t\t&javaParser{},\n\t\t&dockerComposeParser{},\n\t\t&dockerfileParser{},\n\t\t&openAPIParser{},\n\t\t&protoParser{},\n\t\t&ciWorkflowParser{},\n\t\t&readmeParser{},\n\t\t&sqlParser{},\n\t}\n}",
+      "why": "Each parser sees one file and returns findings; the registry is a plain ordered list of 16 implementations. Cross-file reasoning is deliberately left to normalization.",
+      "claimIndexes": [
+        5
+      ]
+    },
+    {
+      "id": "dedupe-evidence",
+      "title": "Merging findings and capping evidence",
+      "path": "apps/api/internal/scan/engine.go",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "startLine": 332,
+      "endLine": 368,
+      "language": "go",
+      "code": "\torder := make([]key, 0, len(in))\n\tmerged := make(map[key]domain.ScanFinding, len(in))\n\n\tfor _, f := range in {\n\t\tkk := key{f.Kind, f.Key}\n\t\texisting, ok := merged[kk]\n\t\tif !ok {\n\t\t\tmerged[kk] = f\n\t\t\torder = append(order, kk)\n\t\t\tcontinue\n\t\t}\n\t\texisting.Evidence = append(existing.Evidence, f.Evidence...)\n\t\tif f.Confidence > existing.Confidence {\n\t\t\texisting.Confidence = f.Confidence\n\t\t\texisting.DetectionMethod = f.DetectionMethod\n\t\t\tif f.Value != \"\" {\n\t\t\t\texisting.Value = f.Value\n\t\t\t}\n\t\t} else if existing.Value == \"\" {\n\t\t\texisting.Value = f.Value\n\t\t}\n\t\tif existing.Category == \"\" {\n\t\t\texisting.Category = f.Category\n\t\t}\n\t\tmerged[kk] = existing\n\t}\n\n\tout := make([]domain.ScanFinding, 0, len(order))\n\tfor _, kk := range order {\n\t\tf := merged[kk]\n\t\t// Cap evidence per finding: five examples prove the point, and an\n\t\t// unbounded list would bloat both storage and the UI.\n\t\tif len(f.Evidence) > 5 {\n\t\t\tf.Evidence = f.Evidence[:5]\n\t\t}\n\t\tout = append(out, f)\n\t}",
+      "why": "The same technology found by several parsers becomes one finding that keeps all the evidence. The highest-confidence detection supplies the value, and evidence is cut to five items.",
+      "claimIndexes": [
+        9
+      ]
+    },
+    {
+      "id": "symlink-before-containment",
+      "title": "Resolve symlinks before testing containment",
+      "path": "apps/api/internal/shared/safepath/safepath.go",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "startLine": 76,
+      "endLine": 106,
+      "language": "go",
+      "code": "\tif !filepath.IsAbs(trimmed) {\n\t\treturn \"\", fmt.Errorf(\"repository path must be absolute\")\n\t}\n\n\t// filepath.Clean collapses \"..\", but cleaning alone is not sufficient\n\t// protection — EvalSymlinks below is what makes the check real.\n\tcleaned := filepath.Clean(trimmed)\n\n\tresolved, err := filepath.EvalSymlinks(cleaned)\n\tif err != nil {\n\t\tif os.IsNotExist(err) {\n\t\t\treturn \"\", fmt.Errorf(\"repository path does not exist\")\n\t\t}\n\t\treturn \"\", fmt.Errorf(\"repository path is not readable: %w\", err)\n\t}\n\n\tinfo, err := os.Stat(resolved)\n\tif err != nil {\n\t\treturn \"\", fmt.Errorf(\"repository path is not readable: %w\", err)\n\t}\n\tif !info.IsDir() {\n\t\treturn \"\", ErrNotDirectory\n\t}\n\n\tfor _, root := range g.roots {\n\t\tif within(root, resolved) {\n\t\t\treturn resolved, nil\n\t\t}\n\t}\n\treturn \"\", ErrOutsideAllowedRoots\n}",
+      "why": "The comment on filepath.Clean says cleaning alone is not protection; EvalSymlinks runs before the check against the allowed roots, so a link inside a root that points outside is rejected.",
+      "claimIndexes": [
+        10
+      ]
+    },
+    {
+      "id": "plugin-load-order",
+      "title": "Per-remote checks before a remote runs",
+      "path": "apps/web/src/lib/pluginLoader.ts",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "startLine": 220,
+      "endLine": 252,
+      "language": "typescript",
+      "code": "  const attempts = registrations.map(async (registration) => {\n    if (registration.status === 'DISABLED') {\n      result.disabled.push(registration);\n      return;\n    }\n\n    // Checked before anything is fetched: once the module is requested the code\n    // has already run, so a later check would be too late to matter.\n    if (!isOriginAllowed(registration.remoteEntry, allowedOrigins)) {\n      result.failed.push({\n        registration,\n        reason: 'forbidden-origin',\n        message:\n          `${registration.name} is served from an origin this host is not ` +\n          `configured to load code from, so it was not evaluated.`,\n        detail:\n          `Remote entry: ${registration.remoteEntry}. Allowed origins: ` +\n          `${allowedOrigins.join(', ') || 'none configured'}.`,\n      });\n      return;\n    }\n\n    if (!isHostVersionCompatible(hostVersion, registration.compatibleHostVersions)) {\n      result.failed.push({\n        registration,\n        reason: 'incompatible',\n        message:\n          `${registration.name} supports host version ` +\n          `${registration.compatibleHostVersions.join(', ') || 'unspecified'}, ` +\n          `but this host is ${hostVersion}.`,\n      });\n      return;\n    }",
+      "why": "A disabled remote is skipped, then the origin is checked before anything is fetched, then the declared host-version range. Each failure is pushed to a result list with a reason instead of thrown.",
+      "claimIndexes": [
+        17
+      ]
+    },
+    {
+      "id": "dashed-unconfirmed-edges",
+      "title": "Unconfirmed edges look unconfirmed",
+      "path": "remotes/graph-explorer/src/graph/layout.ts",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "startLine": 154,
+      "endLine": 169,
+      "language": "typescript",
+      "code": "  const edges: Edge[] = graph.edges.map((edge) => ({\n    id: edge.id,\n    source: edge.source,\n    target: edge.target,\n    label: relationshipLabel(edge.type),\n    labelStyle: { fontSize: 9, fill: 'var(--text-tertiary)' },\n    labelBgStyle: { fill: 'var(--surface-raised)' },\n    style: {\n      stroke: edge.isConfirmed ? 'var(--status-success)' : 'var(--border-strong)',\n      strokeWidth: edge.isConfirmed ? 1.8 : 1.2,\n      // Suggestions are dashed so an unreviewed guess never looks like an\n      // established connection.\n      strokeDasharray: edge.speculative || !edge.isConfirmed ? '5 4' : undefined,\n      opacity: edge.status === 'REJECTED' ? 0.25 : 1,\n    },\n  }));",
+      "why": "Confirmed edges are green and solid; unconfirmed or speculative edges are dashed; rejected ones are faded. The provenance model reaches the pixels.",
+      "claimIndexes": [
+        25
+      ]
+    },
+    {
+      "id": "camera-goal",
+      "title": "Camera goal as plain arithmetic",
+      "path": "remotes/portfolio-universe/src/universe/camera.ts",
+      "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+      "startLine": 32,
+      "endLine": 50,
+      "language": "typescript",
+      "code": "/**\n * Where the camera should sit to inspect a planet.\n *\n * The distance scales with the planet's radius so a large hub does not fill\n * the frame and a small one is not a dot, and is floored at the OrbitControls\n * minimum — a goal inside that limit would have the controls fighting the rig\n * forever, which reads on screen as a camera that will not settle.\n */\nexport function cameraGoalFor(placed: PlacedNode): CameraGoal {\n  const [x, y, z] = placed.position;\n  const distance = Math.max(MIN_DISTANCE + 2, placed.radius * 6 + 9);\n\n  return {\n    // Slightly above and in front, so the planet's label — which sits above it\n    // — is not clipped by the top of the viewport.\n    position: [x, y + distance * 0.35, z + distance],\n    target: [x, y, z],\n  };\n}",
+      "why": "The goal is computed outside React and three.js so it can be unit-tested; distance scales with planet radius and is floored at the OrbitControls minimum.",
+      "claimIndexes": [
+        27
+      ]
+    }
+  ],
+  "captures": [
+    "codescape-git-history",
+    "codescape-test-files",
+    "codescape-coauthor-trailers"
+  ],
+  "assets": [],
+  "diagram": {
+    "nodes": [
+      {
+        "id": "host",
+        "label": "apps/web host",
+        "group": "frontend",
+        "note": "Core pages, plugin loader, error boundaries"
+      },
+      {
+        "id": "remotes",
+        "label": "remotes/*",
+        "group": "frontend",
+        "note": "Catalog, graph explorer, 3D universe"
+      },
+      {
+        "id": "packages",
+        "label": "packages/*",
+        "group": "shared",
+        "note": "Contracts, design system, React bridge"
+      },
+      {
+        "id": "transport",
+        "label": "internal/transport",
+        "group": "backend",
+        "note": "REST /api/v1, OpenAPI"
+      },
+      {
+        "id": "plugins",
+        "label": "internal/plugins",
+        "group": "backend",
+        "note": "Registry, origin guard"
+      },
+      {
+        "id": "scan",
+        "label": "internal/scan",
+        "group": "backend",
+        "note": "Parsers, engine, normalizer"
+      },
+      {
+        "id": "safepath",
+        "label": "shared/safepath",
+        "group": "backend",
+        "note": "Allowed scan roots"
+      },
+      {
+        "id": "domain",
+        "label": "internal/domain",
+        "group": "backend",
+        "note": "Evidence, confidence, relationships"
+      },
+      {
+        "id": "analysis",
+        "label": "internal/analysis",
+        "group": "backend",
+        "note": "Deterministic opportunity rules"
+      },
+      {
+        "id": "db",
+        "label": "PostgreSQL",
+        "group": "data",
+        "note": "Entities, relationships, plugins"
+      },
+      {
+        "id": "repos",
+        "label": "Scanned repositories",
+        "group": "external",
+        "note": "Read-only, never executed"
+      },
+      {
+        "id": "e2e",
+        "label": "e2e (Playwright)",
+        "group": "verification",
+        "note": "Real stack, no mocked API"
+      }
+    ],
+    "edges": [
+      {
+        "from": "host",
+        "to": "transport",
+        "label": "REST, SSE scan progress"
+      },
+      {
+        "from": "host",
+        "to": "remotes",
+        "label": "loads at runtime"
+      },
+      {
+        "from": "host",
+        "to": "packages",
+        "label": "contracts, design system"
+      },
+      {
+        "from": "remotes",
+        "to": "packages",
+        "label": "contracts, React bridge"
+      },
+      {
+        "from": "transport",
+        "to": "plugins",
+        "label": "registry"
+      },
+      {
+        "from": "transport",
+        "to": "scan",
+        "label": "start scan"
+      },
+      {
+        "from": "scan",
+        "to": "safepath",
+        "label": "resolve root"
+      },
+      {
+        "from": "scan",
+        "to": "repos",
+        "label": "read and parse"
+      },
+      {
+        "from": "scan",
+        "to": "domain",
+        "label": "findings with evidence"
+      },
+      {
+        "from": "scan",
+        "to": "db",
+        "label": "normalize after success"
+      },
+      {
+        "from": "plugins",
+        "to": "db",
+        "label": "plugin rows"
+      },
+      {
+        "from": "analysis",
+        "to": "domain",
+        "label": "candidates with evidence"
+      },
+      {
+        "from": "e2e",
+        "to": "host",
+        "label": "drives browser"
+      }
+    ]
+  },
+  "demo": {
+    "url": null,
+    "note": "Runs locally with PostgreSQL in Docker, a Go API and pnpm for the frontends; no public deployment is documented."
+  },
+  "limitations": [
+    "Single node: scans run in an in-process worker pool and there is no distributed lock (README).",
+    "No authentication: the API is unauthenticated and assumes a trusted network; do not expose it to the internet as-is (README, threat model).",
+    "The scanner reads manifests, lockfiles, interfaces, metadata and structure, not source; it builds no call graphs and does no AST analysis, and capability detection from dependencies is shallow (README).",
+    "Packed git objects are not read; commit times fall back to the ref file's modification time and are marked approximate (README).",
+    "GitHub or Git import catalogs metadata only; remote code is never fetched or parsed, so analysis needs a registered local path (README).",
+    "There is no per-project world yet: repository folder districts, source-level call graphs and a navigable per-project 3D world are not implemented (README).",
+    "Plugin registry: Content-Security-Policy headers on the host are not implemented; registry changes are read-only over HTTP unless a management token is configured (ADR 0007).",
+    "Threat-model limits: local paths are visible to anyone who can reach the API, there is no multi-tenancy, rate limiting is per-process and in memory, and parsers process untrusted input (docs/security/threat-model.md).",
+    "Verification limits recorded in the PE-01.1 report: Chromium only, no assertion on WebGL pixels, scan concurrency untested at scale, a small scan fixture. The test figures shown here are the report's and were not re-run.",
+    "pnpm dev serves the remotes from built previews, so a change inside a remote needs a rebuild (README).",
+    "The repository commits no screenshots (the UX-audit images are gitignored), so none are shown here."
+  ],
+  "contribution": "The git captures show 19 commits, all with the author name phcaradanai, 9 on 2026-07-30 and 10 on 2026-07-31. 18 commit messages carry a Co-Authored-By trailer naming Claude Opus 5. No other author name appears.",
+  "lastVerified": "2026-10-25"
+}

@@ -1,0 +1,502 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-25T00:00:00Z",
+  "title": "Design System: Phatcharadanai Kanyapan, Working Studio",
+  "extensions": {
+    "colorMeta": {
+      "thread": {
+        "role": "primary",
+        "displayName": "Evidence Thread",
+        "canonical": "oklch(0.64 0.21 29)",
+        "tonalRamp": [
+          "oklch(0.15 0.21 29)",
+          "oklch(0.26 0.21 29)",
+          "oklch(0.37 0.21 29)",
+          "oklch(0.48 0.21 29)",
+          "oklch(0.6 0.21 29)",
+          "oklch(0.71 0.21 29)",
+          "oklch(0.83 0.21 29)",
+          "oklch(0.95 0.21 29)"
+        ]
+      },
+      "thread-ink": {
+        "role": "primary",
+        "displayName": "Thread on Paper",
+        "canonical": "oklch(0.5 0.2 29)",
+        "tonalRamp": [
+          "oklch(0.15 0.2 29)",
+          "oklch(0.26 0.2 29)",
+          "oklch(0.37 0.2 29)",
+          "oklch(0.48 0.2 29)",
+          "oklch(0.6 0.2 29)",
+          "oklch(0.71 0.2 29)",
+          "oklch(0.83 0.2 29)",
+          "oklch(0.95 0.2 29)"
+        ]
+      },
+      "wall-studio": {
+        "role": "secondary",
+        "displayName": "Prussian",
+        "canonical": "oklch(0.3 0.08 245)",
+        "tonalRamp": [
+          "oklch(0.15 0.08 245)",
+          "oklch(0.26 0.08 245)",
+          "oklch(0.37 0.08 245)",
+          "oklch(0.48 0.08 245)",
+          "oklch(0.6 0.08 245)",
+          "oklch(0.71 0.08 245)",
+          "oklch(0.83 0.08 245)",
+          "oklch(0.95 0.08 245)"
+        ]
+      },
+      "wall-works": {
+        "role": "secondary",
+        "displayName": "Oxblood",
+        "canonical": "oklch(0.3 0.09 22)",
+        "tonalRamp": [
+          "oklch(0.15 0.09 22)",
+          "oklch(0.26 0.09 22)",
+          "oklch(0.37 0.09 22)",
+          "oklch(0.48 0.09 22)",
+          "oklch(0.6 0.09 22)",
+          "oklch(0.71 0.09 22)",
+          "oklch(0.83 0.09 22)",
+          "oklch(0.95 0.09 22)"
+        ]
+      },
+      "wall-lab": {
+        "role": "secondary",
+        "displayName": "Verdigris",
+        "canonical": "oklch(0.285 0.055 178)",
+        "tonalRamp": [
+          "oklch(0.15 0.055 178)",
+          "oklch(0.26 0.055 178)",
+          "oklch(0.37 0.055 178)",
+          "oklch(0.48 0.055 178)",
+          "oklch(0.6 0.055 178)",
+          "oklch(0.71 0.055 178)",
+          "oklch(0.83 0.055 178)",
+          "oklch(0.95 0.055 178)"
+        ]
+      },
+      "wall-gallery": {
+        "role": "secondary",
+        "displayName": "Graphite",
+        "canonical": "oklch(0.2 0.01 270)",
+        "tonalRamp": [
+          "oklch(0.15 0.01 270)",
+          "oklch(0.26 0.01 270)",
+          "oklch(0.37 0.01 270)",
+          "oklch(0.48 0.01 270)",
+          "oklch(0.6 0.01 270)",
+          "oklch(0.71 0.01 270)",
+          "oklch(0.83 0.01 270)",
+          "oklch(0.95 0.01 270)"
+        ]
+      },
+      "wall-journey": {
+        "role": "secondary",
+        "displayName": "Umber",
+        "canonical": "oklch(0.32 0.065 68)",
+        "tonalRamp": [
+          "oklch(0.15 0.065 68)",
+          "oklch(0.26 0.065 68)",
+          "oklch(0.37 0.065 68)",
+          "oklch(0.48 0.065 68)",
+          "oklch(0.6 0.065 68)",
+          "oklch(0.71 0.065 68)",
+          "oklch(0.83 0.065 68)",
+          "oklch(0.95 0.065 68)"
+        ]
+      },
+      "wall-storage": {
+        "role": "secondary",
+        "displayName": "Concrete",
+        "canonical": "oklch(0.35 0.014 235)",
+        "tonalRamp": [
+          "oklch(0.15 0.014 235)",
+          "oklch(0.26 0.014 235)",
+          "oklch(0.37 0.014 235)",
+          "oklch(0.48 0.014 235)",
+          "oklch(0.6 0.014 235)",
+          "oklch(0.71 0.014 235)",
+          "oklch(0.83 0.014 235)",
+          "oklch(0.95 0.014 235)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Label Paper",
+        "canonical": "oklch(0.975 0.006 92)",
+        "tonalRamp": [
+          "oklch(0.15 0.006 92)",
+          "oklch(0.26 0.006 92)",
+          "oklch(0.37 0.006 92)",
+          "oklch(0.48 0.006 92)",
+          "oklch(0.6 0.006 92)",
+          "oklch(0.71 0.006 92)",
+          "oklch(0.83 0.006 92)",
+          "oklch(0.95 0.006 92)"
+        ]
+      },
+      "paper-edge": {
+        "role": "neutral",
+        "displayName": "Paper Edge",
+        "canonical": "oklch(0.86 0.01 92)",
+        "tonalRamp": [
+          "oklch(0.15 0.01 92)",
+          "oklch(0.26 0.01 92)",
+          "oklch(0.37 0.01 92)",
+          "oklch(0.48 0.01 92)",
+          "oklch(0.6 0.01 92)",
+          "oklch(0.71 0.01 92)",
+          "oklch(0.83 0.01 92)",
+          "oklch(0.95 0.01 92)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(0.17 0.014 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.014 258)",
+          "oklch(0.26 0.014 258)",
+          "oklch(0.37 0.014 258)",
+          "oklch(0.48 0.014 258)",
+          "oklch(0.6 0.014 258)",
+          "oklch(0.71 0.014 258)",
+          "oklch(0.83 0.014 258)",
+          "oklch(0.95 0.014 258)"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "oklch(0.38 0.02 258)",
+        "tonalRamp": [
+          "oklch(0.15 0.02 258)",
+          "oklch(0.26 0.02 258)",
+          "oklch(0.37 0.02 258)",
+          "oklch(0.48 0.02 258)",
+          "oklch(0.6 0.02 258)",
+          "oklch(0.71 0.02 258)",
+          "oklch(0.83 0.02 258)",
+          "oklch(0.95 0.02 258)"
+        ]
+      },
+      "vinyl": {
+        "role": "neutral",
+        "displayName": "Vinyl",
+        "canonical": "oklch(0.955 0.012 85)",
+        "tonalRamp": [
+          "oklch(0.15 0.012 85)",
+          "oklch(0.26 0.012 85)",
+          "oklch(0.37 0.012 85)",
+          "oklch(0.48 0.012 85)",
+          "oklch(0.6 0.012 85)",
+          "oklch(0.71 0.012 85)",
+          "oklch(0.83 0.012 85)",
+          "oklch(0.95 0.012 85)"
+        ]
+      },
+      "vinyl-soft": {
+        "role": "neutral",
+        "displayName": "Soft Vinyl",
+        "canonical": "oklch(0.82 0.018 85)",
+        "tonalRamp": [
+          "oklch(0.15 0.018 85)",
+          "oklch(0.26 0.018 85)",
+          "oklch(0.37 0.018 85)",
+          "oklch(0.48 0.018 85)",
+          "oklch(0.6 0.018 85)",
+          "oklch(0.71 0.018 85)",
+          "oklch(0.83 0.018 85)",
+          "oklch(0.95 0.018 85)"
+        ]
+      },
+      "lamp": {
+        "role": "neutral",
+        "displayName": "Lamp",
+        "canonical": "oklch(0.94 0.07 85)",
+        "tonalRamp": [
+          "oklch(0.15 0.07 85)",
+          "oklch(0.26 0.07 85)",
+          "oklch(0.37 0.07 85)",
+          "oklch(0.48 0.07 85)",
+          "oklch(0.6 0.07 85)",
+          "oklch(0.71 0.07 85)",
+          "oklch(0.83 0.07 85)",
+          "oklch(0.95 0.07 85)"
+        ]
+      },
+      "focus": {
+        "role": "neutral",
+        "displayName": "Brass Focus",
+        "canonical": "oklch(0.86 0.15 85)",
+        "tonalRamp": [
+          "oklch(0.15 0.15 85)",
+          "oklch(0.26 0.15 85)",
+          "oklch(0.37 0.15 85)",
+          "oklch(0.48 0.15 85)",
+          "oklch(0.6 0.15 85)",
+          "oklch(0.71 0.15 85)",
+          "oklch(0.83 0.15 85)",
+          "oklch(0.95 0.15 85)"
+        ]
+      },
+      "rail": {
+        "role": "neutral",
+        "displayName": "Ceiling Black",
+        "canonical": "oklch(0.14 0.012 262)",
+        "tonalRamp": [
+          "oklch(0.15 0.012 262)",
+          "oklch(0.26 0.012 262)",
+          "oklch(0.37 0.012 262)",
+          "oklch(0.48 0.012 262)",
+          "oklch(0.6 0.012 262)",
+          "oklch(0.71 0.012 262)",
+          "oklch(0.83 0.012 262)",
+          "oklch(0.95 0.012 262)"
+        ]
+      },
+      "frame-black": {
+        "role": "neutral",
+        "displayName": "Frame Black",
+        "canonical": "oklch(0.1 0.01 260)",
+        "tonalRamp": [
+          "oklch(0.15 0.01 260)",
+          "oklch(0.26 0.01 260)",
+          "oklch(0.37 0.01 260)",
+          "oklch(0.48 0.01 260)",
+          "oklch(0.6 0.01 260)",
+          "oklch(0.71 0.01 260)",
+          "oklch(0.83 0.01 260)",
+          "oklch(0.95 0.01 260)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display vinyl",
+        "purpose": "Room names and the Foyer name; 6rem ceiling."
+      },
+      "headline": {
+        "displayName": "Headline vinyl",
+        "purpose": "Section names lettered on a wall."
+      },
+      "title": {
+        "displayName": "Title vinyl",
+        "purpose": "Doorway and next-work signs, wall sub-sections."
+      },
+      "label-title": {
+        "displayName": "Label title",
+        "purpose": "Wall-label and paper-sheet headings."
+      },
+      "wall-text": {
+        "displayName": "Wall text",
+        "purpose": "Statements applied directly to a wall, max 38ch."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text; tabular numerals."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Wall-label run-in fields and text."
+      },
+      "accession": {
+        "displayName": "Accession",
+        "purpose": "Accession numbers at the foot of labels."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Code, paths, hashes, captured runs."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-frame",
+        "value": "0 1px 1px oklch(0 0 0 / 0.5), 0 10px 18px -6px oklch(0 0 0 / 0.55), 0 28px 48px -16px oklch(0 0 0 / 0.5)",
+        "purpose": "Cast shadow of every frame mat."
+      },
+      {
+        "name": "shadow-frame-hover",
+        "value": "0 1px 1px oklch(0 0 0 / 0.5), 0 16px 26px -8px oklch(0 0 0 / 0.6), 0 36px 56px -16px oklch(0 0 0 / 0.55)",
+        "purpose": "Linked frame lifted 3px on hover."
+      },
+      {
+        "name": "shadow-label",
+        "value": "0 1px 0 oklch(1 0 0 / 0.6) inset, 0 2px 3px oklch(0 0 0 / 0.35), 0 12px 20px -10px oklch(0 0 0 / 0.55)",
+        "purpose": "Paper on the wall: labels, sheets, storage tags, primary buttons, code panels."
+      },
+      {
+        "name": "shadow-rail",
+        "value": "0 8px 18px -10px oklch(0 0 0 / 0.7)",
+        "purpose": "Sticky ceiling rail."
+      },
+      {
+        "name": "shadow-viewer",
+        "value": "0 30px 80px oklch(0 0 0 / 0.6)",
+        "purpose": "Picture viewer dialog."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Exponential ease-out for every authored transition."
+      },
+      {
+        "name": "lift",
+        "value": "transform 200-280ms var(--ease-out)",
+        "purpose": "Buttons lift 2px, frames 3px, arrows slide 3-4px."
+      },
+      {
+        "name": "depth-reveal",
+        "value": "opacity 600ms var(--ease-out)",
+        "purpose": "Depth painting canvas fades in over its still image."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "durations 0.001ms",
+        "purpose": "prefers-reduced-motion removes transitions and painting movement."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "single-column",
+        "value": "52rem"
+      },
+      {
+        "name": "chronology-stack",
+        "value": "40rem"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Paper card button for the main action on a wall.",
+      "html": "<a class=\"ds-btn\" href=\"#\">Enter the galleries <svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2.5 8h11M9 3.5L13.5 8 9 12.5\"/></svg></a>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;gap:var(--s-3);min-height:48px;padding:0 var(--s-5);background:var(--paper);color:var(--ink);font-family:var(--font-label);font-weight:700;font-size:1rem;text-decoration:none;border:0;border-radius:2px;box-shadow:var(--shadow-label);transition:transform 200ms var(--ease-out),background-color 160ms}.ds-btn svg{width:1.125rem;height:1.125rem;transition:transform 200ms var(--ease-out)}.ds-btn:hover{transform:translateY(-2px);background:oklch(1 0 0)}.ds-btn:hover svg{transform:translateX(3px)}.ds-btn:active{transform:translateY(0)}.ds-btn:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action outlined on the wall.",
+      "html": "<a class=\"ds-btn-ghost\" href=\"#\">Read the code</a>",
+      "css": ".ds-btn-ghost{display:inline-flex;align-items:center;min-height:48px;padding:0 var(--s-5);background:transparent;color:var(--vinyl);font-family:var(--font-label);font-weight:700;font-size:1rem;text-decoration:none;border-radius:2px;box-shadow:inset 0 0 0 2px oklch(1 0 0 / 0.5);transition:transform 200ms var(--ease-out),background-color 160ms}.ds-btn-ghost:hover{transform:translateY(-2px);background:oklch(1 0 0 / 0.1)}.ds-btn-ghost:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
+    },
+    {
+      "name": "Wall Label",
+      "kind": "card",
+      "refersTo": "wall-label",
+      "description": "Paper museum label beside every work: title and year, run-in fields, text, chips, accession at the foot.",
+      "html": "<aside class=\"ds-label\"><h3 class=\"ds-label__title\">PrintOps<small>2026</small></h3><dl class=\"ds-label__fields\"><div><dt>Medium</dt><dd>TypeScript, Fastify, React + Vite, Go</dd></div><div><dt>Made by</dt><dd>P. Kanyapan with AI agents</dd></div><div><dt>Status</dt><dd>Production-style</dd></div></dl><p class=\"ds-label__text\">Print gateway: external systems POST jobs; a Go runner registers and heartbeats.</p><p class=\"ds-label__acc\">PK-2026-003</p></aside>",
+      "css": ".ds-label{background:var(--paper);color:var(--ink);border-radius:2px;padding:var(--s-4) var(--s-5) var(--s-5);box-shadow:var(--shadow-label);font-family:var(--font-label);font-size:0.9375rem;line-height:1.5;max-inline-size:26rem}.ds-label__title{font-size:var(--step-1);font-weight:750;line-height:1.2;margin:0 0 var(--s-3)}.ds-label__title small{font-weight:450;color:var(--ink-soft);font-size:0.9375rem;margin-inline-start:var(--s-2)}.ds-label__fields{display:grid;gap:var(--s-1);margin:0 0 var(--s-3)}.ds-label__fields dt{display:inline;font-weight:650}.ds-label__fields dt::after{content:': '}.ds-label__fields dd{display:inline;margin:0}.ds-label__text{margin:0}.ds-label__acc{font-family:var(--font-mono);font-size:0.6875rem;font-weight:500;letter-spacing:0.04em;color:var(--ink-soft);margin:var(--s-3) 0 0;padding-top:var(--s-2);border-top:1px solid var(--paper-edge)}"
+    },
+    {
+      "name": "Evidence Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Evidence level as glyph plus word; private uses a dashed border.",
+      "html": "<span class=\"ds-chip ds-chip--source\"><svg viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5.5 2.5h-2v11h2M10.5 2.5h2v11h-2\"/><circle cx=\"8\" cy=\"8\" r=\"1.4\" fill=\"currentColor\" stroke=\"none\"/></svg>Source</span> <span class=\"ds-chip ds-chip--private\">Not on view</span>",
+      "css": ".ds-chip{display:inline-flex;align-items:center;gap:0.35rem;padding:0.15rem 0.5rem 0.15rem 0.4rem;font-family:var(--font-label);font-size:0.75rem;font-weight:650;line-height:1.4;border:1px solid currentColor;border-radius:2px;color:var(--ink);background:var(--paper);white-space:nowrap}.ds-chip svg{width:0.875rem;height:0.875rem;flex:none}.ds-chip--source{color:oklch(0.32 0.1 155)}.ds-chip--private{border-style:dashed}"
+    },
+    {
+      "name": "Storage Tag",
+      "kind": "card",
+      "refersTo": "storage-tag",
+      "description": "Private work: paper tag with a dashed inner rule, marked Not on view.",
+      "html": "<article class=\"ds-tag\"><h3 class=\"ds-tag__title\">Pharmacy sync</h3><p class=\"ds-tag__meta\">2026 · Go, PostgreSQL</p><p class=\"ds-tag__seal\"><span class=\"ds-tag__chip\">Not on view</span></p><p class=\"ds-tag__acc\">PK-2026-014</p></article>",
+      "css": ".ds-tag{background:var(--paper);color:var(--ink);padding:var(--s-5);border-radius:2px;outline:1px dashed var(--ink-soft);outline-offset:-8px;box-shadow:var(--shadow-label);display:grid;gap:var(--s-2);max-width:20rem;font-family:var(--font-label)}.ds-tag__title{font-family:var(--font-vinyl);font-weight:800;font-stretch:75%;text-transform:uppercase;font-size:var(--step-2);line-height:0.95;margin:0}.ds-tag__meta{font-size:0.875rem;font-weight:650;color:var(--ink-soft);margin:0}.ds-tag__seal{margin:0}.ds-tag__chip{display:inline-flex;padding:0.15rem 0.5rem;font-size:0.75rem;font-weight:650;border:1px dashed currentColor;border-radius:2px}.ds-tag__acc{font-family:var(--font-mono);font-size:0.6875rem;font-weight:500;letter-spacing:0.04em;color:var(--ink-soft);margin:var(--s-3) 0 0;padding-top:var(--s-2);border-top:1px solid var(--paper-edge)}"
+    },
+    {
+      "name": "Rail Navigation",
+      "kind": "nav",
+      "refersTo": "rail",
+      "description": "Sticky ceiling rail; current room carries the red thread underline.",
+      "html": "<nav class=\"ds-rail\"><a class=\"ds-rail__mark\" href=\"#\">P. Kanyapan</a><span class=\"ds-rail__nav\"><a class=\"ds-rail__link\" href=\"#\">Studio</a><a class=\"ds-rail__link\" href=\"#\" aria-current=\"page\">Works</a><a class=\"ds-rail__link\" href=\"#\">Lab</a></span></nav>",
+      "css": ".ds-rail{display:flex;align-items:center;justify-content:space-between;gap:var(--s-5);padding:var(--s-3) var(--gutter);background:oklch(0.14 0.012 262);border-bottom:1px solid oklch(1 0 0 / 0.08);box-shadow:0 8px 18px -10px oklch(0 0 0 / 0.7)}.ds-rail__mark{font-family:var(--font-vinyl);font-weight:800;font-stretch:70%;text-transform:uppercase;font-size:1.125rem;line-height:1;text-decoration:none;color:var(--vinyl)}.ds-rail__nav{display:flex;gap:var(--s-5)}.ds-rail__link{position:relative;text-decoration:none;font-family:var(--font-label);font-size:0.9375rem;font-weight:550;color:var(--vinyl-soft);padding-block:var(--s-2);transition:color 160ms var(--ease-out)}.ds-rail__link:hover,.ds-rail__link[aria-current=page]{color:var(--vinyl)}.ds-rail__link[aria-current=page]::after{content:'';position:absolute;inset:auto 0 -2px 0;height:2px;background:var(--thread)}.ds-rail__link:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
+    },
+    {
+      "name": "Tabs",
+      "kind": "custom",
+      "refersTo": "tab",
+      "description": "Lab bench tabs; selected tab carries a 3px red thread.",
+      "html": "<div class=\"ds-tabs\" role=\"tablist\"><button role=\"tab\" aria-selected=\"true\">PrintOps</button><button role=\"tab\" aria-selected=\"false\">CodeScape</button></div>",
+      "css": ".ds-tabs{display:flex;gap:var(--s-1);border-bottom:1px solid oklch(1 0 0 / 0.18);background:var(--wall-lab);padding:0 var(--s-4)}.ds-tabs button{min-height:44px;padding:0 var(--s-4);background:transparent;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;color:var(--vinyl-soft);font-family:var(--font-label);font-weight:650;cursor:pointer;transition:color 150ms,border-color 150ms}.ds-tabs button:hover{color:var(--vinyl)}.ds-tabs button[aria-selected=true]{color:var(--vinyl);border-bottom-color:var(--thread)}.ds-tabs button:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
+    },
+    {
+      "name": "Doorway",
+      "kind": "custom",
+      "refersTo": "doorway",
+      "description": "Way to the next room: vinyl sign, sliding arrow, optional hint.",
+      "html": "<a class=\"ds-door\" href=\"#\"><span class=\"ds-door__sign\"><span class=\"ds-door__v\">Next: Project worlds</span><svg viewBox=\"0 0 16 16\" width=\"22\" height=\"22\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M2.5 8h11M9 3.5L13.5 8 9 12.5\"/></svg></span><span class=\"ds-door__hint\">Every public work, with its evidence.</span></a>",
+      "css": ".ds-door{display:grid;justify-items:start;gap:var(--s-3);text-decoration:none;color:var(--vinyl);width:fit-content;background:var(--wall-works);padding:var(--s-5)}.ds-door__sign{display:flex;align-items:center;gap:var(--s-3)}.ds-door__v{font-family:var(--font-vinyl);font-weight:800;font-stretch:62%;text-transform:uppercase;font-size:var(--step-2);line-height:1}.ds-door svg{transition:transform 200ms var(--ease-out)}.ds-door:hover svg{transform:translateX(4px)}.ds-door__hint{font-family:var(--font-label);color:var(--vinyl-soft)}.ds-door:focus-visible{outline:3px solid var(--focus);outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Working Studio Exhibition",
+    "overview": "The site is a building, not a page. Each section is a room drenched in one deep wall colour, lit from above by a warm lamp glow that falls off toward a skirting board and a wooden floor. Works hang on those walls in black frames with soft cast shadows, and beside every work sits a white paper wall label written in museum grammar: a bold title with the year, run-in fields (Medium, Made, Made by, Status), a short text, evidence chips, and an accession number at the foot. Room names and section names are cut vinyl lettering applied straight to the wall: heavy, condensed, uppercase Archivo.\n\nThe density is that of a well-hung gallery: few objects per wall, generous space between them, long reading moved onto paper sheets like catalogue pages. Proof is the ornament. The single accent colour is a red thread that marks evidence: the current room in the rail, the selected tab, the x-ray edge, the architecture drawing's edges, a targeted ledger entry. Everything else is wall, paper, ink, vinyl and black frames.\n\nMotion is one authored moment per surface, an exponential ease-out on transform and opacity: frames lift 3px on hover, doorway arrows slide 4px, the depth painting follows the pointer. Content is visible by default, and reduced motion removes every transition and the painting's movement.",
+    "keyCharacteristics": [
+      "One deep wall colour per room, with lamp glow above and a floor below.",
+      "Works in black frames with soft cast shadows; paper wall labels beside them.",
+      "Condensed uppercase vinyl lettering for room and section names; Hanken Grotesk for all reading.",
+      "One red thread accent, reserved for evidence and current state.",
+      "Near-square 2px corners on every paper and control.",
+      "Evidence level carried by shape and word, never colour alone."
+    ],
+    "rules": [
+      {
+        "name": "The Red Thread Rule",
+        "body": "Red marks evidence and current state only: what is selected, targeted or connected. It is never a fill for a button, a heading colour, or decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Wall Rule",
+        "body": "A room has one wall colour. Glow, skirting and floor are mixed from it with `color-mix`, never introduced as new hues.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paper and Wall Rule",
+        "body": "Text on paper uses ink; text on a wall uses vinyl. Never put ink on a wall or vinyl on paper.",
+        "section": "colors"
+      },
+      {
+        "name": "The Vinyl Ceiling Rule",
+        "body": "Display vinyl never exceeds 6rem. Long work titles step down from Display to Headline.",
+        "section": "typography"
+      },
+      {
+        "name": "The Mono for Identifiers Rule",
+        "body": "Martian Mono is only for identifiers, paths, hashes and code. Prose, headings, captions, dates and counts are Hanken Grotesk.",
+        "section": "typography"
+      },
+      {
+        "name": "The Hung Object Rule",
+        "body": "Only objects that hang on the wall cast shadows, and they cast them downward from an overhead light. Wall text and vinyl lettering sit flat, with at most a 1px shadow.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do give every room exactly one wall colour from the six walls and mix its glow and floor from it.",
+      "Do hang every shown work in a black frame with the frame cast shadow, with a paper wall label beside it.",
+      "Do write wall labels in run-in museum grammar and put the accession number at the foot.",
+      "Do carry evidence level with a glyph and a word in a chip, never colour alone.",
+      "Do show private work only as a storage tag with a dashed inner rule, marked \"Not on view\".",
+      "Do keep vinyl display at or under 6rem, and every interactive target at least 44px.",
+      "Do honour reduced motion: content stays visible and transitions drop to nothing."
+    ],
+    "donts": [
+      "Don't use the red thread as a fill, a heading colour or decoration.",
+      "Don't set prose, headings, captions, dates or counts in Martian Mono.",
+      "Don't round paper or controls beyond 2px, or give frames a radius.",
+      "Don't use glass, blur, hard offset shadows, or a dark hero with glass cards.",
+      "Don't put ink text directly on a wall or vinyl text on paper."
+    ]
+  }
+}

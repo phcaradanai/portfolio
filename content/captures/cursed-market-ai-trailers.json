@@ -1,0 +1,13 @@
+{
+  "id": "cursed-market-ai-trailers",
+  "repo": "phcaradanai/Cursed-Market",
+  "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+  "cwd": ".",
+  "command": "git log b34c5e59816cb6606bb7f98cd264b6d399e25c30 --format=%B | grep -o 'Co-Authored-By: Claude [A-Za-z0-9. ]* <noreply@anthropic.com>' | sort | uniq -c && git log b34c5e59816cb6606bb7f98cd264b6d399e25c30 --grep='Co-Authored-By: Claude' --format=%h | wc -l",
+  "capturedAt": "2026-10-24T17:15:57Z",
+  "exitCode": 0,
+  "durationMs": 4843,
+  "output": "   6 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n  19 Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>\n      25",
+  "truncated": false,
+  "environment": "macOS Darwin 25.5.0 (uname -m x86_64), git 2.55.0, /bin/sh"
+}

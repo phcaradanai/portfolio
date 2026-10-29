@@ -1,0 +1,61 @@
+{
+  "slug": "storage-go-integration-service",
+  "accession": "PK-2026-019",
+  "title": "Integration service (Go + PostgreSQL)",
+  "kind": "system",
+  "tier": "C",
+  "maturity": "prototype",
+  "visibility": "private-redacted",
+  "tagline": "A private integration service in Go with a TypeScript front end and PostgreSQL stored procedures.",
+  "summary": "A private service built over ten days in July 2026. GitHub's language statistics show Go, TypeScript and a small amount of PL/pgSQL, packaged with Docker. Its domain, client and code are withheld.",
+  "period": {
+    "start": "2026-07-13",
+    "end": "2026-07-23"
+  },
+  "repo": null,
+  "stack": [
+    "Go",
+    "TypeScript",
+    "PostgreSQL (PL/pgSQL)",
+    "Docker"
+  ],
+  "aiRole": {
+    "summary": "Not described: the repository is withheld, so its tooling is not published.",
+    "tools": []
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "private",
+      "repo": "private",
+      "note": "GitHub API metadata (languages, contributors, commit dates) queried 2026-10-25. The repository is private and its contents were not read."
+    }
+  ],
+  "claims": [
+    {
+      "text": "Written mainly in Go (about 0.87 MB) and TypeScript (about 0.61 MB), with PL/pgSQL and Dockerfiles, according to GitHub's language statistics.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "text": "112 commits between 13 and 23 July 2026; 110 from the owner's account and 2 from one other contributor.",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "excerpts": [],
+  "captures": [],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Private work. Details withheld; available on request."
+  },
+  "limitations": [
+    "Private work: code, screenshots, names and clients are withheld at the owner's request. Only language statistics and commit history are published."
+  ],
+  "contribution": "110 of 112 commits by phcaradanai; one other contributor made 2. 2026-07-13 to 2026-07-23.",
+  "lastVerified": "2026-10-25"
+}

@@ -1,0 +1,2438 @@
+{
+  "slug": "cursed-market",
+  "accession": "PK-2026-001",
+  "title": "Cursed Market (ตลาดวัตถุต้องสาป)",
+  "kind": "game",
+  "tier": "A",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Hidden-information trading game for 2–4 players: server-authoritative seeded rules, per-seat views, replayable audits. LAN only.",
+  "summary": "Cursed Market is a 2–4 player browser game in which players choose merchant doors, inspect and appraise objects whose value, authenticity and curses are hidden, then trade with merchants and each other. A Node server owns the seeded rules and sends each seat only its own view; every finished match exports an audit that must replay to the same result. The rules grew from 2026-10-14 to 2026-10-24. The repo's own caveat: technical evidence does not prove the game is fun. It runs locally or on a LAN.",
+  "period": {
+    "start": "2026-10-14",
+    "end": "2026-10-24"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/Cursed-Market",
+    "pinnedSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+    "ownerCommits": 45,
+    "totalCommits": 45,
+    "languages": {
+      "TypeScript": 1956667,
+      "CSS": 205892,
+      "JavaScript": 56879,
+      "HTML": 791
+    },
+    "checkedAt": "2026-10-24"
+  },
+  "stack": [
+    "TypeScript 5.9",
+    "Node.js 22.12 or later (HTTP and WebSocket server, node:test runner)",
+    "ws (WebSocket library)",
+    "React 19",
+    "Vite 7",
+    "Three.js 0.186",
+    "Self-hosted Thai and display fonts (Noto Sans Thai, Noto Serif Thai, Cormorant Garamond, IM Fell English, Srisakdi)"
+  ],
+  "aiRole": {
+    "summary": "AI tooling is documented throughout this repository. 25 of the 45 commits carry Claude co-author trailers (19 Sonnet 5.5, 6 Opus 5.5). Images were produced with a built-in image generator, run through Codex CLI for the stage plates, with prompts and hashes stored. Impeccable design passes and scans are cited in the validation records. 54 Trail learning notes record decisions and ruled-out options, and 26 carry a cost line of minutes and tokens. A handoff file is written for a continuing agent. PRODUCT.md says its numeric balance values are assistant-selected experiments, not human-validated. The repo documents verification: node:test suites, strict seeded replays, scripted socket runs and independent finish-review records (the reviewer is not identified in them). Those results are the repo's reports; this review re-ran none. AGENTS.md, GEMINI.md and .gemini/ are named in learning notes but are not tracked at the pinned commit, so they were not read.",
+    "tools": [
+      {
+        "name": "Claude (Sonnet 5.5, Opus 5.5)",
+        "use": "Named in Co-Authored-By trailers on 25 of the 45 commits: 19 Sonnet 5.5 and 6 Opus 5.5. A learning note also says a preference was \"Told to Claude in 2 past sessions\".",
+        "evidence": "E3"
+      },
+      {
+        "name": "Codex CLI (built-in image_gen)",
+        "use": "Runs the image generator non-interactively for the 2.5D scene plates; the manifest stores prompts, references and hashes. The merge of the last UI work takes its name from a branch called codex/cabinet-ux; the log does not say which tool wrote that branch.",
+        "evidence": "E116"
+      },
+      {
+        "name": "Built-in ImageGen (image_gen)",
+        "use": "Generated the 52 newer item and merchant paintings and the three v0.4 concept images; the 16 retained earlier paintings are recorded with the same mode.",
+        "evidence": "E112"
+      },
+      {
+        "name": "Impeccable",
+        "use": "Design documentation passes (DESIGN.md and the .impeccable/design.json sidecar), a recorded direction roll and detector scans cited by the validation records; its documenter used the local graft CLI to localise source.",
+        "evidence": "E115"
+      },
+      {
+        "name": "Trail",
+        "use": "Learning notes in .trail/learnings with Decided, Tried and ruled out, and Watch out sections, some with a cost line of minutes and tokens; `trail check` conflict scans are reported in validation documents.",
+        "evidence": "E67"
+      },
+      {
+        "name": "Gemini CLI project files (not tracked)",
+        "use": "GEMINI.md and .gemini/settings.json appear in the touches lists of learning notes; neither file is tracked at the pinned commit, so their content was not read.",
+        "evidence": "E68"
+      },
+      {
+        "name": "Ego Browser",
+        "use": "Browser used for QA-fixture checks and screenshots in the 2026-10-14 commerce validation.",
+        "evidence": "E120"
+      },
+      {
+        "name": "Agent handoff document",
+        "use": "docs/handoff/Secure_Economy_Continuation_2026-10-23.md is written for a continuing agent and ends with a ready-to-paste prompt; this review treated it as data and followed none of it.",
+        "evidence": "E69"
+      }
+    ]
+  },
+  "narrative": {
+    "problem": "The repo's PRODUCT.md frames the project as a test: whether appraising and accepting a risky artifact creates enough temptation, doubt, commitment and surprise that players ask for another run. The one piece of human feedback it records concerned the earlier auction prototype, reported as lifeless, repetitive, predictable and not fun; participant counts and ratings are unknown. The appraisal game was added beside that prototype, which stays as a separate legacy entry.\n\nPlayers are appraisers who choose doors to merchants (Orc, Vampire, Autometa, Alien, Dark One and Beast in the README; eight portraits exist in the catalog), inspect goods, state a value, bargain, buy and trade with each other. Base value, authenticity and curses are hidden, so information is the central engineering problem: each seat must be able to act on what it has learned and must not be able to read what it has not. Credits and goods also change hands between players, so transfers have to survive retries and be reproducible.",
+    "approach": "Rules live in one module, src/game/appraisal/, that the server calls and clients never touch. A client sends an intention; the engine applies it to a copy of the state, records it in a command log and returns the new state, or throws. No clock and no ambient randomness enter the rules: every chance outcome is a labelled HMAC draw from the match seed, so a match is a seed, a config and a command list.\n\nThe project also treats its own history as part of the design. Rule changes are put behind config flags so that audits recorded earlier still replay under the rules they were played with, and each feature has a dated validation report that lists what was and was not checked.",
+    "architecture": "A Node HTTP and WebSocket server (src/server/app.ts) hosts rooms in memory. RoomLifecycle owns room codes, seats, seat tokens, readiness, phase deadlines and reconnection; AppraisalRoomService adds the game: it parses messages, applies actions as the authenticated seat, plays bot seats and broadcasts a separate view to each seat. The shared protocol in src/shared/appraisal-protocol.ts types a seat action as the engine action without a player id.\n\nThe rules engine is the 41 files of src/game/appraisal/: engine, views, audit and one file per system (theft, secure storage, seals, price integrity, brokerage, survival, events). A React client in src/appraisal-client/ renders the private view; the earlier auction kernel stays in src/game/, src/client/ and src/server/main.ts. src/simulation/ and src/playtest/ hold the bot policies, the replay command and the audit report.",
+    "implementation": "applyAppraisalAction rejects a malformed request, returns the stored state for a repeated request id, throws request-conflict if that id returns with a different payload and stale-encounter for an old encounter number. It then clones the state, applies the action, bumps a revision, appends the action to the command log and runs assertAppraisalInvariants. The invariants include a money check: bank, wallets and vaults must sum to the configured total plus recorded funding, and the ledger replayed from the starting balances must equal every balance.\n\nHidden truth is generated from labelled draws when merchant stock is created and reaches a seat only through its own knowledge record. appraisalViewFor sends other seats as credits, energy, score, flags, item count and life; the viewer's own record is the player minus ten named private fields. True values appear only in the Collector results. Subsystems follow the same pattern: a theft duel seals the merchant's hand when it starts and the view exposes only whether the seat must choose or has submitted; market conditions are matched only against facts the seat knows, so selling is not a free test.\n\nCommerce rules are small functions on the same state. An appraiser is paid a one-time 10% commission, rounded down, and gains trust with that merchant up to 10; each trust level adds five points to the chance a below-reservation price is accepted; being caught underpricing costs trust. Later systems add vaults with 4% interest, secured loans with escrowed collateral, price audits against an immutable base, and a Collector who scores goods at the end. Replay restores the run from seed and config, re-applies the commands and requires the exported audit to be deeply equal.",
+    "outcome": "At the pinned commit (2026-10-24, 45 commits) the repo holds a playable prototype with a React client, bot seats, a replay command and a validation folder of 162 files. The figures below are the repo's reports, not re-run here. The README, dated 2026-10-14, lists 352 tests, 120 seeded replays and six LAN runs for rules v0.5. Later documents record 789 of 789 tests at commit 3b45081 on 2026-10-23 and, in a UI report the same day, 821 of 822 with one network assertion failing under full load and passing alone.\n\nThose runs were synthetic: the 120 replays use four scripted bot policies that read only the per-seat view, and the six socket runs used scripted clients. The repo's only human feedback concerns the earlier auction loop, its playtest worksheet for the appraisal game is empty, and there is no public deployment.",
+    "lessons": "What the repo's records say is still open or was learned.\n\nLearned, as recorded: a dated self-review on 2026-10-23 found three high-severity defects that the tests had not: an untimed duel could stall a room, loans left open at match end let a borrower keep principal and collateral, and the Collector deadline constant had no consumer. Each was fixed behind a config flag so old audits still replay; the same record notes that another behaviour change under the secureEconomy flag was not given a rule version. A 2026-10-14 UI pass found the browser client rejected every v0.5 room, so survival had only been exercised through socket scripts until then.\n\nOpen: no human session of the appraisal game; bots play none of the theft, vault, loan or seal actions, so simulation figures say nothing about them; a merchant's tell can be countered about 73.5% of the time in the review's trials; the vault can be used to avoid theft compensation; a seat's own view is built by removing fields, so a new private field would leak by default; the README is stale; keyboard, hover and live seal flows were not exercised in a browser."
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "ran",
+      "captureId": "cursed-market-commit-history",
+      "note": "git rev-list --count, author-email count and first/last commit dates: 45 commits, one author email, 2026-10-14 to 2026-10-24."
+    },
+    {
+      "id": "E2",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "ran",
+      "captureId": "cursed-market-commit-log",
+      "note": "Commit subjects with dates, including the fix commit 8cfc55c after the 2026-10-23 review and the merge of branch codex/cabinet-ux (b34c5e5)."
+    },
+    {
+      "id": "E3",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "ran",
+      "captureId": "cursed-market-ai-trailers",
+      "note": "Counts Co-Authored-By: Claude trailers in commit messages: 19 name Sonnet 5.5, 6 name Opus 5.5; 25 commits carry one."
+    },
+    {
+      "id": "E4",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "ran",
+      "captureId": "cursed-market-source-counts",
+      "note": "53 test files; 488 lines starting with test( or it( (a grep count, not a test count); 41 files and 5,301 lines in src/game/appraisal; 162 files in docs/validation; 54 learning notes, 26 with a cost line."
+    },
+    {
+      "id": "E5",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "ran",
+      "captureId": "cursed-market-bots-secure-economy",
+      "note": "Lines naming five secure-economy actions (theft-start, vault-deposit, loan-propose, seal-offer, crime-clear): 0 in src/simulation, 20 in src/game/appraisal."
+    },
+    {
+      "id": "E6",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "ran",
+      "captureId": "cursed-market-determinism-grep",
+      "note": "No Math.random in src/game or src/simulation, no Date.now in src/game; 87 lines in src/game/appraisal call randomAt(."
+    },
+    {
+      "id": "E7",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/random.ts",
+      "lines": [
+        3,
+        7
+      ],
+      "note": "randomAt: HMAC-SHA256 keyed by the seed over a label; keeps no state."
+    },
+    {
+      "id": "E8",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/engine.ts",
+      "lines": [
+        121,
+        127
+      ],
+      "note": "Item hidden truth from labelled draws: genuine below .75, cursed below .35, certificate below .65."
+    },
+    {
+      "id": "E9",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/mechanics.ts",
+      "lines": [
+        199,
+        201
+      ],
+      "note": "known(): what a seat knows is public knowledge merged with that seat's own knowledge record."
+    },
+    {
+      "id": "E10",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/engine.ts",
+      "lines": [
+        321,
+        332
+      ],
+      "note": "applyAppraisalAction: request shape, idempotency by request id, stale-encounter check, phase check, deep clone."
+    },
+    {
+      "id": "E11",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/engine.ts",
+      "lines": [
+        410,
+        411
+      ],
+      "note": "After an action: revision bump, accepted-request signature, command log, invariants."
+    },
+    {
+      "id": "E12",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/engine.ts",
+      "lines": [
+        413,
+        415
+      ],
+      "note": "advanceAppraisalEncounter records an advance command so replay can repeat it."
+    },
+    {
+      "id": "E13",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/engine.ts",
+      "lines": [
+        452,
+        464
+      ],
+      "note": "assertAppraisalInvariants: credit conservation and ledger replay against balances."
+    },
+    {
+      "id": "E14",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/engine.ts",
+      "lines": [
+        31,
+        38
+      ],
+      "note": "DEFAULT_APPRAISAL_CONFIG: the rule flags switched on for new matches."
+    },
+    {
+      "id": "E15",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/engine.ts",
+      "lines": [
+        86,
+        89
+      ],
+      "note": "restoreAppraisalRun takes the saved config unchanged, including audits without a catalog version."
+    },
+    {
+      "id": "E16",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/engine.ts",
+      "lines": [
+        91,
+        93
+      ],
+      "note": "Run creation validates player ids (2-4, pattern, reserved names), seed length and config."
+    },
+    {
+      "id": "E17",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/engine.ts",
+      "lines": [
+        164,
+        175
+      ],
+      "note": "makeMarket: budget capped at half of the free bank; each order reserves its full quota payout; fallback opens the cheapest order the bank can back."
+    },
+    {
+      "id": "E18",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/views.ts",
+      "lines": [
+        44,
+        47
+      ],
+      "note": "appraisalViewFor: the seat's own record is the player clone minus ten named fields."
+    },
+    {
+      "id": "E19",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/views.ts",
+      "lines": [
+        59,
+        59
+      ],
+      "note": "Other seats are projected to id, credits, energy, score, flags, item count and life."
+    },
+    {
+      "id": "E20",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/views.ts",
+      "lines": [
+        26,
+        26
+      ],
+      "note": "True base, authenticity and curse are added to an item view only at RESULTS for Collector-scored goods."
+    },
+    {
+      "id": "E21",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/views.ts",
+      "lines": [
+        58,
+        58
+      ],
+      "note": "In survival, own accuracyBonus is sent as 0 before RESULTS."
+    },
+    {
+      "id": "E22",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/views.ts",
+      "lines": [
+        61,
+        61
+      ],
+      "note": "In survival, history is withheld (empty) until RESULTS."
+    },
+    {
+      "id": "E23",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/audit.ts",
+      "lines": [
+        21,
+        24
+      ],
+      "note": "exportAppraisalAudit throws before RESULTS."
+    },
+    {
+      "id": "E24",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/audit.ts",
+      "lines": [
+        25,
+        33
+      ],
+      "note": "replayAppraisalAudit: restore, re-apply commands, require deep equality with the audit."
+    },
+    {
+      "id": "E25",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/playtest/appraisal-report.ts",
+      "lines": [
+        46,
+        54
+      ],
+      "note": "Report analyser: each recorded timeout must match a recorded safe-default command."
+    },
+    {
+      "id": "E26",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/simulation/appraisal.ts",
+      "lines": [
+        62,
+        62
+      ],
+      "note": "Bot policies decide from the per-seat view type."
+    },
+    {
+      "id": "E27",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/shared/appraisal-protocol.ts",
+      "lines": [
+        5,
+        5
+      ],
+      "note": "AppraisalSeatAction: the engine action type without playerId."
+    },
+    {
+      "id": "E28",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/server/messages.ts",
+      "lines": [
+        12,
+        14
+      ],
+      "note": "keys(): rejects any key outside an allowed list."
+    },
+    {
+      "id": "E29",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/server/appraisal-messages.ts",
+      "lines": [
+        141,
+        141
+      ],
+      "note": "Comment on parseAppraisalMessage."
+    },
+    {
+      "id": "E30",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/server/appraisal-rooms.ts",
+      "lines": [
+        105,
+        107
+      ],
+      "note": "The room service adds the acting player from the authenticated seat."
+    },
+    {
+      "id": "E31",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/server/appraisal-rooms.ts",
+      "lines": [
+        92,
+        94
+      ],
+      "note": "Stale match ids and post-ready actions are rejected before the engine is called."
+    },
+    {
+      "id": "E32",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/server/appraisal-rooms.ts",
+      "lines": [
+        177,
+        181
+      ],
+      "note": "broadcast: one view per connected seat."
+    },
+    {
+      "id": "E33",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/server/appraisal-rooms.ts",
+      "lines": [
+        163,
+        176
+      ],
+      "note": "Timeout safe defaults are applied as normal commands with a request id naming match, encounter, phase and seat."
+    },
+    {
+      "id": "E34",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/server/appraisal-rooms.ts",
+      "lines": [
+        19,
+        49
+      ],
+      "note": "A 30-second duel clock runs in every room, timed or not, and cancels the duel."
+    },
+    {
+      "id": "E35",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/server/appraisal-rooms.ts",
+      "lines": [
+        132,
+        161
+      ],
+      "note": "Bot seats use applyAppraisalAction; a rejected move falls back to done."
+    },
+    {
+      "id": "E36",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/server/room-lifecycle.ts",
+      "lines": [
+        96,
+        98
+      ],
+      "note": "Match id and seed come from crypto random bytes when the host starts."
+    },
+    {
+      "id": "E37",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/server/app.ts",
+      "lines": [
+        34,
+        38
+      ],
+      "note": "WebSocket server: 4,096-byte payload cap and same-host origin check."
+    },
+    {
+      "id": "E38",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/server/app.ts",
+      "lines": [
+        54,
+        55
+      ],
+      "note": "Close code 4008 after more than 100 messages in a 5-second window."
+    },
+    {
+      "id": "E39",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/theft.ts",
+      "lines": [
+        113,
+        119
+      ],
+      "note": "npcHand: preferred hand with probability .6 from a labelled draw."
+    },
+    {
+      "id": "E40",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/theft.ts",
+      "lines": [
+        126,
+        159
+      ],
+      "note": "startTheftDuel: NPC hand sealed at start; server picks the target good."
+    },
+    {
+      "id": "E41",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/theft.ts",
+      "lines": [
+        247,
+        252
+      ],
+      "note": "chooseTheftHand: hands are stored privately and cleared after both are revealed."
+    },
+    {
+      "id": "E42",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/theft.ts",
+      "lines": [
+        323,
+        345
+      ],
+      "note": "theftViewFor builds the duel view field by field."
+    },
+    {
+      "id": "E43",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/theft.ts",
+      "lines": [
+        78,
+        80
+      ],
+      "note": "PvP defeat constants: 2-encounter cooldown, 5% compensation, 4 instalments."
+    },
+    {
+      "id": "E44",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/secure-storage.ts",
+      "lines": [
+        188,
+        202
+      ],
+      "note": "payVaultInterest: paid from the bank into the wallet, floored, uncapped, limited by what the bank can pay."
+    },
+    {
+      "id": "E45",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/secure-storage.ts",
+      "lines": [
+        4,
+        5
+      ],
+      "note": "Vault interest constant and floor."
+    },
+    {
+      "id": "E46",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/secure-storage.ts",
+      "lines": [
+        155,
+        157
+      ],
+      "note": "Funding transfers lender credits and moves the item to a collateral owner."
+    },
+    {
+      "id": "E47",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/secure-storage.ts",
+      "lines": [
+        54,
+        62
+      ],
+      "note": "Loan deadline derived from collateral value and future base payouts."
+    },
+    {
+      "id": "E48",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/secure-storage.ts",
+      "lines": [
+        170,
+        187
+      ],
+      "note": "settleLoansBeforeAdvance(state, final): every active loan is foreclosed at match end."
+    },
+    {
+      "id": "E49",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/price-integrity.ts",
+      "lines": [
+        6,
+        11
+      ],
+      "note": "priceAuditChance thresholds at 150%, 200%, 250% of base."
+    },
+    {
+      "id": "E50",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/price-integrity.ts",
+      "lines": [
+        33,
+        36
+      ],
+      "note": "An overpriced item has a system sale quote of 0."
+    },
+    {
+      "id": "E51",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/price-integrity.ts",
+      "lines": [
+        56,
+        73
+      ],
+      "note": "Owner reappraisal costs 1 energy, once per item per encounter, succeeds within 10% of base."
+    },
+    {
+      "id": "E52",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/survival.ts",
+      "lines": [
+        12,
+        13
+      ],
+      "note": "collectorDue reads config.collectorDeadline."
+    },
+    {
+      "id": "E53",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/survival.ts",
+      "lines": [
+        14,
+        33
+      ],
+      "note": "collectRun: closes loans, scores each seat, moves goods to the collector."
+    },
+    {
+      "id": "E54",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/scoring.ts",
+      "lines": [
+        1,
+        10
+      ],
+      "note": "itemScoreValue and collectorTotal."
+    },
+    {
+      "id": "E55",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/core2.ts",
+      "lines": [
+        12,
+        14
+      ],
+      "note": "CORE2.collectorEncounter is 15."
+    },
+    {
+      "id": "E56",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/core2.ts",
+      "lines": [
+        5,
+        9
+      ],
+      "note": "Header comment of core v0.6: flag-gated, numbers experimental and not human-validated."
+    },
+    {
+      "id": "E57",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/market-contracts.ts",
+      "lines": [
+        3,
+        4
+      ],
+      "note": "Trust cap 10; each level adds .05 to acceptance."
+    },
+    {
+      "id": "E58",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/market-contracts.ts",
+      "lines": [
+        6,
+        10
+      ],
+      "note": "marketConditionMatch returns match, mismatch or unknown from known facts only."
+    },
+    {
+      "id": "E59",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/mechanics.ts",
+      "lines": [
+        261,
+        264
+      ],
+      "note": "appraise: detection and trust-weighted acceptance are labelled draws."
+    },
+    {
+      "id": "E60",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/mechanics.ts",
+      "lines": [
+        281,
+        283
+      ],
+      "note": "Being caught underpricing loses trust."
+    },
+    {
+      "id": "E61",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/mechanics.ts",
+      "lines": [
+        294,
+        304
+      ],
+      "note": "completeAppraisedSale: one-time 10% commission, floored, and +1 trust."
+    },
+    {
+      "id": "E62",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "src/game/appraisal/pulse.ts",
+      "lines": [
+        6,
+        7
+      ],
+      "note": "TRUST_RULES: caught loses 1; repeat buys earn trust."
+    },
+    {
+      "id": "E63",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "tests/appraisal-secure-theft.test.ts",
+      "lines": [
+        29,
+        59
+      ],
+      "note": "Privacy test on the serialised view and a same-seed determinism test."
+    },
+    {
+      "id": "E64",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "tests/appraisal-secure-theft.test.ts",
+      "lines": [
+        80,
+        93
+      ],
+      "note": "The sealed NPC hand depends on seed and duel, not on request id or later choice."
+    },
+    {
+      "id": "E65",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "docs/validation/survival-v0.5.md",
+      "lines": [
+        19,
+        28
+      ],
+      "note": "Validation table: each claim row links its raw artifact."
+    },
+    {
+      "id": "E66",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "docs/playtests/appraisal-session-v0.5.md",
+      "lines": [
+        3,
+        5
+      ],
+      "note": "Human session worksheet: instructions and empty fields."
+    },
+    {
+      "id": "E67",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": ".trail/learnings/2026-10-23-full-game-review-2026-10-23-phcaradanai.md",
+      "lines": [
+        1,
+        6
+      ],
+      "note": "Trail learning note front matter with a cost line (minutes and tokens)."
+    },
+    {
+      "id": "E68",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": ".trail/learnings/2026-10-23-full-game-review-2026-10-23-phcaradanai.md",
+      "lines": [
+        10,
+        13
+      ],
+      "note": "touches: list names agent guidance files that are not tracked at the pinned commit."
+    },
+    {
+      "id": "E69",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "docs/handoff/Secure_Economy_Continuation_2026-10-23.md",
+      "lines": [
+        277,
+        284
+      ],
+      "note": "Section 14 is a ready-to-paste prompt for a continuing agent."
+    },
+    {
+      "id": "E70",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "package.json",
+      "lines": [
+        18,
+        18
+      ],
+      "note": "npm test builds the server and runs the built-in node:test runner."
+    },
+    {
+      "id": "E71",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "source",
+      "path": "package.json",
+      "lines": [
+        27,
+        43
+      ],
+      "note": "Dependencies and dev dependencies."
+    },
+    {
+      "id": "E72",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "README.md",
+      "lines": [
+        5,
+        5
+      ],
+      "quote": "หลักฐานเทคนิคไม่พิสูจน์ความสนุก; ยังต้องทดสอบกับคนหลัง feedback ว่ารุ่นแรกซ้ำและคาดเดาง่าย",
+      "note": "Thai: technical evidence does not prove fun; testing with people is still needed after feedback that the first version was repetitive and predictable."
+    },
+    {
+      "id": "E73",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "README.md",
+      "lines": [
+        5,
+        5
+      ],
+      "quote": "ผ่าน352tests,build,120seededreplays และ6actualLANruns ทั้งสองโหมด",
+      "note": "Thai: passed 352 tests, a build, 120 seeded replays and 6 actual LAN runs in both modes. The paragraph is dated 2026-10-14."
+    },
+    {
+      "id": "E74",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "README.md",
+      "lines": [
+        25,
+        25
+      ],
+      "quote": "ห้องอยู่ใน memory ไม่มีฐานข้อมูล",
+      "note": "Thai: rooms live in memory, no database."
+    },
+    {
+      "id": "E75",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "README.md",
+      "lines": [
+        81,
+        81
+      ],
+      "quote": "ยังไม่มี human fun/balance/final brand approval",
+      "note": "Thai: no human fun, balance or final brand approval yet."
+    },
+    {
+      "id": "E76",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "README.md",
+      "lines": [
+        75,
+        75
+      ],
+      "quote": "Server ไม่ส่ง seed, future offers, hidden truth หรือ internal audit ก่อนจบให้ client",
+      "note": "Thai: the server does not send the seed, future offers, hidden truth or internal audit to the client before the end."
+    },
+    {
+      "id": "E77",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "README.md",
+      "lines": [
+        75,
+        75
+      ],
+      "quote": "สิทธิ์ actor มาจาก opaque seat token ไม่เชื่อ playerId จาก JSON",
+      "note": "Thai: the acting player comes from an opaque seat token; a playerId in JSON is not trusted."
+    },
+    {
+      "id": "E78",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "PRODUCT.md",
+      "lines": [
+        19,
+        19
+      ],
+      "quote": "The first auction playtest was reported as lifeless, repetitive, predictable and not fun."
+    },
+    {
+      "id": "E79",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "PRODUCT.md",
+      "lines": [
+        25,
+        25
+      ],
+      "quote": "The 10/10 split and numeric balance are assistant-selected experiments recorded in `docs/plan/Appraisal_Rules_Decisions_v0.4.md`, not human-validated balance."
+    },
+    {
+      "id": "E80",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "PRODUCT.md",
+      "lines": [
+        35,
+        35
+      ],
+      "quote": "In-memory rooms do not survive server restart."
+    },
+    {
+      "id": "E81",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "PRODUCT.md",
+      "lines": [
+        41,
+        41
+      ],
+      "quote": "No accounts, ranking, combat, permanent progression, public hosting, pixel spritesheet or automation is included."
+    },
+    {
+      "id": "E82",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "PRODUCT.md",
+      "lines": [
+        49,
+        49
+      ],
+      "quote": "The 2026-10-14 UI polish pass found that the browser client rejected every v0.5 room state (`rulesVersion` check), so survival mode had only been exercised through socket scripts; the fix has a regression test."
+    },
+    {
+      "id": "E83",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/survival-v0.5.md",
+      "lines": [
+        21,
+        21
+      ],
+      "quote": "349 passed**, zero failures/skips: 322 prior tests plus 27 survival/privacy/consent regressions",
+      "note": "Full suite of the v0.5 delivery, 2026-10-14."
+    },
+    {
+      "id": "E84",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/survival-v0.5.md",
+      "lines": [
+        24,
+        24
+      ],
+      "quote": "10 seeds × 2/3/4 seats × 4 DTO-only policies; **6–16 encounters**. Final rerun uses corrected projection. These are synthetic policies, not human balance/fun evidence"
+    },
+    {
+      "id": "E85",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/simulation/survival-v0.5/summary.json",
+      "lines": [
+        4,
+        6
+      ],
+      "quote": "\"runs\": 120, \"strictReplay\": true, \"humanFunValidated\": false",
+      "note": "Seeded-run summary file written by the repo's check script."
+    },
+    {
+      "id": "E86",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/survival-v0.5.md",
+      "lines": [
+        25,
+        25
+      ],
+      "quote": "Six completed actual socket runs**: 2/3/4 seats × custom timed/untimed, with schema5, all life0, itemized Collector score, strict replay and rematch."
+    },
+    {
+      "id": "E87",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/survival-v0.5/lan-check.json",
+      "lines": [
+        5,
+        5
+      ],
+      "quote": "HTTP assets and synthetic LAN-address sockets; no browser, image inspection or human/device playtest",
+      "note": "The scope field of the scripted LAN run output."
+    },
+    {
+      "id": "E88",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/survival-v0.5.md",
+      "lines": [
+        46,
+        46
+      ],
+      "quote": "pre-Collector v0.5 DTOs withhold value-derived history (`history:[]`) and hidden accuracy (`self.accuracyBonus:0`)."
+    },
+    {
+      "id": "E89",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/survival-v0.5.md",
+      "lines": [
+        52,
+        52
+      ],
+      "quote": "The first unpaced LAN bot run exceeded the unchanged WebSocket guard of **100 requests per5seconds** (`src/server/app.ts`), closing with4008. The original script kept waiting for an ack, which surfaced as a phase timeout. The v0.5 script now records socket-close reasons and paces synthetic requests at75ms; all six flows pass. The server guard was preserved."
+    },
+    {
+      "id": "E90",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": ".trail/learnings/2026-10-15-make-the-ui-feel-like-a-phcaradanai.md",
+      "lines": [
+        12,
+        12
+      ],
+      "quote": "Told to Claude in 2 past sessions here, most recently on Oct 14.",
+      "note": "A Trail learning note records a preference as told to Claude in earlier sessions."
+    },
+    {
+      "id": "E91",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/survival-v0.5.md",
+      "lines": [
+        66,
+        66
+      ],
+      "quote": "The only supplied human enjoyment evidence still reports the old auction loop as repetitive, predictable and not fun."
+    },
+    {
+      "id": "E92",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/Secure_Economy_v0.5.md",
+      "lines": [
+        66,
+        67
+      ],
+      "quote": "Fresh runs this round: `npm test` 789/789 and `npm run build` pass.",
+      "note": "Update dated 2026-10-23; the review in game-review-2026-10-23.md gives the same count at commit 3b45081."
+    },
+    {
+      "id": "E93",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/Secure_Economy_v0.5.md",
+      "lines": [
+        52,
+        53
+      ],
+      "quote": "These checks establish technical behavior, not human playtest enjoyment or final economy balance."
+    },
+    {
+      "id": "E94",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/Secure_Economy_v0.5.md",
+      "lines": [
+        71,
+        73
+      ],
+      "quote": "The seal and compensation UI was verified by server-rendered markup tests only; the built app was loaded without console errors but a live multi-seat seal flow was not exercised in a browser, and bots do not use seals."
+    },
+    {
+      "id": "E95",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/Secure_Economy_v0.5.md",
+      "lines": [
+        74,
+        75
+      ],
+      "quote": "Secure-economy rule version was not bumped, so historical `secureEconomy` replays recorded before this change would now diverge."
+    },
+    {
+      "id": "E96",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/Secure_Economy_v0.5.md",
+      "lines": [
+        46,
+        47
+      ],
+      "quote": "Keyboard and hover behavior were not independently exercised"
+    },
+    {
+      "id": "E97",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/ui-market-portals-2026-10-23.md",
+      "lines": [
+        9,
+        9
+      ],
+      "quote": "Full suite: 821 of 822 passed. The cross-shop fee network assertion failed under full load (514 versus 513) and passed when rerun alone."
+    },
+    {
+      "id": "E98",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/game-review-2026-10-23.md",
+      "lines": [
+        18,
+        18
+      ],
+      "quote": "กติกาที่ผู้ใช้ยืนยันแล้ว (ดอกเบี้ย 4% ไม่มีเพดาน, ค่าชดเชย 5% × 4 งวดจากกระเป๋าเท่านั้น, ค่าชดเชยที่จ่ายไม่ครบถูกยกให้, ซื้อตราคืนแล้วตราถูกทำลาย, ไม่ยึดของใน vault หรือของค้ำ) ไม่นับเป็นบั๊ก",
+      "note": "Thai: rules the user confirmed (4% uncapped interest, 5% x 4 compensation from the wallet only, shortfalls forgiven, bought-back seals destroyed, vault and collateral not seized) are not counted as bugs."
+    },
+    {
+      "id": "E99",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/game-review-2026-10-23.md",
+      "lines": [
+        29,
+        29
+      ],
+      "quote": "ห้องที่ปิดจับเวลา ถ้าฝ่ายใดในดวลเป่ายิ้งฉุบไม่ส่งมือ เกมจะค้างถาวร",
+      "note": "Thai: in an untimed room, if a duel side never submits a hand the game stalls permanently."
+    },
+    {
+      "id": "E100",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/game-review-2026-10-23.md",
+      "lines": [
+        30,
+        30
+      ],
+      "quote": "สัญญากู้ที่ยังไม่ครบกำหนดตอนเกมจบ ทำให้ผู้กู้ได้ทั้งเงินต้นและมูลค่าของค้ำ ผู้ให้กู้เสียเงินต้นฟรี",
+      "note": "Thai: a loan not yet due at match end lets the borrower keep both principal and collateral value."
+    },
+    {
+      "id": "E101",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/game-review-2026-10-23.md",
+      "lines": [
+        31,
+        31
+      ],
+      "quote": "ค่าคงที่ Collector deadline (`collectorEncounter:15`) ไม่มีโค้ดใช้งาน โหมด survival ยังไม่มีเพดานรอบ",
+      "note": "Thai: the Collector deadline constant has no consuming code; survival has no round cap."
+    },
+    {
+      "id": "E102",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/game-review-2026-10-23.md",
+      "lines": [
+        32,
+        32
+      ],
+      "quote": "bot ไม่ใช้ระบบ secure economy เลย (ขโมย, ตรา, คลัง, เงินกู้) ผล simulation จึงไม่ครอบคลุมระบบใหม่",
+      "note": "Thai: bots do not use the secure economy at all (theft, seals, vault, loans), so simulation results do not cover the new systems."
+    },
+    {
+      "id": "E103",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/game-review-2026-10-23.md",
+      "lines": [
+        38,
+        38
+      ],
+      "quote": "view ของตัวเองสร้างแบบ spread แล้วตัดบางฟิลด์ออก ฟิลด์ลับที่เพิ่มใหม่จะหลุดไปถึง client โดยอัตโนมัติ",
+      "note": "Thai: the own view is built by spreading then removing some fields; a newly added private field would reach the client automatically."
+    },
+    {
+      "id": "E104",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/game-review-2026-10-23.md",
+      "lines": [
+        145,
+        145
+      ],
+      "quote": "เลือกมือที่ชนะท่าประจำตลอด: ชนะ 294 แพ้ 106 จาก 400 ครั้ง (≈73.5%)",
+      "note": "Thai: always choosing the hand that beats the merchant's usual hand won 294 and lost 106 of 400."
+    },
+    {
+      "id": "E105",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/game-review-2026-10-23.md",
+      "lines": [
+        311,
+        311
+      ],
+      "quote": "สถานะลงวันที่ 2026-10-14 และอ้าง 352 tests (ตอนนี้ 789)",
+      "note": "Thai: the README status is dated 2026-10-14 and cites 352 tests (now 789)."
+    },
+    {
+      "id": "E106",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/system-links-continuation-2026-10-23.md",
+      "lines": [
+        28,
+        28
+      ],
+      "quote": "แล้วตรวจ replay หลังแก้ได้ hash เดิมทั้ง 2 โหมด",
+      "note": "Thai: after the fix, replay of the stored legacy fixtures gave the original hashes in both modes."
+    },
+    {
+      "id": "E107",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/plan/Commerce_Trust_Market_v0.5.md",
+      "lines": [
+        7,
+        7
+      ],
+      "quote": "ผู้ประเมินรับ **10% ของราคาขายจริง ปัดเศษลงเป็นเครดิตจำนวนเต็ม**",
+      "note": "Thai: the appraiser receives 10% of the actual sale price, rounded down to whole credits."
+    },
+    {
+      "id": "E108",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/plan/Commerce_Trust_Market_v0.5.md",
+      "lines": [
+        13,
+        13
+      ],
+      "quote": "ตัวเลข +1/เพดาน 10/ระดับละ 5 จุดเป็นค่าทดลองของการนำไปใช้",
+      "note": "Thai: the +1, cap of 10 and 5 points per level are trial values of this implementation."
+    },
+    {
+      "id": "E109",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/plan/Commerce_Trust_Market_v0.5.md",
+      "lines": [
+        28,
+        28
+      ],
+      "quote": "เพื่อไม่ให้ลองขายเป็นการตรวจฟรี",
+      "note": "Thai: so that trying to sell is not a free inspection."
+    },
+    {
+      "id": "E110",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/plan/Commerce_Trust_Market_v0.5.md",
+      "lines": [
+        34,
+        34
+      ],
+      "quote": "เกมใหม่เปิด `config.commerce` รายการของเก่าที่ไม่มี flag ใช้เศรษฐกิจ/การยอมรับราคา/ตลาดเดิม และ replay ตรงเดิม",
+      "note": "Thai: new games enable config.commerce; old records without the flag use the old economy and replay identically."
+    },
+    {
+      "id": "E111",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/handoff/Secure_Economy_Continuation_2026-10-23.md",
+      "lines": [
+        19,
+        19
+      ],
+      "quote": "ห้ามเปลี่ยนข้อเสนอที่ยังไม่ยืนยันให้กลายเป็นกฎโดยไม่แจ้งผู้ใช้",
+      "note": "Thai, addressed to the continuing agent: do not turn unconfirmed proposals into rules without telling the user."
+    },
+    {
+      "id": "E112",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/art/consistent-catalog-v0.5/README.md",
+      "lines": [
+        9,
+        9
+      ],
+      "quote": "All 52 new images were generated through the built-in ImageGen tool, one call per asset."
+    },
+    {
+      "id": "E113",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/art/consistent-catalog-v0.5/README.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "The existing ten item paintings and six merchant paintings already matched the direction and were retained."
+    },
+    {
+      "id": "E114",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/art/appraisal-v0.4/generation-prompts.json",
+      "lines": [
+        9,
+        9
+      ],
+      "quote": "built-in image_gen generate",
+      "note": "Prompt record of the first retained painting (npc-orc); the other 15 entries carry the same mode field."
+    },
+    {
+      "id": "E115",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/art/appraisal-v0.4/documentation.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "Fresh Impeccable document pass for the implemented realistic-card working direction."
+    },
+    {
+      "id": "E116",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/art/stage-2.5d/generation-manifest.json",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "Codex CLI 0.163.0 built-in image_gen, run non-interactively (codex exec, read-only sandbox, ephemeral)"
+    },
+    {
+      "id": "E117",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/art/concepts/v0.4/README.md",
+      "lines": [
+        33,
+        33
+      ],
+      "quote": "สร้างด้วย built-in `image_gen`: generate ภาพละหนึ่งครั้ง และ edit isometric หนึ่งครั้ง",
+      "note": "Thai: made with the built-in image_gen: one generation per image and one edit of the isometric image."
+    },
+    {
+      "id": "E118",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/art/concepts/v0.4/README.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "ยังไม่มีแนวที่ผู้ใช้เลือกและไม่ใช่ screenshot ของเกมที่ทำงานแล้ว",
+      "note": "Thai: no direction chosen by the user yet, and not a screenshot of a working game."
+    },
+    {
+      "id": "E119",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/art/concepts/v0.4/README.md",
+      "lines": [
+        9,
+        9
+      ],
+      "quote": "ภาษาอังกฤษในภาพเป็นข้อความ mockup",
+      "note": "Thai: the English in the images is mockup text."
+    },
+    {
+      "id": "E120",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/commerce-v0.5.md",
+      "lines": [
+        12,
+        12
+      ],
+      "quote": "Ego Browser ตรวจ production bundle ผ่าน QA fixture",
+      "note": "Thai: Ego Browser checked the production bundle through a QA fixture."
+    },
+    {
+      "id": "E121",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/commerce-v0.5.md",
+      "lines": [
+        12,
+        12
+      ],
+      "quote": "ไม่อ้างว่า fixture เป็น run ปกติหรือใช้เป็น audit proof",
+      "note": "Thai: the fixture is not claimed to be a normal run or audit proof."
+    },
+    {
+      "id": "E122",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/price-knowledge-v0.5.md",
+      "lines": [
+        26,
+        26
+      ],
+      "quote": "ภาพใช้ fixture ที่กำหนด NPC/ร้านเพื่อให้ตรวจ UI ได้แน่นอน แยกจากหลักฐาน LAN จริงข้างต้น",
+      "note": "Thai: the images use a fixture that fixes the NPC and shop so the UI check is repeatable, separate from the real LAN evidence."
+    },
+    {
+      "id": "E123",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/trade-refill-portals-v0.5.md",
+      "lines": [
+        24,
+        24
+      ],
+      "quote": "ภาพ browser ใช้ข้อมูล fixture เพื่อให้เห็นเหตุการณ์แน่นอน แยกจากหลักฐาน LAN และ seeded audit ข้างต้น",
+      "note": "Thai: the browser images use fixture data to show the event deterministically, separate from LAN and seeded-audit evidence."
+    },
+    {
+      "id": "E124",
+      "repo": "phcaradanai/Cursed-Market",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "level": "reported",
+      "path": "docs/validation/merchant-abilities-v0.5/README.md",
+      "lines": [
+        15,
+        15
+      ],
+      "quote": "The local-only fixture runs the real room service, HTTP client and WebSocket actions with synthetic inventories and trust. It is never imported by production."
+    }
+  ],
+  "claims": [
+    {
+      "text": "The repository has 45 commits, from 2026-10-14 to 2026-10-24, all with the author email phcaradanai@gmail.com.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "text": "The commit log shows the rules growing in steps: life, energy and Collector on 2026-10-14; trust, pulse shards and trade changes on 2026-10-16; core v0.6 rules on 2026-10-22; PvP theft penalties, sinner seals and vault interest on 2026-10-23; a cabinet UI merged from a branch named codex/cabinet-ux on 2026-10-24.",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "text": "25 of the 45 commits carry a Co-Authored-By trailer naming Claude: 19 name Claude Sonnet 5.5 and 6 name Claude Opus 5.5. A Trail learning note also records a preference as told to Claude in two earlier sessions.",
+      "evidence": [
+        "E3",
+        "E90"
+      ]
+    },
+    {
+      "text": "A client message is typed as an action without a player id, the parser rejects any key outside an allowed list, and the room service adds the acting player from the authenticated seat before calling the engine. The README states the same rule.",
+      "evidence": [
+        "E27",
+        "E28",
+        "E29",
+        "E30",
+        "E31",
+        "E77"
+      ]
+    },
+    {
+      "text": "applyAppraisalAction returns the stored state for a repeated request id, throws request-conflict if the id returns with a different payload, throws stale-encounter for an old encounter number, and works on a deep copy; each applied action bumps a revision and is appended to a command log.",
+      "evidence": [
+        "E10",
+        "E11"
+      ]
+    },
+    {
+      "text": "After every action assertAppraisalInvariants checks that bank, wallet and vault credits sum to the configured starting total adjusted by recorded round-reward and item funding, and replays the ledger from the starting balances to compare with every balance, so credits cannot change without a ledger entry.",
+      "evidence": [
+        "E13"
+      ]
+    },
+    {
+      "text": "All chance in the rules is randomAt(seed, label): an HMAC-SHA256 of a text label keyed by the match seed. It keeps no state, so an outcome depends on its label, not on how many draws came before.",
+      "evidence": [
+        "E7"
+      ]
+    },
+    {
+      "text": "At the pinned commit no line in src/game or src/simulation contains Math.random, no line in src/game contains Date.now, and 87 lines in src/game/appraisal call randomAt(. A match seed is 32 random bytes drawn when the host starts the match.",
+      "evidence": [
+        "E6",
+        "E36"
+      ]
+    },
+    {
+      "text": "An item's hidden truth is drawn from labelled randomAt calls when merchant stock is created: genuine with probability 0.75, cursed 0.35, certificate 0.65. A seat learns it only through public knowledge or its own knowledge record.",
+      "evidence": [
+        "E8",
+        "E9"
+      ]
+    },
+    {
+      "text": "The room service builds a separate view for each connected seat with appraisalViewFor(game, seat.id). Other seats appear only as credits, energy, score, flags, item count and life; an item view carries what that seat has learned, and adds the true base value, authenticity and curse only at RESULTS for goods the Collector scored.",
+      "evidence": [
+        "E32",
+        "E19",
+        "E20",
+        "E76"
+      ]
+    },
+    {
+      "text": "In survival mode the view withholds value-derived history and hidden accuracy until results; the 2026-10-14 report records an independent review finding on exactly this (F2) and a command-only regression test for it.",
+      "evidence": [
+        "E22",
+        "E21",
+        "E88"
+      ]
+    },
+    {
+      "text": "A seat's own record is built by cloning the player and removing ten named fields, not by listing allowed fields, although the comment above it says allowlist. The 2026-10-23 review flags that a new private field would be sent to the client by default; the code is unchanged at the pinned commit.",
+      "evidence": [
+        "E18",
+        "E103"
+      ]
+    },
+    {
+      "text": "A theft duel seals the merchant's hand when it starts, the server picks the target good in a player duel instead of accepting an id, hands are cleared once both are revealed, and the view sent to a seat holds only whether it must choose and whether it has submitted.",
+      "evidence": [
+        "E40",
+        "E41",
+        "E42"
+      ]
+    },
+    {
+      "text": "One test serialises the theft view and asserts it holds no hands or item id before resolution; another runs the same seed and choices twice and requires identical state; a third shows the sealed hand is the same whatever the request id or the player's later choice.",
+      "evidence": [
+        "E63",
+        "E64"
+      ]
+    },
+    {
+      "text": "marketConditionMatch is given only facts the seat already knows and returns unknown when a required fact is missing; the design notes add that an unaffordable sacrifice is refused the same way for matching and mismatching goods, so selling cannot be used as a free test of a hidden property.",
+      "evidence": [
+        "E58",
+        "E109"
+      ]
+    },
+    {
+      "text": "When goods an appraiser priced are first sold by the merchant, the appraiser is paid once a base commission of 10% of the price rounded down, and gains one trust with that merchant, capped at 10; a commissionPaid flag stops resale between players from paying again.",
+      "evidence": [
+        "E61",
+        "E107"
+      ]
+    },
+    {
+      "text": "Each trust level adds five percentage points to the chance a merchant accepts a price below its reservation; being caught underpricing loses one trust. The catch and the acceptance are labelled seeded draws, and the design notes call the numbers trial values.",
+      "evidence": [
+        "E57",
+        "E59",
+        "E62",
+        "E60",
+        "E108"
+      ]
+    },
+    {
+      "text": "The Dark Market budget is capped at half of the bank's free funds, except that if every drawn order is too dear it opens the cheapest one the free bank can still back. Each order reserves its full quota payout, and an invariant requires the bank to cover the market budget plus promised rewards.",
+      "evidence": [
+        "E17",
+        "E13"
+      ]
+    },
+    {
+      "text": "The secure economy (2026-10-23) adds vaults with 4% interest paid from the bank, secured loans whose collateral moves to an escrow owner with value and deadline frozen at funding, price audits against an item's immutable base, and PvP theft penalties of a seal, a two-encounter cooldown and four 5% compensation instalments.",
+      "evidence": [
+        "E45",
+        "E44",
+        "E46",
+        "E47",
+        "E49",
+        "E43"
+      ]
+    },
+    {
+      "text": "Prices a player sets are audited against the item's immutable base: from 150% of base the audit chance is 25%, from 200% it is 50%, from 250% it is 100%. A flagged item sells to the system for 0 until the owner passes a paid reappraisal within 10% of base.",
+      "evidence": [
+        "E49",
+        "E50",
+        "E51"
+      ]
+    },
+    {
+      "text": "When every player has zero life, or after encounter 15 in new matches, the Collector scores each seat as credits plus item values, then one percentage modifier: a fake keeps 25% of base, a curse keeps 75%, and goods another seat appraised score 15% more.",
+      "evidence": [
+        "E53",
+        "E52",
+        "E54",
+        "E55",
+        "E14"
+      ]
+    },
+    {
+      "text": "A match audit can be exported only once the match reaches RESULTS. Replay restores the run from seed and config, re-applies every recorded command including the advance steps, and requires the result to be deeply equal to the audit.",
+      "evidence": [
+        "E23",
+        "E24",
+        "E12"
+      ]
+    },
+    {
+      "text": "Timeout defaults are recorded as ordinary commands with a request id naming match, encounter, phase and seat, and the report analyser checks every recorded timeout against the replayed run.",
+      "evidence": [
+        "E33",
+        "E25"
+      ]
+    },
+    {
+      "text": "Bot seats act through the same engine actions as people and decide from the per-seat view type; a rejected bot action falls back to ending the turn.",
+      "evidence": [
+        "E35",
+        "E26"
+      ]
+    },
+    {
+      "text": "Rule changes are put behind config flags and restoreAppraisalRun takes the exact saved config, so an audit recorded before a rule existed replays under the old rules; new matches get the current set from DEFAULT_APPRAISAL_CONFIG. After one fix the repo stored legacy audit hashes and re-checked that replay gave the same hashes in both modes.",
+      "evidence": [
+        "E14",
+        "E15",
+        "E110",
+        "E106"
+      ]
+    },
+    {
+      "text": "Each feature has a dated report in docs/validation/ that links its raw artifacts: test output, build output, JSON from scripted socket runs, seeded-run summaries and a source-hash manifest. At the pinned commit the folder holds 162 files.",
+      "evidence": [
+        "E65",
+        "E4"
+      ]
+    },
+    {
+      "text": "The README status paragraph is dated 2026-10-14 and reports 352 tests, a build, 120 seeded replays and six LAN runs; the v0.5 validation report of that date lists 349 tests plus 27 focused ones, and the repo's 2026-10-23 review calls the README stale. These are the repo's reports, not re-run here.",
+      "evidence": [
+        "E73",
+        "E83",
+        "E105"
+      ]
+    },
+    {
+      "text": "Later figures in the repo's records, not re-run here: 789 of 789 full-suite tests at commit 3b45081 on 2026-10-23, and 821 of 822 in a UI report the same day, where one network assertion failed under full load and passed when rerun alone. The 488 in the source-count capture is a grep of test( and it( lines, not a test count.",
+      "evidence": [
+        "E92",
+        "E97",
+        "E4"
+      ]
+    },
+    {
+      "text": "The 120 seeded runs reported on 2026-10-14 used four scripted bot policies that read only the per-seat view, across 2, 3 and 4 seats and 10 seeds each; every run was strictly replayed, and the summary file stores humanFunValidated: false.",
+      "evidence": [
+        "E84",
+        "E85"
+      ]
+    },
+    {
+      "text": "Six scripted socket runs (2, 3 and 4 seats, timed and untimed) completed with Collector scoring, strict replay and rematch; the run's own scope line says it covered no browser, image inspection or human or device playtest.",
+      "evidence": [
+        "E86",
+        "E87"
+      ]
+    },
+    {
+      "text": "The server closes a socket that sends more than 100 messages in a 5-second window (code 4008) and caps a message at 4,096 bytes; the first scripted LAN bot run exceeded that guard, and the repo changed the script's pacing while preserving the server guard.",
+      "evidence": [
+        "E38",
+        "E37",
+        "E89"
+      ]
+    },
+    {
+      "text": "A dated self-review (2026-10-23) ranked ten findings; its first three were an untimed duel that could stall a room, loans left unsettled at match end, and a Collector deadline constant with no consumer. Commit 8cfc55c addressed them: at the pinned commit a 30-second duel clock runs in untimed rooms, loans are foreclosed at match end, and collectorDue reads the deadline.",
+      "evidence": [
+        "E99",
+        "E100",
+        "E101",
+        "E2",
+        "E34",
+        "E48",
+        "E52"
+      ]
+    },
+    {
+      "text": "A 2026-10-14 UI pass found that the browser client rejected every v0.5 room state through a rulesVersion check, so survival had only been exercised through socket scripts until then; a regression test was added.",
+      "evidence": [
+        "E82"
+      ]
+    },
+    {
+      "text": "No line in src/simulation names the theft, vault, loan, seal or criminal-notice actions (0 matches against 20 in src/game/appraisal), and the repo's records say bots do not use seals; simulation figures therefore do not measure the secure economy.",
+      "evidence": [
+        "E5",
+        "E102",
+        "E94"
+      ]
+    },
+    {
+      "text": "A merchant's duel hand is its preferred hand with probability 0.6; the repo's review recorded 294 wins in 400 trials for a player who always counters it, and lists this and the vault and compensation interactions as playtest risks, not bugs.",
+      "evidence": [
+        "E39",
+        "E104",
+        "E98"
+      ]
+    },
+    {
+      "text": "The README says the technical evidence does not prove the game is fun, that testing with people is still needed, and that there is no human fun, balance or final brand approval yet. PRODUCT.md records the earlier auction prototype's feedback as lifeless, repetitive, predictable and not fun.",
+      "evidence": [
+        "E72",
+        "E75",
+        "E78"
+      ]
+    },
+    {
+      "text": "PRODUCT.md calls the numeric balance assistant-selected experiments, not human-validated balance, and the core v0.6 source comment says the same of its numbers.",
+      "evidence": [
+        "E79",
+        "E56"
+      ]
+    },
+    {
+      "text": "The playtest folder holds protocols and a v0.5 session worksheet whose fields are empty at the pinned commit; the 2026-10-14 report says the only supplied human enjoyment evidence still concerns the old auction loop.",
+      "evidence": [
+        "E66",
+        "E91"
+      ]
+    },
+    {
+      "text": "The 2026-10-23 secure-economy report says the seal and compensation screens were checked by server-rendered markup tests only, a live multi-seat seal flow was not exercised in a browser, and keyboard and hover behaviour was not independently exercised. It also says its checks establish technical behaviour, not human enjoyment or economy balance.",
+      "evidence": [
+        "E94",
+        "E96",
+        "E93"
+      ]
+    },
+    {
+      "text": "The same report states that the secure-economy rule version was not bumped when behaviour changed, so audits recorded before the change would now replay differently.",
+      "evidence": [
+        "E95"
+      ]
+    },
+    {
+      "text": "Creating a run checks that there are 2 to 4 distinct player ids matching a restricted pattern (reserved names such as __proto__ are refused), that the seed is a string of at most 256 characters, and that the config is valid.",
+      "evidence": [
+        "E16"
+      ]
+    },
+    {
+      "text": "Rooms are held in server memory with no database, and the repo says they do not survive a server restart; PRODUCT.md lists public hosting among things not included.",
+      "evidence": [
+        "E74",
+        "E80",
+        "E81"
+      ]
+    },
+    {
+      "text": "Server and tests are TypeScript on Node 22.12 or later; npm test builds the server and runs the built-in node:test runner over the compiled files. Dependencies include React 19, Vite 7, ws and Three.js.",
+      "evidence": [
+        "E70",
+        "E71"
+      ]
+    },
+    {
+      "text": "The repo's documents attribute rules to 'the user' and keep them apart from agent proposals: the review lists rules the user confirmed as not bugs, and the handoff tells the next agent not to turn unconfirmed proposals into rules.",
+      "evidence": [
+        "E98",
+        "E111"
+      ]
+    },
+    {
+      "text": "The 52 newer item and merchant paintings were generated with the built-in ImageGen tool, one call per asset; 16 earlier paintings were kept, and their prompt file records the mode 'built-in image_gen generate'. Prompts, hashes and sizes are stored in generation-prompts.json.",
+      "evidence": [
+        "E112",
+        "E113",
+        "E114"
+      ]
+    },
+    {
+      "text": "The 2.5D scene plates were produced with Codex CLI's built-in image_gen run non-interactively; the manifest stores each prompt, reference image and source and delivery hash.",
+      "evidence": [
+        "E116"
+      ]
+    },
+    {
+      "text": "The three v0.4 concept images were generated with the built-in image_gen tool; the repo labels them direction exploration, not screenshots of a working game, and their numbers and English text as mockup values.",
+      "evidence": [
+        "E117",
+        "E118",
+        "E119"
+      ]
+    },
+    {
+      "text": "The seven screenshots here come from the repo's validation records of 2026-10-14 to 2026-10-23; four of those records say the capture used a fixture or synthetic state to show a case deterministically, and all predate the cabinet UI merged on 2026-10-24.",
+      "evidence": [
+        "E121",
+        "E122",
+        "E123",
+        "E124",
+        "E2"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "random-at",
+      "title": "Seeded draws: one labelled HMAC per outcome",
+      "path": "src/game/random.ts",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "startLine": 1,
+      "endLine": 14,
+      "language": "typescript",
+      "code": "import { createHmac } from \"node:crypto\";\n\n/** Independent labelled draws; revealing one outcome cannot expose future draws. */\nexport function randomAt(seed: string, label: string): number {\n  const bytes = createHmac(\"sha256\", seed).update(label).digest();\n  return bytes.readUInt32BE(0) / 0x100000000;\n}\n\nexport function pick<T>(values: readonly T[], random: number): T {\n  if (values.length === 0 || !Number.isFinite(random) || random < 0 || random >= 1) {\n    throw new Error(\"Cannot pick from an empty collection or invalid random draw\");\n  }\n  return values[Math.floor(random * values.length)]!;\n}",
+      "why": "randomAt keeps no state. A draw is HMAC-SHA256 keyed by the match seed over a text label, so an outcome depends only on its label (for example an item id plus \":genuine\"), not on how many draws came before. Revealing one outcome does not expose another.",
+      "claimIndexes": [
+        6,
+        7,
+        8
+      ]
+    },
+    {
+      "id": "apply-action",
+      "title": "Authority boundary: guards before any rule runs",
+      "path": "src/game/appraisal/engine.ts",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "startLine": 321,
+      "endLine": 341,
+      "language": "typescript",
+      "code": "export function applyAppraisalAction(previous:AppraisalState,action:AppraisalAction):AppraisalState {\n  check(action && typeof action==='object' && typeof action.playerId==='string' && typeof action.requestId==='string' && /^[a-zA-Z0-9_-]{1,80}$/.test(action.requestId),'request','คำสั่งไม่ถูกต้อง');\n  const key=`${action.playerId}:${action.requestId}`; const signature=JSON.stringify(action);\n  if(previous.accepted[key]) {check(previous.accepted[key]===signature,'request-conflict','request ID ถูกใช้กับคำสั่งอื่น');return previous;}\n  check(action.encounter===previous.encounter,'stale-encounter','คำสั่งมาจาก encounter เก่า');\n  const roundAction=action.type==='round-flip' || action.type==='round-bank' || action.type==='round-raise';\n  const storageAction=action.type.startsWith('vault-');\n  const loanAction=action.type.startsWith('loan-');\n  const sealAction=action.type.startsWith('seal-');\n  const financeAction=storageAction || loanAction || sealAction || action.type==='crime-clear';\n  check(roundAction?previous.phase==='REVEAL':financeAction?previous.phase!=='RESULTS':!['REVEAL','RESULTS'].includes(previous.phase),'phase','ช่วงนี้ไม่รับ action');\n  const state=structuredClone(previous); const p=player(state,action.playerId);\n  const duelling=state.config.secureEconomy && state.theftDuels?.some(d=>d.status==='open' && [d.thiefId,d.victimId].includes(p.id));\n  check(!duelling || action.type==='theft-hand' || action.type==='theft-timeout' || action.type==='theft-expire','theft-pending','เลือกมือเป่ายิ้งฉุบให้เสร็จก่อน');\n  check(!p.abilityChoice || action.type==='merchant-ability' && !!action.choiceId || action.type==='done' || action.type==='theft-timeout' || action.type==='theft-expire','ability-choice','เลือกสินค้าที่พ่อค้าเสนอให้ก่อน');\n  if(roundAction) {\n    if(action.type==='round-flip')flipRoundReward(state,p,action.guess,action.attempt,action.guesses);\n    else if(action.type==='round-raise')raiseRoundReward(state,p,action.coinCount,action.attempt);\n    else bankRoundReward(state,p);\n    state.revision++;state.accepted[key]=signature;state.commands.push(structuredClone(action));enforceCaps(state);assertAppraisalInvariants(state);return state;\n  }",
+      "why": "The first lines are the boundary. A repeated request id returns the stored state, a changed payload is request-conflict, an old encounter number is rejected, and the phase decides which action families are allowed. The state is deep-cloned before any change, and an open theft duel locks the seat to submitting its hand.",
+      "claimIndexes": [
+        4
+      ]
+    },
+    {
+      "id": "ledger-invariants",
+      "title": "Money checked by derivation, not trust",
+      "path": "src/game/appraisal/engine.ts",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "startLine": 452,
+      "endLine": 464,
+      "language": "typescript",
+      "code": "  check(state.reservedRewards===state.players.filter(p=>p.subsidy).length+state.players.reduce((sum,p)=>sum+(p.npcContracts?.alien?.reservedCredits??0),0),'reward-reserve','งบรางวัลไม่ตรงสิทธิ์ที่จอง');\n  check(Number.isSafeInteger(state.bank) && state.bank>=0 && state.market.budget>=0 && state.bank>=state.market.budget+state.reservedRewards,'economy','bank reserve ไม่ถูกต้อง');\n  const roundFunding=state.ledger.filter(e=>e.from==='@round-fund');\n  check(roundFunding.every(e=>state.config.roundRewards && e.reason==='round-reward' && state.players.some(p=>p.id===e.to)),'ledger','เงินรางวัลจบรอบไม่ถูกต้อง');\n  const roundStakes=state.ledger.filter(e=>e.to==='@round-fund');\n  check(roundStakes.every(e=>state.config.multiCoinRewards && e.reason==='round-stake' && state.players.some(p=>p.id===e.from)),'ledger','เงินทบเหรียญไม่ถูกต้อง');\n  const itemFunding=state.ledger.filter(e=>e.from==='@item-fund');\n  check(itemFunding.every(e=>passivesEnabled(state.config) && ['gear-commission','gear-market'].includes(e.reason) && state.players.some(p=>p.id===e.to)),'ledger','โบนัสสินค้าผิดกติกา');\n  const expected=state.config.bankReserve+state.config.startingCredits*state.players.length+roundFunding.reduce((sum,e)=>sum+e.amount,0)-roundStakes.reduce((sum,e)=>sum+e.amount,0)+itemFunding.reduce((sum,e)=>sum+e.amount,0);\n  check(state.bank+state.players.reduce((sum,p)=>sum+p.credits+(p.personalVault?.credits??0),0)===expected,'economy','credit รวมเปลี่ยนโดยไม่มี ledger');\n  const initial:Record<string,number>={bank:state.config.bankReserve,'@round-fund':0,'@item-fund':0,...Object.fromEntries(state.players.map(p=>[p.id,state.config.startingCredits])),...(state.config.secureEconomy?Object.fromEntries(state.players.map(p=>[`vault:${p.id}`,0])):{})};\n  for(const entry of state.ledger) {check(Number.isSafeInteger(entry.amount) && entry.amount>0 && initial[entry.from]!==undefined && initial[entry.to]!==undefined,'ledger','ledger ไม่ถูกต้อง');initial[entry.from]!-=entry.amount;initial[entry.to]!+=entry.amount;}\n  check(initial.bank===state.bank && state.players.every(p=>initial[p.id]===p.credits && (!state.config.secureEconomy || initial[`vault:${p.id}`]===(p.personalVault?.credits??0))),'ledger','ledger ไม่ตรง state');",
+      "why": "Bank, wallets and vaults must sum to the configured total plus recorded round funding; then the ledger is replayed from the starting balances and compared with every balance. A rule that creates or loses credits without a ledger entry makes the next action throw.",
+      "claimIndexes": [
+        5,
+        17
+      ]
+    },
+    {
+      "id": "strict-replay",
+      "title": "Audit export only at RESULTS; replay must match",
+      "path": "src/game/appraisal/audit.ts",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "startLine": 21,
+      "endLine": 33,
+      "language": "typescript",
+      "code": "export function exportAppraisalAudit(state:AppraisalState):AppraisalAudit {\n  check(state.phase==='RESULTS','audit-private','ดาวน์โหลด seed/audit ได้หลังจบ run เท่านั้น');\n  return structuredClone({schemaVersion:state.version,playerIds:state.players.map(p=>p.id),seed:state.seed,config:state.config,commands:state.commands,ledger:state.ledger,history:state.history,trace:state.trace,items:state.items,final:state.players.map(p=>({id:p.id,credits:p.credits,energy:p.energy,inventory:p.inventory,score:p.score,...(p.life!==undefined?{life:p.life}:{})})),...(state.collector?{collector:state.collector}:{})});\n}\nexport function replayAppraisalAudit(audit:AppraisalAudit):AppraisalState {\n  check((audit?.schemaVersion===4 || audit?.schemaVersion===5) && Array.isArray(audit.commands) && (audit.schemaVersion===5)===!!audit.config.survival,'audit','เวอร์ชัน appraisal audit ไม่ตรงกติกา');\n  let state=restoreAppraisalRun(audit.playerIds,audit.seed,audit.config);\n  for(const command of audit.commands) state=command.type==='advance'?advanceAppraisalEncounter(state):applyAppraisalAction(state,command);\n  check(state.phase==='RESULTS' && isDeepStrictEqual(exportAppraisalAudit(state),audit),'audit','ผล audit ไม่ตรง replay');\n  assertAppraisalInvariants(state);if(state.config.survival)return state;\n  const scores=scoresFromAppraisalHistory(state.history);\n  check(state.players.every(p=>scores[p.id]===p.score),'score','คะแนน run ไม่ตรงประวัติ');return state;\n}",
+      "why": "exportAppraisalAudit refuses to run before RESULTS, so the seed and hidden state are not downloadable mid-match. replayAppraisalAudit rebuilds the run from seed and config, re-applies each command including advance, and requires the exported audit to be deeply equal to the one supplied.",
+      "claimIndexes": [
+        21
+      ]
+    },
+    {
+      "id": "seat-identity",
+      "title": "The server decides who is acting",
+      "path": "src/server/appraisal-rooms.ts",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "startLine": 92,
+      "endLine": 108,
+      "language": "typescript",
+      "code": "      case 'action': {\n        insist(room.game && message.matchId === room.matchId, 'stale-match', 'คำสั่งนี้เป็นของแมตช์เก่า ใช้สถานะล่าสุด');\n        insist(!room.revealReady.has(seat.id) || !!room.game.accepted[`${seat.id}:${message.action.requestId}`],'already-ready','ยืนยันไปต่อแล้ว รอรอบถัดไป');\n        if(message.action.type==='loan-respond' && message.action.accept){\n          const loanId=message.action.loanId;\n          const loan=room.game.loans?.find(l=>l.id===loanId);\n          insist(!loan || ![loan.borrowerId,loan.lenderId].some(id=>room.revealReady.has(id)),'already-ready','คู่สัญญายืนยันไปต่อแล้ว ทำสัญญาใหม่ช่วงถัดไป');\n        }\n        if(message.action.type==='seal-respond' && message.action.accept){\n          const offerId=message.action.offerId;\n          const offer=(room.game as {sealOffers?:Array<{id:string;holderId:string;buyerId:string}>}).sealOffers?.find(o=>o.id===offerId);\n          insist(!offer || ![offer.holderId,offer.buyerId].some(id=>room.revealReady.has(id)),'already-ready','คู่ค้ายืนยันไปต่อแล้ว ทำข้อเสนอใหม่ช่วงถัดไป');\n        }\n        const previous = room.game;\n        room.game = applyAppraisalAction(previous, { ...message.action, playerId: seat.id });\n        this.phaseChanged(room, previous); peer.send({ type: 'ack', requestId: message.action.requestId }); break;\n      }",
+      "why": "A message carries a match id and an action without a player id. The room service rejects a stale match, then calls the engine with playerId set to the authenticated seat. A seat that has confirmed the reveal can only repeat requests the engine already accepted.",
+      "claimIndexes": [
+        3
+      ]
+    },
+    {
+      "id": "duel-view",
+      "title": "A view built field by field",
+      "path": "src/game/appraisal/theft.ts",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "startLine": 323,
+      "endLine": 345,
+      "language": "typescript",
+      "code": "/** Never send an NPC hand, concealed target item, or submitted opposing hand to a client. */\nexport function theftViewFor(state: AppraisalState, p: Appraiser): TheftView {\n  const crime = (p as Thief).crime;\n  return {\n    duels: ((state as TheftState).theftDuels ?? []).filter(d => d.encounter === state.encounter && [d.thiefId,d.victimId].includes(p.id)).map(d => ({\n      id:d.id, thiefId:d.thiefId, ...(d.victimId ? {victimId:d.victimId} : d.npc ? {npc:d.npc} : {}),\n      ...(d.npc ? {npcTell:npcTheftTell(d.npc)} : {}),\n      round:d.round, status:d.status, needsChoice:d.status === 'open' && !d.hands[p.id], submitted:!!d.hands[p.id],\n      ...(state.config.statusLinks === 1 && d.status === 'open' ? tieView(state,d,p) : {}),\n      revealed:d.revealed.map(r => ({...r})),\n    })),\n    targets: state.players.filter(v => v.id !== p.id && !v.paused && !v.done).map(v => {\n      const until = pvpBlockedUntil(state,p,v.id);\n      return {playerId:v.id,...(until !== undefined ? {blockedUntilEncounter:until} : {})};\n    }),\n    compensation: ((state as TheftState).compensations ?? []).filter(c => [c.thiefId,c.victimId].includes(p.id)).map(c => ({\n      id:c.id,role:c.thiefId === p.id ? 'payer' as const : 'receiver' as const,otherId:c.thiefId === p.id ? c.victimId : c.thiefId,\n      amount:c.amount,remaining:c.dueEncounters.filter(e => !c.settled.some(s => s.encounter === e)),paid:c.settled.reduce((sum,s) => sum+s.paid,0),\n    })),\n    seals: ((state as TheftState).sinnerSeals ?? []).filter(seal => seal.holderId === p.id).map(seal => ({id:seal.id,thiefId:seal.thiefId})),\n    ...(crime ? {crime:{failures:crime.failures,banStartsEncounter:crime.banStartsEncounter,banUntilEncounter:crime.banUntilEncounter,active:merchantTradeBanned(state,p),noticePrice:noticePrice(crime),cases:crime.cases.length}} : {}),\n  };\n}",
+      "why": "The comment states the rule: no merchant hand, no concealed target and no opposing hand reach a client. The seat gets only whether it needs to choose and whether it has submitted, plus rounds already revealed, its own compensation schedule and its own crime record.",
+      "claimIndexes": [
+        12,
+        9
+      ]
+    },
+    {
+      "id": "market-contract",
+      "title": "Market conditions without a price oracle",
+      "path": "src/game/appraisal/market-contracts.ts",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "startLine": 1,
+      "endLine": 22,
+      "language": "typescript",
+      "code": "import type { Appraiser, Knowledge, MarketContract, MarketOrder, NpcId } from './types.js';\n\nexport const TRUST_CAP=10;\nexport function trustAcceptanceBonus(p:Pick<Appraiser,'npcTrust'>,npc:NpcId):number {return (p.npcTrust?.[npc]??0)*.05;}\nexport function marketOrderReserve(order:MarketOrder):number {return order.price*(order.rarityReserveMultiplier??1)+(order.contract?.bonus.kind==='credits'?order.contract.bonus.amount:0);}\n/** Accept only visible facts on the client; an unknown property must never become a quote oracle. */\nexport function marketConditionMatch(contract:MarketContract,facts:Pick<Knowledge,'genuine'|'cursed'>):'match'|'mismatch'|'unknown' {\n  if(contract.requirements.some(r=>facts[r.property]!==undefined && facts[r.property]!==r.value))return 'mismatch';\n  return contract.requirements.every(r=>facts[r.property]!==undefined)?'match':'unknown';\n}\nexport function makeMarketContract(roll:(key:string)=>number,survival:boolean):MarketContract {\n  const requirements:MarketContract['requirements'][]=[\n    [{property:'genuine',value:true}],[{property:'cursed',value:false}],\n    [{property:'genuine',value:true},{property:'cursed',value:false}],\n    [{property:'genuine',value:false}],[{property:'cursed',value:true}],\n    [{property:'genuine',value:true},{property:'cursed',value:true}],\n  ];\n  const bonusIndex=Math.floor(roll('bonus')*4),costIndex=Math.floor(roll('cost')*3);\n  const bonus:MarketContract['bonus']=bonusIndex===0?{kind:'credits',amount:3}:bonusIndex===1?{kind:'energy',amount:2}:bonusIndex===2 && survival?{kind:'life',amount:1}:{kind:'buff',statusId:'B03'};\n  const fullPriceCost:MarketContract['fullPriceCost']=costIndex===0?{kind:'energy',amount:2}:costIndex===1 && survival?{kind:'life',amount:1}:{kind:'debuff',statusId:'D01'};\n  return {requirements:requirements[Math.floor(roll('requirements')*requirements.length)]!,bonus,fullPriceCost};\n}",
+      "why": "The comment on line 6 states the design rule. A contract can mismatch only on a fact the seat already holds; with a required fact unknown the result is unknown, so offering to sell cannot reveal whether the item is genuine or cursed. Requirement, bonus and cost are rolled from labelled draws.",
+      "claimIndexes": [
+        14,
+        16
+      ]
+    },
+    {
+      "id": "duel-test",
+      "title": "Privacy and determinism asserted in tests",
+      "path": "tests/appraisal-secure-theft.test.ts",
+      "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "startLine": 29,
+      "endLine": 59,
+      "language": "typescript",
+      "code": "test('NPC hand is sealed before choice; draws replay without spending another attempt or energy',()=>{\n  const state = fixture(); const p = state.players[0]!;\n  startTheftDuel(state,p,{itemId:p.stock[0]!});\n  const duel = latest(state); const sealed = duel.hands.npc!;\n  const before = JSON.stringify(theftViewFor(state,p));\n  assert.equal(before.includes('\"hands\"'),false);\n  assert.equal(before.includes('\"itemId\"'),false);\n  assert.deepEqual(theftViewFor(state,p).duels[0]!.revealed,[]);\n  chooseTheftHand(state,p,duel.id,sealed);\n  assert.equal(duel.status,'open'); assert.equal(duel.round,2);\n  assert.deepEqual(duel.revealed,[{thief:sealed,opponent:sealed}]);\n  assert.equal(p.energy,7); assert.equal(p.stealTried!.length,1);\n  chooseTheftHand(state,p,duel.id,beats[duel.hands.npc!]);\n  assert.equal(duel.status,'won'); assert.equal(p.energy,7);\n  assert.equal(state.items[duel.itemId]!.owner,p.id);\n  assert.equal(p.inventory.filter(id=>id===duel.itemId).length,1);\n  assert.equal(p.theft,undefined);\n  assert.throws(()=>startTheftDuel(state,p,{itemId:p.stock[0]!}));\n});\n\ntest('same seed and choices replay identical NPC hands and results',()=>{\n  const first = fixture(); const second = fixture();\n  for(const state of [first,second]) {\n    const p = state.players[0]!;\n    startTheftDuel(state,p,{itemId:p.stock[0]!});\n    const d = latest(state);\n    chooseTheftHand(state,p,d.id,d.hands.npc!);\n    chooseTheftHand(state,p,d.id,'paper');\n  }\n  assert.deepEqual(first,second);\n});",
+      "why": "Two styles in one place: a privacy test that serialises the view and searches it for forbidden keys, and a determinism test that runs the same seed and choices twice and compares whole states with assert.deepEqual. The fixture uses a fixed seed, secure-theft.",
+      "claimIndexes": [
+        13
+      ]
+    }
+  ],
+  "captures": [
+    "cursed-market-commit-history",
+    "cursed-market-commit-log",
+    "cursed-market-ai-trailers",
+    "cursed-market-source-counts",
+    "cursed-market-bots-secure-economy",
+    "cursed-market-determinism-grep"
+  ],
+  "assets": [
+    {
+      "tools": [
+        "Codex CLI built-in image_gen"
+      ],
+      "sourceSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "featured": true,
+      "id": "scene-market",
+      "file": "scene-market.webp",
+      "title": "Dark Market backdrop plate (generated)",
+      "category": "ai-generated",
+      "alt": "Dim stone counter in the lower half; above it a hooded broker with faint glowing eyes reaches a gloved hand between black iron bars, with hanging brass lanterns, a dark red banner bearing a compass star, and a distant crowd in teal mist on the right.",
+      "provenance": "Ships in the client as the Dark Market screen's background layer. The stage manifest records its prompt, the Codex CLI built-in image_gen runner and source and delivery hashes; its 195,772-byte delivery size matches this file.",
+      "provenanceEvidence": "docs/art/stage-2.5d/generation-manifest.json",
+      "sourcePath": "src/appraisal-client/public/art/scenes/market/backdrop.webp",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "tools": [],
+      "sourceSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "featured": true,
+      "id": "ui-merchant-abilities",
+      "file": "screenshot-merchant-abilities.png",
+      "title": "Appraisal screen with the merchant abilities panel",
+      "category": "screenshot",
+      "alt": "Full-page Thai appraisal screen over a painted candle-lit study: an orc merchant portrait at left, a stamp item card with three free inspect buttons in the centre, a row of eight merchant tiles with The Swarm selected, and three held goods to choose from below.",
+      "provenance": "Browser capture from the 2026-10-23 merchant-abilities validation, 1440 px wide. The record says it ran against a local fixture with synthetic inventories and trust; it predates the cabinet UI merged on 2026-10-24 and shows a throwaway room code in the header.",
+      "provenanceEvidence": "docs/validation/merchant-abilities-v0.5/README.md",
+      "sourcePath": "docs/validation/merchant-abilities-v0.5/merchant-abilities-desktop.png",
+      "width": 1440,
+      "height": 1411
+    },
+    {
+      "tools": [],
+      "sourceSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "featured": true,
+      "id": "ui-portal-event",
+      "file": "screenshot-portal-event.png",
+      "title": "Portal event: keep or close a door",
+      "category": "screenshot",
+      "alt": "Dialog titled dimensional gate shift over a dimmed table, listing three waiting merchants (Orc, Autometa, Alien) with sample goods, trust and negotiation bonuses, then two radio choices to keep or close the first door and a confirm button.",
+      "provenance": "Browser capture from the 2026-10-14 trade-refill-portals validation, taken after duplicate choices were removed. The record says the browser images use fixture data to show the event deterministically, apart from the real LAN run; it predates the cabinet UI.",
+      "provenanceEvidence": "docs/validation/trade-refill-portals-v0.5.md",
+      "sourcePath": "docs/validation/trade-refill-portals-v0.5/desktop.png",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "tools": [],
+      "sourceSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "featured": false,
+      "id": "ui-portal-choice",
+      "file": "screenshot-portal-choice.png",
+      "title": "Portal choice with three merchants",
+      "category": "screenshot",
+      "alt": "Door-choice screen with three portrait cards: a tentacled deep-sea merchant, an insect-headed Swarm merchant and a four-eyed alien, each with a short offer, trust figure and a gold open-this-door button; credits, energy and life sit in the header and a Dark Market box at right.",
+      "provenance": "Actual game rendering at 1440x900 from the 2026-10-14 catalog art pass, showing the then-new Deep Sea and Swarm portraits; the art README mentions a temporary QA bot for the session. It predates the cabinet UI and shows a throwaway room code.",
+      "provenanceEvidence": "docs/art/consistent-catalog-v0.5/README.md",
+      "sourcePath": "docs/art/consistent-catalog-v0.5/game-desktop.png",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "tools": [
+        "Ego Browser"
+      ],
+      "sourceSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "featured": false,
+      "id": "ui-commerce-desk",
+      "file": "screenshot-commerce-desk.png",
+      "title": "Appraisal desk with commission toast and Dark Market order",
+      "category": "screenshot",
+      "alt": "Dark brown card interface: an orc merchant portrait and a life-recovery deal at left, a mirror card with unknown value, authenticity and curse rows and inspect, appraise and buy steps in the centre, a Dark Market buy order at right, and two toasts reporting a sale with a 2-credit commission and Orc trust 4 of 10.",
+      "provenance": "Ego Browser capture from the 2026-10-14 commerce validation of a production bundle on a QA fixture built from real engine state; the record says the fixture is not a normal run or audit proof. It predates the cabinet UI and shows a throwaway room code.",
+      "provenanceEvidence": "docs/validation/commerce-v0.5.md",
+      "sourcePath": "docs/validation/commerce-v0.5/desktop.png",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "tools": [],
+      "sourceSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "featured": false,
+      "id": "ui-price-before",
+      "file": "screenshot-price-before.png",
+      "title": "Price card before any inspection",
+      "category": "screenshot",
+      "alt": "Appraisal card for a pale carnival mask on a dark page: true value reads unknown with a prompt to use price inspection, authenticity and curse unchecked, three inspect buttons, and two inspections left.",
+      "provenance": "Fixture capture from the 2026-10-14 price-knowledge validation: no value range and no risk figure before a price inspection. The record says the fixture fixes the merchant so the UI check is repeatable, apart from the real LAN run.",
+      "provenanceEvidence": "docs/validation/price-knowledge-v0.5.md",
+      "sourcePath": "docs/validation/price-knowledge-v0.5/before-desktop.png",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "tools": [],
+      "sourceSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "featured": false,
+      "id": "ui-price-after",
+      "file": "screenshot-price-after.png",
+      "title": "Price card after one price inspection",
+      "category": "screenshot",
+      "alt": "The same mask card after a price inspection: true value now reads unknown with a clue range of 14 to 19, one inspection left, and a toast reporting the result and 1 energy spent.",
+      "provenance": "Fixture capture from the same 2026-10-14 price-knowledge validation; the record gives the same 14-19 range and the energy drop from 8 to 7. It predates the cabinet UI.",
+      "provenanceEvidence": "docs/validation/price-knowledge-v0.5.md",
+      "sourcePath": "docs/validation/price-knowledge-v0.5/after-desktop.png",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "tools": [],
+      "sourceSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "featured": false,
+      "id": "ui-coin-wager",
+      "file": "screenshot-coin-wager.png",
+      "title": "Round-credit coin wager screen",
+      "category": "screenshot",
+      "alt": "Thai screen headed credits after trading on a dark study background: two gold coins above a panel offering 20 credits, heads or tails choices for coin 1 and coin 2, buttons to stop and collect or toss two coins, and a result panel at right with a continue button.",
+      "provenance": "Desktop capture from the 2026-10-22 multi-coin wager validation. The record says its captures precede a final clarification that the odds and held-item gain or loss in the expanded instructions are per coin; it shows a throwaway room code.",
+      "provenanceEvidence": "docs/validation/multi-coin-v0.5/README.md",
+      "sourcePath": "docs/validation/multi-coin-v0.5/desktop.png",
+      "width": 1440,
+      "height": 1101
+    },
+    {
+      "tools": [
+        "Codex CLI built-in image_gen"
+      ],
+      "sourceSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "featured": false,
+      "id": "scene-hall",
+      "file": "scene-hall.webp",
+      "title": "Market hall backdrop plate (generated)",
+      "category": "ai-generated",
+      "alt": "Wide candle-lit gothic market hall seen from floor level: a worn red patterned rug leads toward distant arcades, hanging lanterns, stalls with cloth awnings and a cold teal glow in the haze.",
+      "provenance": "Ships in the client as the hall scene's background layer. The stage manifest records its prompt, the Codex CLI built-in image_gen runner and hashes; its 225,896-byte delivery size matches this file.",
+      "provenanceEvidence": "docs/art/stage-2.5d/generation-manifest.json",
+      "sourcePath": "src/appraisal-client/public/art/scenes/hall/backdrop.webp",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "tools": [
+        "Codex CLI built-in image_gen"
+      ],
+      "sourceSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "featured": false,
+      "id": "scene-collector",
+      "file": "scene-collector.webp",
+      "title": "Collector's vault backdrop plate (generated)",
+      "category": "ai-generated",
+      "alt": "Vast dark vault hall with shelves of chests and artifacts on both sides, red banners, candles along a long stone aisle, and a faceless hooded figure holding an open ledger beneath a teal gothic window.",
+      "provenance": "Ships in the client as the Collector results scene's background layer. The stage manifest records its prompt, the Codex CLI built-in image_gen runner and hashes; its 214,038-byte delivery size matches this file.",
+      "provenanceEvidence": "docs/art/stage-2.5d/generation-manifest.json",
+      "sourcePath": "src/appraisal-client/public/art/scenes/collector/backdrop.webp",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "tools": [
+        "Built-in ImageGen"
+      ],
+      "sourceSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "featured": false,
+      "id": "catalog-gallery",
+      "file": "catalog-gallery.png",
+      "title": "Catalog art gallery: eight merchants and sixty products",
+      "category": "ai-generated",
+      "alt": "Tall labelled gallery page: a row of eight merchant portraits followed by a grid of sixty product paintings in a dark brown realistic style, each captioned in Thai with its file name and whether it is new or original.",
+      "provenance": "Capture of the project's labelled review gallery (catalog.html) from the 2026-10-14 art pass. The README says 52 of the 68 images were generated with the built-in ImageGen tool and 16 earlier paintings were retained; the earlier prompt file records those as built-in image_gen too.",
+      "provenanceEvidence": "docs/art/consistent-catalog-v0.5/README.md",
+      "sourcePath": "docs/art/consistent-catalog-v0.5/catalog-desktop.png",
+      "width": 1440,
+      "height": 3581
+    },
+    {
+      "tools": [
+        "Built-in image_gen"
+      ],
+      "sourceSha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+      "featured": false,
+      "id": "concept-card",
+      "file": "concept-realistic-card.png",
+      "title": "Concept: realistic card layout",
+      "category": "ai-generated",
+      "alt": "Concept mockup of a card-style game table: an orc merchant reaching toward a central Shadow Key card showing ask, proposed value and risk, three portal cards above, a Dark Market buy-order panel at right and owned item cards below.",
+      "provenance": "Generated with the built-in image_gen tool at 1672x941; the prompt is stored beside it. The repo calls it a direction concept, not a screenshot, with mockup numbers and English text; it later adopted this direction as the working UI direction, not as final brand approval.",
+      "provenanceEvidence": "docs/art/concepts/v0.4/README.md",
+      "sourcePath": "docs/art/concepts/v0.4/realistic-card.png",
+      "width": 1672,
+      "height": 941
+    }
+  ],
+  "diagram": {
+    "nodes": [
+      {
+        "id": "client",
+        "label": "appraisal-client (React)",
+        "group": "client",
+        "note": "Thai card UI, reconnect and retry"
+      },
+      {
+        "id": "proto",
+        "label": "appraisal-protocol.ts",
+        "group": "shared",
+        "note": "Seat action type without playerId; room view; audit"
+      },
+      {
+        "id": "parse",
+        "label": "appraisal-messages.ts",
+        "group": "server",
+        "note": "Allowed-key message parsing"
+      },
+      {
+        "id": "rooms",
+        "label": "appraisal-rooms.ts",
+        "group": "server",
+        "note": "Seats, timers, bots, per-seat broadcast"
+      },
+      {
+        "id": "life",
+        "label": "room-lifecycle.ts",
+        "group": "server",
+        "note": "Room codes, seat tokens, seed, phases"
+      },
+      {
+        "id": "engine",
+        "label": "appraisal/engine.ts",
+        "group": "rules",
+        "note": "applyAppraisalAction, invariants"
+      },
+      {
+        "id": "rng",
+        "label": "game/random.ts",
+        "group": "rules",
+        "note": "HMAC-SHA256 labelled draws"
+      },
+      {
+        "id": "views",
+        "label": "appraisal/views.ts",
+        "group": "rules",
+        "note": "Per-seat view projection"
+      },
+      {
+        "id": "audit",
+        "label": "appraisal/audit.ts",
+        "group": "rules",
+        "note": "Export at RESULTS, strict replay"
+      },
+      {
+        "id": "sim",
+        "label": "simulation + playtest",
+        "group": "verification",
+        "note": "Bot policies, replay CLI, report"
+      },
+      {
+        "id": "tests",
+        "label": "tests/*.test.ts",
+        "group": "verification",
+        "note": "node:test suites"
+      },
+      {
+        "id": "docs",
+        "label": "docs/validation",
+        "group": "verification",
+        "note": "Dated reports with raw artifacts"
+      }
+    ],
+    "edges": [
+      {
+        "from": "client",
+        "to": "parse",
+        "label": "JSON message over WebSocket"
+      },
+      {
+        "from": "proto",
+        "to": "parse",
+        "label": "types"
+      },
+      {
+        "from": "parse",
+        "to": "rooms",
+        "label": "typed seat action"
+      },
+      {
+        "from": "rooms",
+        "to": "life",
+        "label": "extends"
+      },
+      {
+        "from": "rooms",
+        "to": "engine",
+        "label": "action + playerId from seat"
+      },
+      {
+        "from": "engine",
+        "to": "rng",
+        "label": "labelled draws"
+      },
+      {
+        "from": "rooms",
+        "to": "views",
+        "label": "appraisalViewFor(seat)"
+      },
+      {
+        "from": "views",
+        "to": "client",
+        "label": "private view"
+      },
+      {
+        "from": "engine",
+        "to": "audit",
+        "label": "command log"
+      },
+      {
+        "from": "sim",
+        "to": "engine",
+        "label": "bots, replay"
+      },
+      {
+        "from": "tests",
+        "to": "engine",
+        "label": "assertions"
+      },
+      {
+        "from": "tests",
+        "to": "docs",
+        "label": "output recorded"
+      }
+    ]
+  },
+  "demo": {
+    "url": null,
+    "note": "Runs locally: the README gives npm ci, npm run build and npm start, and other machines on the same network join by room code. No public deployment is documented."
+  },
+  "limitations": [
+    "The README says technical evidence does not prove the game is fun; testing with people is still needed. PRODUCT.md calls the numeric balance assistant-selected experiments, not human-validated balance.",
+    "The only human feedback on file concerns the earlier auction prototype (lifeless, repetitive, predictable, not fun). The v0.5 session worksheet for the appraisal game is empty at the pinned commit.",
+    "No public deployment: the game runs locally or on a LAN, and rooms live in server memory and do not survive a restart.",
+    "Test, replay and LAN figures are the repo's reports; this review re-ran none. The README status is dated 2026-10-14 and the repo's own 2026-10-23 review calls it stale; later reports give 789 of 789 and 821 of 822 full-suite results. The 488 in the source-count capture counts test( and it( lines, not tests.",
+    "The 120 seeded runs and six socket runs used scripted bots and clients; the LAN run's own scope line says it involved no browser, image inspection or human or device playtest.",
+    "Bots take none of the theft, vault, loan, seal or criminal-notice actions (0 matching lines in src/simulation), so simulation figures do not measure the secure economy.",
+    "The secure-economy rule version was not bumped when behaviour changed, so audits recorded in that window would replay differently (the repo's validation note).",
+    "A seat's own view is built by removing ten named fields rather than listing allowed ones; a new private field would be sent by default (the repo's 2026-10-23 review, still true at the pinned commit).",
+    "Always countering a merchant's theft tell won 294 of 400 trials in the repo's review; the review lists that and the vault and compensation interactions as playtest risks.",
+    "Browser coverage is partial: keyboard and hover behaviour were not independently exercised, the seal and compensation screens were checked by server-rendered markup tests only, and the v0.5 report did no browser or accessibility QA.",
+    "Screenshots are from fixtures or validation sessions of 2026-10-14 to 2026-10-23 and predate the cabinet UI merged on 2026-10-24; several show throwaway room codes.",
+    "Numeric balance values in core v0.6 and the commerce rules are marked experimental or trial in the repo's own documents."
+  ],
+  "contribution": "From git only: 45 commits from 2026-10-14 to 2026-10-24, all with the author email phcaradanai@gmail.com; no other author email appears. 25 of the 45 carry a Claude Co-Authored-By trailer. One merge commit joins a branch named codex/cabinet-ux; the log does not say which tool wrote it. Commit authorship does not show which lines a person or an AI agent wrote.",
+  "lastVerified": "2026-10-24"
+}

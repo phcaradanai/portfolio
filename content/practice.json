@@ -1,0 +1,230 @@
+{
+ "generatedAt": "2026-10-24T11:56:36.299Z",
+ "note": "Paths tracked in git at the pinned sha; absence means no such file was found by name, not that the practice is absent.",
+ "repos": {
+  "Cursed-Market": {
+   "repo": "phcaradanai/Cursed-Market",
+   "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+   "files": 730,
+   "testFiles": 56,
+   "found": {
+    "product": "PRODUCT.md",
+    "design": "DESIGN.md",
+    "architecture": null,
+    "decisions": null,
+    "verification": "docs/validation/Secure_Economy_v0.5.md",
+    "agentNotes": null
+   }
+  },
+  "relic-tide": {
+   "repo": "phcaradanai/relic-tide",
+   "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+   "files": 387,
+   "testFiles": 55,
+   "found": {
+    "product": "PRODUCT.md",
+    "design": "DESIGN.md",
+    "architecture": null,
+    "decisions": null,
+    "verification": "EXPANSION_VERIFICATION.md",
+    "agentNotes": "AGENTS.md"
+   }
+  },
+  "the-fisher": {
+   "repo": "phcaradanai/the-fisher",
+   "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+   "files": 115,
+   "testFiles": 5,
+   "found": {
+    "product": "PRODUCT.md",
+    "design": "DESIGN.md",
+    "architecture": null,
+    "decisions": null,
+    "verification": null,
+    "agentNotes": "AGENTS.md"
+   }
+  },
+  "shadow_council": {
+   "repo": "phcaradanai/shadow_council",
+   "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+   "files": 125,
+   "testFiles": 18,
+   "found": {
+    "product": "PRODUCT_VISION.md",
+    "design": null,
+    "architecture": "ARCHITECTURE.md",
+    "decisions": "ADR/001-initial-architecture.md",
+    "verification": null,
+    "agentNotes": null
+   }
+  },
+  "print_ops": {
+   "repo": "phcaradanai/print_ops",
+   "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+   "files": 969,
+   "testFiles": 178,
+   "found": {
+    "product": "PRODUCT.md",
+    "design": "DESIGN.md",
+    "architecture": null,
+    "decisions": "docs/decisions/0001-architecture-style.md",
+    "verification": null,
+    "agentNotes": null
+   }
+  },
+  "AI_Kingdom": {
+   "repo": "phcaradanai/AI_Kingdom",
+   "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+   "files": 692,
+   "testFiles": 154,
+   "found": {
+    "product": null,
+    "design": null,
+    "architecture": "ARCHITECTURE.md",
+    "decisions": null,
+    "verification": null,
+    "agentNotes": "AGENTS.md"
+   }
+  },
+  "ScopeFlow": {
+   "repo": "phcaradanai/ScopeFlow",
+   "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+   "files": 405,
+   "testFiles": 106,
+   "found": {
+    "product": null,
+    "design": null,
+    "architecture": null,
+    "decisions": null,
+    "verification": null,
+    "agentNotes": null
+   }
+  },
+  "Project-Explorer": {
+   "repo": "phcaradanai/Project-Explorer",
+   "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+   "files": 290,
+   "testFiles": 57,
+   "found": {
+    "product": null,
+    "design": null,
+    "architecture": null,
+    "decisions": "docs/adr/0001-monorepo.md",
+    "verification": null,
+    "agentNotes": "CLAUDE.md"
+   }
+  },
+  "ai-product-intelligence": {
+   "repo": "phcaradanai/ai-product-intelligence",
+   "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+   "files": 174,
+   "testFiles": 40,
+   "found": {
+    "product": "PRODUCT.md",
+    "design": "DESIGN.md",
+    "architecture": null,
+    "decisions": null,
+    "verification": null,
+    "agentNotes": "CLAUDE.md"
+   }
+  },
+  "chatgpt-mcp": {
+   "repo": "phcaradanai/chatgpt-mcp",
+   "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+   "files": 18,
+   "testFiles": 3,
+   "found": {
+    "product": null,
+    "design": null,
+    "architecture": null,
+    "decisions": null,
+    "verification": null,
+    "agentNotes": null
+   }
+  },
+  "platform-control-plane": {
+   "repo": "phcaradanai/platform-control-plane",
+   "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+   "files": 291,
+   "testFiles": 48,
+   "found": {
+    "product": null,
+    "design": null,
+    "architecture": "docs/architecture.md",
+    "decisions": "docs/adr/0001-backstage-as-app-factory.md",
+    "verification": null,
+    "agentNotes": null
+   }
+  },
+  "vending-3d-ctl-agent": {
+   "repo": "phcaradanai/vending-3d-ctl-agent",
+   "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+   "files": 89,
+   "testFiles": 8,
+   "found": {
+    "product": "PRODUCT.md",
+    "design": "DESIGN.md",
+    "architecture": null,
+    "decisions": null,
+    "verification": null,
+    "agentNotes": "AGENTS.md"
+   }
+  },
+  "coup_coop": {
+   "repo": "phcaradanai/coup_coop",
+   "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+   "files": 57,
+   "testFiles": 0,
+   "found": {
+    "product": null,
+    "design": null,
+    "architecture": null,
+    "decisions": null,
+    "verification": null,
+    "agentNotes": "AGENTS.md"
+   }
+  },
+  "escape-room": {
+   "repo": "phcaradanai/escape-room",
+   "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+   "files": 1177,
+   "testFiles": 49,
+   "found": {
+    "product": null,
+    "design": null,
+    "architecture": null,
+    "decisions": null,
+    "verification": "REVIEW_PLAN.md",
+    "agentNotes": "AGENTS.md"
+   }
+  },
+  "Splendor-Online": {
+   "repo": "phcaradanai/Splendor-Online",
+   "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+   "files": 134,
+   "testFiles": 5,
+   "found": {
+    "product": null,
+    "design": null,
+    "architecture": null,
+    "decisions": null,
+    "verification": null,
+    "agentNotes": "AGENTS.md"
+   }
+  },
+  "pvp_td": {
+   "repo": "phcaradanai/pvp_td",
+   "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+   "files": 197,
+   "testFiles": 33,
+   "found": {
+    "product": null,
+    "design": null,
+    "architecture": "ARCHITECTURE_NOTES.md",
+    "decisions": null,
+    "verification": "TEST_REPORT.md",
+    "agentNotes": null
+   }
+  }
+ }
+}

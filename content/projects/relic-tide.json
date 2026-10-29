@@ -1,0 +1,1512 @@
+{
+  "slug": "relic-tide",
+  "accession": "PK-2026-002",
+  "title": "Relic Tide",
+  "kind": "game",
+  "tier": "A",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Real-time 2–4 player extraction game in Godot: 20 Hz authoritative server, filtered snapshots, seeded rounds, receipted art pipeline.",
+  "summary": "Relic Tide is a real-time online extraction game for 2–4 players in a flooding ruin, built in Godot 4 and GDScript with a headless authoritative room service. The repo documents 20 Hz rules, recipient-filtered snapshots at 10 Hz, direction-only movement packets, bounded client prediction and seeded rounds, plus receipts for paid PixelLab requests and recorded prompts and hashes for generated images and local depth maps. Verification is local: Godot suites, socket tests and browser captures. There is no WAN playtest or public deployment.",
+  "period": {
+    "start": "2026-10-06",
+    "end": "2026-10-12"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/relic-tide",
+    "pinnedSha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+    "ownerCommits": 9,
+    "totalCommits": 9,
+    "languages": {
+      "GDScript": 387176,
+      "Python": 150859,
+      "JavaScript": 23403,
+      "PowerShell": 8362,
+      "HTML": 5433,
+      "Lua": 5107,
+      "GDShader": 3899,
+      "Batchfile": 172
+    },
+    "checkedAt": "2026-10-24"
+  },
+  "stack": [
+    "Godot 4.7.2",
+    "GDScript",
+    "WebSocket multiplayer (Godot)",
+    "Godot web export (Compatibility / WebGL 2)",
+    "Node.js (static server and proxy)",
+    "Python (asset pipeline)",
+    "PowerShell",
+    "Lua (Aseprite scripts)",
+    "GDShader"
+  ],
+  "aiRole": {
+    "summary": "AI tooling appears in three forms in this repository. Agent guidance files and hooks are checked in: AGENTS.md, GEMINI.md and a .claude/ folder with Graft hooks, all telling agents to query a code graph before reading source. The first design prompt is stored in prompt-used/#001.md, and the asset pipeline records generators: PixelLab for sprites and animation, the built-in image generator for backgrounds, props and doors, local Depth-Anything-V2 for depth maps, and a paid DepthFlow service that was tried and rejected. The repo also records its verification: headless Godot suites with counts, real-socket network scenarios, native and browser captures and an independent visual reviewer's disposition. Those results are the repo's reports; this review re-ran none of them.",
+    "tools": [
+      {
+        "name": "AGENTS.md agent guidelines",
+        "use": "Repository guidelines for coding agents: architecture notes, test commands and 'Never restore simultaneous-turn waiting'. The Graft block in it addresses agents.",
+        "evidence": "E26"
+      },
+      {
+        "name": "Graft code-context graph",
+        "use": "A block in AGENTS.md and GEMINI.md and hooks in .claude/ instruct agents to ask the code graph first. ",
+        "evidence": "E28"
+      },
+      {
+        "name": ".claude settings and hooks",
+        "use": "Claude Code project settings with Graft status line and hooks.",
+        "evidence": "E29"
+      },
+      {
+        "name": "Initial design prompt (prompt-used/#001.md)",
+        "use": "The creative brief that opened the project, written as instructions to an AI agent ('You are responsible for designing and building a playable digital game prototype').",
+        "evidence": "E30"
+      },
+      {
+        "name": "PixelLab",
+        "use": "Explorer and hunter sprite generation and animation through its v2 API, with receipts.",
+        "evidence": "E48"
+      },
+      {
+        "name": "Built-in image generator (image_gen)",
+        "use": "Environment sheets, furniture, doors and the first Atlantis city image.",
+        "evidence": "E51"
+      },
+      {
+        "name": "Depth-Anything-V2 (local)",
+        "use": "Grayscale depth maps for background images, run locally.",
+        "evidence": "E54"
+      },
+      {
+        "name": "DepthFlow (cloud)",
+        "use": "Paid camera-motion clips (two Dolly, one Orbit); the repo records them as barely moving or rejected, and excluded from the current web export.",
+        "evidence": "E55"
+      },
+      {
+        "name": "Impeccable",
+        "use": "A .impeccable/review folder of native captures is referenced in DESIGN.md; the folder was removed from the repo in the last commit.",
+        "evidence": "E58"
+      },
+      {
+        "name": "Ego Lite browser",
+        "use": "Used for the browser screenshots and two-client sessions the verification record describes.",
+        "evidence": "E44"
+      }
+    ]
+  },
+  "narrative": {
+    "problem": "Relic Tide began, in the prompt stored at prompt-used/#001.md, as a board-game-inspired exploration game for two to four players in which a ruined city rises from and sinks into water, and players choose actions without knowing what the others will do. The repository's later documents replace simultaneous turns with real-time play: explorers move continuously through a flooding ruin, take relics and return to a boat, and only extracted treasure scores. There is no assigned traitor role.\n\nThe engineering problem the documents describe is social play over a network. Helping, blocking and abandoning others must happen through visible world actions. The server must own doors, water, relic ownership and outcomes, and clients must not receive what they could use to cheat: hidden positions, rivals' inventories or puzzle answers.",
+    "approach": "The documents fix a split of responsibilities. A central room service owns movement validation, world objects, flood state, relic ownership and extraction, and clients send intentions, not positions, water levels or scores. Domain rules live in a class with no scene, timer, input or rendering dependency, so tests can drive it with supplied ticks.\n\nThe game is written in Godot 4 with GDScript and exported to the browser (single-threaded Compatibility renderer, WebGL 2). Art is raster: environment sheets, props and sprites from generators, animated in code, with recorded prompts, hashes and receipts. The project rules forbid drawing scenery or explorers from polygons or procedural shapes.",
+    "architecture": "At runtime there are three parts. The client runs main.gd for presentation, movement_client.gd for local prediction and session.gd for the WebSocket link. A headless Godot process (server/room_server.gd) runs the same session script in server mode and hosts room_directory.gd, which owns room codes, membership, validation and one rules object per match. A small Node script (web/serve.mjs) serves the exported game and forwards WebSocket upgrades on /rooms to that loopback server and starts it.\n\nGeometry is shared: expedition_map.gd defines each level once, and both client prediction and server rules instantiate it for the match. player_view.gd turns authoritative state into a per-recipient snapshot. The room service is GDScript running in Godot, not a separate Node application.",
+    "implementation": "Each 0.05 s step runs in a fixed order: vault holds, doors, valve holds, water, movement against current collision and water, survival and extraction, then hunters. Doors advance before water, so a refuge door that finishes closing in a tick admits no water in that tick. Water moves by simultaneous transfers from the previous state. Movement packets carry a direction, a sequence number and a match token, and the server rejects any other shape.\n\nSnapshots are built per recipient and sent on every second tick and after accepted events. Unseen explorers are sent as a name and a hidden state. The client predicts at most 12 unacknowledged steps, then resets to the acknowledged position and replays the rest. Rounds are seeded from four random bytes taken by the room service, which fix duration, breach and hunt timing and chest rewards. Hunters get one target each and give up after 2.5 seconds without sight or beyond 900 units.\n\nThe asset pipeline in tools/assets wraps PixelLab, local Depth-Anything-V2 and Aseprite. It writes a receipt before any paid request, refuses to overwrite a versioned bundle and records source hashes in manifests.",
+    "outcome": "At the pinned commit the repository holds three authored levels (Lagoon, Foundry, Catacombs; 3840×2560 units, twelve rooms each), a start screen, a walkable waiting room with host map choice and readiness, chest puzzles, survival gear, flooding, hunters and a web export. Rooms of two, three and four players are exercised by local socket tests, and the browser sessions the repo records used two clients on one computer.\n\nEvery check the repo records is local: headless Godot suites, a real-socket runner with a delayed relay, native renders and browser captures. The records list no WAN playtest, no public deployment and no human balance session. The history is nine commits over seven calendar days, 2026-10-06 to 2026-10-12.",
+    "lessons": "What the repo's records say is still open or was learned.\n\nOpen: human multi-person balance (round pacing, flood frequency, hunter pressure, gear value, room density, extraction fairness), real WAN latency, public TLS deployment, other browsers, and reconnect or host migration. Hunter spawn and pathfinding quality are not established.\n\nLearned, as recorded: the DepthFlow clips barely moved or were rejected when applied to the playable map, and the Atlantis depth background was superseded by the playable-map expansion. A parallel run of legacy render tests lost window focus and produced five downstream failures; a serial run and a focus probe found the cause. A network fixture still asserted a superseded camera zoom and was corrected. The verification record also says its counts describe assertions, not coverage or playtest quality."
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/game.gd",
+      "lines": [
+        1,
+        7
+      ],
+      "note": "TideGame: pure rules class, STEP constant, input timeout."
+    },
+    {
+      "id": "E2",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/session.gd",
+      "lines": [
+        40,
+        45
+      ],
+      "note": "Server-mode accumulator calls directory.step() once per Rules.STEP."
+    },
+    {
+      "id": "E3",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/session.gd",
+      "lines": [
+        129,
+        133
+      ],
+      "note": "Connections above 256 peers are disconnected."
+    },
+    {
+      "id": "E4",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/room_directory.gd",
+      "lines": [
+        8,
+        9
+      ],
+      "note": "Room code alphabet and MAX_ROOMS."
+    },
+    {
+      "id": "E5",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/room_directory.gd",
+      "lines": [
+        19,
+        27
+      ],
+      "note": "Per-peer request buckets: 40/s movement, 30/s other."
+    },
+    {
+      "id": "E6",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/room_directory.gd",
+      "lines": [
+        151,
+        163
+      ],
+      "note": "start_room: seed and match id come from Crypto random bytes."
+    },
+    {
+      "id": "E7",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/room_directory.gd",
+      "lines": [
+        164,
+        171
+      ],
+      "note": "accept_input: seat from connection, strict key set and types, match token."
+    },
+    {
+      "id": "E8",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/room_directory.gd",
+      "lines": [
+        172,
+        189
+      ],
+      "note": "step(): per-room tick; views(room) when tick % 2 == 0."
+    },
+    {
+      "id": "E9",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/room_directory.gd",
+      "lines": [
+        190,
+        212
+      ],
+      "note": "accept_event: validated event kinds; views(room) after an accepted event."
+    },
+    {
+      "id": "E10",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/game.gd",
+      "lines": [
+        166,
+        172
+      ],
+      "note": "set_input: finite, |x|,|y| <= 1, strictly increasing sequence."
+    },
+    {
+      "id": "E11",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/game.gd",
+      "lines": [
+        337,
+        365
+      ],
+      "note": "step(): doors before water; comment on the refuge threshold tick."
+    },
+    {
+      "id": "E12",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/game.gd",
+      "lines": [
+        173,
+        208
+      ],
+      "note": "Door permeability and obstruction handling."
+    },
+    {
+      "id": "E13",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/game.gd",
+      "lines": [
+        231,
+        278
+      ],
+      "note": "Water transfers from one shared previous state."
+    },
+    {
+      "id": "E14",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/player_view.gd",
+      "lines": [
+        74,
+        98
+      ],
+      "note": "ExpeditionView.project: per-recipient actor list."
+    },
+    {
+      "id": "E15",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/movement_client.gd",
+      "lines": [
+        44,
+        64
+      ],
+      "note": "advance() and reconcile()."
+    },
+    {
+      "id": "E16",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/movement_client.gd",
+      "lines": [
+        4,
+        7
+      ],
+      "note": "STEP and MAX_PENDING."
+    },
+    {
+      "id": "E17",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/expedition_systems.gd",
+      "lines": [
+        33,
+        50
+      ],
+      "note": "Seeded RNG, duration, timers, chest rewards."
+    },
+    {
+      "id": "E18",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/expedition_systems.gd",
+      "lines": [
+        349,
+        393
+      ],
+      "note": "advance_hunters: target binding, pursuit range, search window, rest timer."
+    },
+    {
+      "id": "E19",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "tests/expedition_privacy_test.gd",
+      "lines": [
+        13,
+        49
+      ],
+      "note": "Packet round-trip through var_to_bytes, then field-absence checks."
+    },
+    {
+      "id": "E20",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "tests/authority_test.gd",
+      "lines": [
+        24,
+        43
+      ],
+      "note": "Spoof, stale, NaN, overspeed and wrong-type inputs are rejected."
+    },
+    {
+      "id": "E21",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "tools/assets/character_production.py",
+      "lines": [
+        56,
+        78
+      ],
+      "note": "submit(): receipt reserved before POST; retry only after HTTP 429."
+    },
+    {
+      "id": "E22",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "shaders/depth_parallax.gdshader",
+      "lines": [
+        17,
+        35
+      ],
+      "note": "fragment(): UV offset scaled by (depth - focus)."
+    },
+    {
+      "id": "E23",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "scripts/atlantis_background.gd",
+      "lines": [
+        1,
+        39
+      ],
+      "note": "Separate CanvasLayer, 24 s loop, 10 px offset, reduced-motion switch."
+    },
+    {
+      "id": "E24",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "server/room_server.gd",
+      "lines": [
+        1,
+        26
+      ],
+      "note": "Headless SceneTree entry that instantiates the session in server mode."
+    },
+    {
+      "id": "E25",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "web/serve.mjs",
+      "lines": [
+        33,
+        47
+      ],
+      "note": "WebSocket upgrade on /rooms forwarded to loopback; Godot server spawned as a child process."
+    },
+    {
+      "id": "E26",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "AGENTS.md",
+      "lines": [
+        1,
+        7
+      ],
+      "note": "Repository guidelines file for coding agents."
+    },
+    {
+      "id": "E27",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "AGENTS.md",
+      "lines": [
+        63,
+        63
+      ],
+      "note": "Guideline: rules, shared geometry and presentation in separate modules."
+    },
+    {
+      "id": "E28",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "AGENTS.md",
+      "lines": [
+        77,
+        92
+      ],
+      "note": "Graft block: instructs agents to query a code graph before reading source."
+    },
+    {
+      "id": "E29",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": ".claude/settings.json",
+      "lines": [
+        1,
+        12
+      ],
+      "note": "Claude Code settings: graft status line and hooks."
+    },
+    {
+      "id": "E30",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "prompt-used/#001.md",
+      "lines": [
+        1,
+        5
+      ],
+      "note": "The original design prompt written for an AI agent."
+    },
+    {
+      "id": "E31",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "assets/generated/depth/atlantis-background-v1/manifest.json",
+      "lines": [
+        9,
+        21
+      ],
+      "note": "Depth manifest: encoding, source hash, provider, encoder, device."
+    },
+    {
+      "id": "E32",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "assets/generated/sprites/brine-stalker-v1/manifest.json",
+      "lines": [
+        9,
+        9
+      ],
+      "note": "frame_count 256."
+    },
+    {
+      "id": "E33",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "source",
+      "path": "assets/generated/sprites/explorer-holding-p1-v2/manifest.json",
+      "lines": [
+        9,
+        9
+      ],
+      "note": "frame_count 1376."
+    },
+    {
+      "id": "E34",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "README.md",
+      "lines": [
+        47,
+        47
+      ],
+      "quote": "Rules run at 20Hz with recipient-filtered snapshots at 10Hz. Clients and authority share per-match geometry. Movement packets contain direction, sequence and match token, never client positions. Bounded prediction and fractional presentation smooth acknowledgements. Focus loss sends neutral input; stale input stops after 250ms."
+    },
+    {
+      "id": "E35",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "README.md",
+      "lines": [
+        49,
+        49
+      ],
+      "quote": "Hidden explorer packets omit position, velocity, region and held items; clients clear stale presentation caches. Rival gear, breath, health, exact treasure, puzzle data and hunter routes remain private."
+    },
+    {
+      "id": "E36",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "README.md",
+      "lines": [
+        5,
+        5
+      ],
+      "quote": "Lagoon, Foundry and Catacombs each contain a 3840×2560 playable ruin, twelve rooms and segmented gated corridors."
+    },
+    {
+      "id": "E37",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "README.md",
+      "lines": [
+        7,
+        7
+      ],
+      "quote": "Seeded rounds last 10–30 minutes, including a final 60–120-second escape warning."
+    },
+    {
+      "id": "E38",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "README.md",
+      "lines": [
+        63,
+        63
+      ],
+      "quote": "The network runner rejects script errors and covers fifteen scenarios, including all three large levels with 2/3/4 actual client processes, puzzles, shared provisions, extraction, disconnects and a relay with 200ms round-trip delay plus periodic 180ms stalls. This proves local reliable-transport behavior, not WAN conditions."
+    },
+    {
+      "id": "E39",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "PRODUCT.md",
+      "lines": [
+        53,
+        53
+      ],
+      "quote": "The central room service owns movement validation, world objects, flood state, relic ownership, extraction and outcomes. Clients send intentions, not trusted positions, water levels, inventories or scores."
+    },
+    {
+      "id": "E40",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "EXPANSION_VERIFICATION.md",
+      "lines": [
+        93,
+        93
+      ],
+      "quote": "Fresh verification: nine headless suites total 13,364 checks / 0 failures; full network runner 15/15 scenarios, including 2–4 people, latency/stalls and complete rounds on all three levels; production environment GPU 1,236/0; focused door/object GPU 171/0; legacy GPU 23/0 serial; web rebuild and smoke 8/0.",
+      "note": "Section dated 8 October 2026 (door, proximity shadow and object depth repair)."
+    },
+    {
+      "id": "E41",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "EXPANSION_VERIFICATION.md",
+      "lines": [
+        79,
+        79
+      ],
+      "quote": "Fresh Godot 4.7.2 checks pass: rules 643, privacy 77, authority 53, scene 573, movement presentation 66, production maps 5,136, production survival rules 356, production privacy 93, waiting lifecycle 31, actual OpenGL production renderer 1,236, and local Web smoke 8.",
+      "note": "Section dated 8 October 2026 (natural room furnishing)."
+    },
+    {
+      "id": "E42",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "EXPANSION_VERIFICATION.md",
+      "lines": [
+        57,
+        57
+      ],
+      "quote": "Public HTTPS/WSS, other browser engines, real internet sessions and human balance remain unverified."
+    },
+    {
+      "id": "E43",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "EXPANSION_VERIFICATION.md",
+      "lines": [
+        45,
+        45
+      ],
+      "quote": "This verifies local reliable-transport delay behavior; it does not simulate physical packet loss or certify WAN performance. Movement suites preserve authority/collision during acknowledgements and correction blending. No measured frame-rate or zero-stutter claim is made."
+    },
+    {
+      "id": "E44",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "EXPANSION_VERIFICATION.md",
+      "lines": [
+        51,
+        51
+      ],
+      "quote": "Actual Ego Lite screenshots confirm Start, room creation, host selection of Brass Foundry and a second browser's live room list containing the test room."
+    },
+    {
+      "id": "E45",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "server/README.md",
+      "lines": [
+        5,
+        5
+      ],
+      "quote": "No public server or domain exists yet."
+    },
+    {
+      "id": "E46",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "server/README.md",
+      "lines": [
+        59,
+        59
+      ],
+      "quote": "These are implementation bounds, not proven production capacity figures."
+    },
+    {
+      "id": "E47",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "ASSET_PIPELINE.md",
+      "lines": [
+        15,
+        15
+      ],
+      "quote": "A receipt is reserved before a paid POST. Only an identical request explicitly rejected with HTTP 429 may retry; accepted or ambiguous submissions are never resent."
+    },
+    {
+      "id": "E48",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "ASSET_PIPELINE.md",
+      "lines": [
+        7,
+        7
+      ],
+      "quote": "The original PixelLab brine stalker now has walk (12 frames), idle (8), attack (8) and stun (4) in all eight directions: 256 frames and 32 tags."
+    },
+    {
+      "id": "E49",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "ASSET_PIPELINE.md",
+      "lines": [
+        7,
+        7
+      ],
+      "quote": "Recorded PixelLab allowance changed from 1,788 to 1,703 during this batch (85 units); no dollar price is inferred."
+    },
+    {
+      "id": "E50",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "ASSET_QUALITY.md",
+      "lines": [
+        25,
+        25
+      ],
+      "quote": "Historical PixelLab production used **82 generations**, taking the account from **1,994 to 1,912 of 2,000**. The grip/pickup extension used **124 more**, taking **1,912→1,788**."
+    },
+    {
+      "id": "E51",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "ASSET_PIPELINE.md",
+      "lines": [
+        5,
+        5
+      ],
+      "quote": "all 36 production rooms now use authored room-purpose furniture groups. The built-in `image_gen` tool produced `assets/generated/environment/expedition-furniture-v1.png` (1254×1254 RGBA, sixteen isolated furniture motifs) and `expedition-floor-details-v1.png` (1536×1024 RGBA, eight flat detail motifs)"
+    },
+    {
+      "id": "E52",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "ASSET_PIPELINE.md",
+      "lines": [
+        280,
+        280
+      ],
+      "quote": "`assets/city.png` is reused through `assets/generated/depth/atlantis-background-v1/` (actual local CPU vits inference, 1536×1024, near-white). `scripts/atlantis_background.gd` puts it on a separate CanvasLayer with a slow time loop, reduced-motion switch and subdued play tint. The level painting never receives displacement."
+    },
+    {
+      "id": "E53",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "ASSET_PIPELINE.md",
+      "lines": [
+        9,
+        9
+      ],
+      "quote": "Its Workshop Orbit overlay was retired after the user rejected the pasted appearance; the later Atlantis/DA-V2 background is also superseded by the latest playable-map request."
+    },
+    {
+      "id": "E54",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "ASSET_PIPELINE.md",
+      "lines": [
+        147,
+        147
+      ],
+      "quote": "The installed `vits` model is the default. It produces an opaque grayscale map at exactly the source image dimensions, normalized to 0–255 with near objects white."
+    },
+    {
+      "id": "E55",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "ASSET_QUALITY.md",
+      "lines": [
+        29,
+        29
+      ],
+      "quote": "Two earlier Dolly clips cost twenty credits each (**600→580→560**) and barely moved. The later individually approved Workshop Orbit cost twenty credits (**560→540**), produced an 8.0667s, 400×380, 30fps clip without a visible watermark, and had an actual five-second repeating camera cycle. Its movement was measurable, but the user rejected the result when applied to the playable map."
+    },
+    {
+      "id": "E56",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "ASSET_PIPELINE.md",
+      "lines": [
+        34,
+        34
+      ],
+      "quote": "The shipped bundles are `assets/generated/sprites/explorer-holding-pN-v2/`: 1,376 frames per palette, 120 tags, 88×88 canvas, foot anchor `(44,74)`, standing height 44."
+    },
+    {
+      "id": "E57",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "ASSET_PIPELINE.md",
+      "lines": [
+        32,
+        32
+      ],
+      "quote": "Local native raster authoring corrects these defects using actual PixelLab forearms, fingers, alternating gait and knee/lean poses."
+    },
+    {
+      "id": "E58",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "DESIGN.md",
+      "lines": [
+        147,
+        147
+      ],
+      "quote": "The actual .impeccable/review/expansion-*.png native captures cover Start, waiting, all three map themes, dry/wet rooms, gate states, refuge, blackouts, lantern, puzzle, blueprint, hunter and finale"
+    },
+    {
+      "id": "E59",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "reported",
+      "path": "assets/generated/sprites/brine-stalker-v1/origin.txt",
+      "lines": [
+        1,
+        1
+      ],
+      "quote": "Original Relic Tide monster; PixelLab native source preserved in private receipts and export ZIP."
+    },
+    {
+      "id": "E60",
+      "repo": "phcaradanai/relic-tide",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "level": "ran",
+      "captureId": "relic-tide-git-history",
+      "note": "git rev-list --count HEAD, git log and author-email count: 9 commits, 2026-10-06 to 2026-10-12, all one address."
+    }
+  ],
+  "claims": [
+    {
+      "text": "Server-side rules advance in fixed 0.05 s steps (20 Hz): TideGame defines STEP := 0.05, and the server-mode session accumulates frame time and calls directory.step() once per step.",
+      "evidence": [
+        "E1",
+        "E2",
+        "E34"
+      ]
+    },
+    {
+      "text": "Recipient views are sent on every second tick (10 Hz) and immediately after any accepted event; each view is projected for one recipient. The README states 10 Hz recipient-filtered snapshots.",
+      "evidence": [
+        "E8",
+        "E9",
+        "E34"
+      ]
+    },
+    {
+      "text": "A movement command must have exactly three keys (direction vector, integer sequence, match token). Extra keys such as position or player, non-finite or over-unit components, stale sequences and old match tokens are rejected; the authority test exercises each case.",
+      "evidence": [
+        "E7",
+        "E10",
+        "E20"
+      ]
+    },
+    {
+      "text": "Seat identity comes from the connection id (room.peers.find(peer)), never from the packet. Requests are budgeted per peer per second (40 movement, 30 other).",
+      "evidence": [
+        "E7",
+        "E5"
+      ]
+    },
+    {
+      "text": "The room service caps rooms at 64 and connections at 256; the server README says these are implementation bounds, not proven production capacity figures.",
+      "evidence": [
+        "E4",
+        "E3",
+        "E46"
+      ]
+    },
+    {
+      "text": "ExpeditionView.project sends an unseen explorer as only a name and the state hidden. A visible rival gets position, velocity, region, state and light/relic flags; breath, score and survival inventory are added only for the recipient's own explorer.",
+      "evidence": [
+        "E14"
+      ]
+    },
+    {
+      "text": "The privacy test passes each recipient's packet through var_to_bytes and bytes_to_var before asserting, then checks that rival health, gear, ammo and treasure, hidden monsters, other players' puzzle nonce and the full simulation state are absent.",
+      "evidence": [
+        "E19",
+        "E35"
+      ]
+    },
+    {
+      "text": "Client prediction is bounded: at most 12 unacknowledged commands (MAX_PENDING). Each snapshot drops acknowledged commands, resets to the authoritative position and replays the rest; during a stall the client stops predicting.",
+      "evidence": [
+        "E15",
+        "E16"
+      ]
+    },
+    {
+      "text": "Rounds are seeded: the room service draws four bytes of cryptographic randomness at start, and ExpeditionSystems seeds one RandomNumberGenerator that fixes duration (600–1800 s), escape grace (60–120 s), breach, hunt and atmosphere timers and chest rewards.",
+      "evidence": [
+        "E6",
+        "E17",
+        "E37"
+      ]
+    },
+    {
+      "text": "The rules class (TideGame) is a RefCounted with no scene, timer or input dependency; its header says transport owns time and event order. The repo's guidelines say rules, shared geometry and presentation are kept in separate modules.",
+      "evidence": [
+        "E1",
+        "E27"
+      ]
+    },
+    {
+      "text": "Within each step doors advance before water is computed, and a refuge door's permeability is exactly 0.0 when closed, so a refuge that finishes closing while dry admits no water on that tick.",
+      "evidence": [
+        "E11",
+        "E12"
+      ]
+    },
+    {
+      "text": "Water moves by simultaneous transfers computed from one previous-state snapshot; each region's total outgoing volume is scaled so it cannot exceed what the region holds.",
+      "evidence": [
+        "E13"
+      ]
+    },
+    {
+      "text": "Hunters are spawned one per active explorer and each keeps one target. A hunter leaves when its target is inactive, more than 900 units away, or unseen for a 50-tick (2.5 s) search; the next hunt is rolled 125–200 s after the last hunter leaves.",
+      "evidence": [
+        "E18"
+      ]
+    },
+    {
+      "text": "The room service is a headless Godot process (server/room_server.gd) running the same session script in server mode. A Node script (web/serve.mjs) serves the web export, forwards WebSocket upgrades on /rooms to loopback and spawns the Godot server as a child process.",
+      "evidence": [
+        "E24",
+        "E25"
+      ]
+    },
+    {
+      "text": "The README describes three levels (Lagoon, Foundry, Catacombs), each a 3840×2560 playable ruin with twelve rooms and segmented gated corridors, and seeded rounds of 10–30 minutes.",
+      "evidence": [
+        "E36",
+        "E37"
+      ]
+    },
+    {
+      "text": "The product document assigns movement validation, world objects, flood state, relic ownership, extraction and outcomes to the central room service; clients send intentions, not positions, water levels, inventories or scores.",
+      "evidence": [
+        "E39"
+      ]
+    },
+    {
+      "text": "The repo reports, in a section dated 8 October 2026, nine headless suites totalling 13,364 checks with 0 failures and 15 of 15 real-socket network scenarios; another section the same day lists per-suite counts (rules 643, privacy 77, authority 53). Not re-run here.",
+      "evidence": [
+        "E40",
+        "E41"
+      ]
+    },
+    {
+      "text": "The network runner covers fifteen scenarios, including a relay with 200 ms round-trip delay and periodic 180 ms stalls; the README states this proves local reliable-transport behaviour, not WAN conditions.",
+      "evidence": [
+        "E38",
+        "E43"
+      ]
+    },
+    {
+      "text": "Paid PixelLab submissions are guarded by receipts: a receipt in state 'submitting' is written before the POST, an existing receipt blocks a second POST, and only a rate-limited receipt with an identical payload may be resubmitted.",
+      "evidence": [
+        "E21",
+        "E47"
+      ]
+    },
+    {
+      "text": "The repo records PixelLab usage as allowance changes: 82 generations for the first model, 124 for the grip and pickup extension, and 85 units for the brine stalker, with no dollar price inferred.",
+      "evidence": [
+        "E50",
+        "E49"
+      ]
+    },
+    {
+      "text": "The hunter ('brine stalker') sprite set is a PixelLab original with 256 frames and 32 tags across eight directions (walk 12, idle 8, attack 8, stun 4).",
+      "evidence": [
+        "E48",
+        "E32",
+        "E59"
+      ]
+    },
+    {
+      "text": "The explorer sprites ship as palette bundles (explorer-holding-pN-v2) of 1,376 frames each on an 88×88 canvas; the docs say PixelLab frames were corrected by local authoring for grips and pickups.",
+      "evidence": [
+        "E56",
+        "E57",
+        "E33"
+      ]
+    },
+    {
+      "text": "The Atlantis depth map is local Depth-Anything-V2 output (vits, CPU), 1536×1024, near=white; its manifest records the SHA-256 of the source image assets/city.png.",
+      "evidence": [
+        "E31",
+        "E54"
+      ]
+    },
+    {
+      "text": "The Atlantis backdrop sat on a separate CanvasLayer behind the playable level and moved up to 10 source pixels on a 24 s loop through a depth-parallax shader with a reduced-motion switch. The repo later marks it superseded.",
+      "evidence": [
+        "E23",
+        "E22",
+        "E52",
+        "E53"
+      ]
+    },
+    {
+      "text": "Sixteen furniture motifs and eight floor-detail motifs were produced with the built-in image_gen tool and are used in all 36 production rooms.",
+      "evidence": [
+        "E51"
+      ]
+    },
+    {
+      "text": "The repository has 9 commits, from 2026-10-06 to 2026-10-12, and the author-email count shows all 9 use one address, the owner's.",
+      "evidence": [
+        "E60"
+      ]
+    },
+    {
+      "text": "No public deployment exists and WAN behaviour is unverified: the server README says no public server or domain exists, and the verification record lists real internet sessions as unverified.",
+      "evidence": [
+        "E45",
+        "E42"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "step-order",
+      "title": "One fixed step: doors before water",
+      "path": "scripts/game.gd",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "startLine": 337,
+      "endLine": 365,
+      "language": "gdscript",
+      "code": "func step() -> void:\n\tif finished: return\n\tif expedition != null: expedition.before_water(self)\n\t# Door closure advances before same-tick transfer. A dry, fully sealed R4\n\t# therefore has exactly zero incoming flow on the threshold tick.\n\t_advance_vault_holds()\n\t_advance_doors()\n\t_advance_valve_holds()\n\t_advance_water()\n\tvar closed := _closed_doors()\n\tfor who in range(explorers.size()):\n\t\tvar input: Dictionary = inputs[who]\n\t\tvar explorer: Dictionary = explorers[who]\n\t\tif not _active(who): continue\n\t\tvar direction: Vector2 = input.direction if tick - input.received_tick < INPUT_TIMEOUT_TICKS else Vector2.ZERO\n\t\tif expedition != null:\n\t\t\tif not direction.is_zero_approx(): explorer.facing = direction\n\t\t\tdirection *= expedition.movement_factor(self, who)\n\t\tvar before: Vector2 = explorer.position\n\t\tvar start_depth: float = water_depths[explorer.region]\n\t\texplorer.position = Map.move(before, direction, STEP, closed, start_depth, water_depths, explorer.has_relic, expedition != null and expedition.has_oxygen(self, who))\n\t\texplorer.velocity = (explorer.position - before) / STEP\n\t\texplorer.region = Map.region_at(explorer.position)\n\t\tinput.applied_sequence = input.sequence\n\t_advance_survival_and_extraction()\n\tif expedition != null: expedition.advance_hunters(self)\n\ttick += 1\n\tif not explorers.any(func(explorer): return explorer.state == \"exploring\"): _finish(\"all_terminal\")\n\telif float(tick) * STEP >= (EXPEDITION_LENGTH if expedition == null else expedition.duration): _finish(\"deadline\")",
+      "why": "The comment and the call order carry the rule: doors advance, then water transfers, then movement, survival and hunters. A dry refuge whose door finishes closing in this tick sees a closed door in the same tick's water step.",
+      "claimIndexes": [
+        0,
+        10,
+        9
+      ]
+    },
+    {
+      "id": "input-gate",
+      "title": "Strict input gate and the 20 Hz / 10 Hz loop",
+      "path": "scripts/room_directory.gd",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "startLine": 164,
+      "endLine": 189,
+      "language": "gdscript",
+      "code": "func accept_input(peer: int, command: Dictionary) -> bool:\n\tif not members.has(peer): return false\n\tvar room: Dictionary = rooms[members[peer]]\n\tvar who: int = room.peers.find(peer)\n\tif room.phase != \"running\" or room.game == null or who < 0: return false\n\tif command.size() != 3 or typeof(command.get(\"direction\")) != TYPE_VECTOR2 or typeof(command.get(\"sequence\")) != TYPE_INT or typeof(command.get(\"match_id\")) != TYPE_STRING: return false\n\tif command.match_id != room.match_id: return false\n\treturn room.game.set_input(who, command.direction, command.sequence)\nfunc step() -> void:\n\tfor room: Dictionary in rooms.values():\n\t\tif room.phase == \"lobby\":\n\t\t\tvar closed: Array = room.staging_map.DOORS.keys()\n\t\t\tfor peer in room.peers:\n\t\t\t\tvar intention: Dictionary = room.lobby_inputs[peer]\n\t\t\t\tvar direction: Vector2 = intention.direction if room.lobby_tick - intention.tick < Rules.INPUT_TIMEOUT_TICKS else Vector2.ZERO\n\t\t\t\troom.positions[peer] = room.staging_map.move(room.positions[peer], direction, Rules.STEP, closed)\n\t\t\t\tintention.ack = intention.sequence\n\t\t\troom.lobby_tick += 1\n\t\t\tif room.lobby_tick % 2 == 0: lobby(room)\n\t\t\tcontinue\n\t\tif room.phase != \"running\": continue\n\t\troom.game.step()\n\t\tif room.game.finished:\n\t\t\troom.phase = \"finished\"\n\t\t\tviews(room)\n\t\telif room.game.tick % 2 == 0: views(room)",
+      "why": "accept_input requires exactly three keys of the right types, so a position or player id in the packet fails the size check. The seat is found from the connection. step() runs the rules once per tick but sends views only when tick % 2 == 0.",
+      "claimIndexes": [
+        2,
+        3,
+        0,
+        1
+      ]
+    },
+    {
+      "id": "recipient-view",
+      "title": "Recipient-specific projection",
+      "path": "scripts/player_view.gd",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "startLine": 74,
+      "endLine": 98,
+      "language": "gdscript",
+      "code": "static func project(game, who: int, token: String = \"fixture\", phase: String = \"running\") -> Dictionary:\n\tif phase == \"running\" and game.finished: phase = \"finished\"\n\tvar visible: Array = []\n\tvar observer: Dictionary = game.explorers[who]\n\tvar map = game.Map\n\tvar closed: Array[String] = map.closed_door_ids(game.doors)\n\tvar radius: float = map.vision_radius(observer.position, observer.has_light, closed)\n\tfor i in range(game.explorers.size()):\n\t\tvar p: Dictionary = game.explorers[i]\n\t\tif i == who or (p.state != \"escaped\" and map.can_see_with_radius(observer.position, p.position, radius, closed, observer.has_light)):\n\t\t\tvar actor := {\"name\": p.name, \"position\": p.position, \"velocity\": p.velocity, \"region\": p.region, \"state\": p.state, \"has_light\": p.has_light, \"has_relic\": p.has_relic}\n\t\t\tif i == who:\n\t\t\t\tactor[\"breath\"] = p.breath\n\t\t\t\tactor[\"score\"] = p.score\n\t\t\t\tactor[\"region_depth\"] = game.water_depths[p.region]\n\t\t\t\tif game.expedition != null:\n\t\t\t\t\tfor field in [\"health\", \"breath_max\", \"gear\", \"tank\", \"ammo\", \"treasure\", \"facing\", \"last_loot\", \"loot_serial\"]: actor[field] = p[field].duplicate(true) if p[field] is Dictionary else p[field]\n\t\t\t\t\tactor[\"move_factor\"] = game.expedition.movement_factor(game, who)\n\t\t\t\t\tactor[\"oxygen_enabled\"] = game.expedition.has_oxygen(game, who)\n\t\t\tif game.expedition != null:\n\t\t\t\tactor[\"stunned\"] = p.stun_until > game.tick\n\t\t\t\tactor[\"hurt\"] = p.hurt_until > game.tick\n\t\t\tvisible.append(actor)\n\t\telse:\n\t\t\tvisible.append({\"name\": p.name, \"state\": \"hidden\"})",
+      "why": "Only the observer's own explorer gets breath, score and survival fields. Another explorer appears in full only if the map's sight test passes; otherwise the packet holds a name and the state hidden.",
+      "claimIndexes": [
+        5
+      ]
+    },
+    {
+      "id": "prediction",
+      "title": "Bounded prediction and reconciliation",
+      "path": "scripts/movement_client.gd",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "startLine": 44,
+      "endLine": 64,
+      "language": "gdscript",
+      "code": "func advance(direction: Vector2) -> Dictionary:\n\tsequence += 1\n\tvar command := {\"direction\": direction.limit_length(1), \"sequence\": sequence, \"match_id\": match_id}\n\t# Stop prediction during a stalled connection; authority still expires input.\n\tif pending.size() < MAX_PENDING:\n\t\tpending.append(command)\n\t\t_move(command.direction)\n\treturn command\nfunc reconcile(snapshot: Dictionary) -> bool:\n\tif snapshot.match_id != match_id:\n\t\treset(snapshot)\n\t\treturn true\n\tif snapshot.tick < tick: return false\n\ttick = snapshot.tick\n\t_set_world(snapshot)\n\tvar before := position\n\tpending = pending.filter(func(command): return command.sequence > snapshot.ack_sequence)\n\tposition = snapshot.explorers[snapshot.you].position\n\tfor command in pending: _move(command.direction)\n\tcorrection_distance = before.distance_to(position)\n\treturn true",
+      "why": "advance() sends direction, sequence and match id and predicts only while fewer than MAX_PENDING commands are unacknowledged. reconcile() discards acknowledged commands, takes the server position and replays the pending ones.",
+      "claimIndexes": [
+        7
+      ]
+    },
+    {
+      "id": "seeded-round",
+      "title": "Seeded round parameters",
+      "path": "scripts/expedition_systems.gd",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "startLine": 33,
+      "endLine": 50,
+      "language": "gdscript",
+      "code": "func _init(seed_value: int, map) -> void:\n\trng.seed = seed_value\n\t# Weather is rolled once per expedition; its severity sets both cadence and\n\t# a 10–30 minute duration. All clients observe authority's same clock.\n\tvar weather := rng.randf()\n\tduration = float(roundi(600.0 + weather * 1200.0))\n\tescape_grace = float(rng.randi_range(60, 120))\n\tnext_breach = 55.0 + weather * 25.0\n\tnext_hunt = 115.0 + weather * 65.0\n\tnext_atmosphere = 85.0 + weather * 30.0\n\tvar index := 0\n\tfor chest_id in map.chest_anchors:\n\t\tvar anchor: Dictionary = map.chest_anchors[chest_id]\n\t\t# Early provision chests deliberately share map/chart knowledge and supply\n\t\t# breathing gear before routes can be cut. Later rewards are seeded.\n\t\tvar loot: String = ITEM_NAMES[index % ITEM_NAMES.size()]\n\t\tchests[chest_id] = {\"id\": chest_id, \"position\": anchor.position, \"region\": anchor.region, \"opened\": false, \"claimed\": [], \"kind\": [\"runes\", \"circuit\", \"pressure\"][index % 3], \"loot\": loot, \"treasure\": rng.randi_range(20, 45)}\n\t\tindex += 1",
+      "why": "One seed fixes the round's weather roll, which sets duration and timer offsets, and the chest rewards. No wall clock or client value enters; the room service supplies the seed.",
+      "claimIndexes": [
+        8
+      ]
+    },
+    {
+      "id": "privacy-test",
+      "title": "Privacy test on serialized packets",
+      "path": "tests/expedition_privacy_test.gd",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "startLine": 13,
+      "endLine": 49,
+      "language": "gdscript",
+      "code": "func packet(game, who: int) -> Dictionary:\n\t# Assert actual transport-serializable data, rather than trusting node hiding.\n\treturn bytes_to_var(var_to_bytes(View.project(game, who, \"private-test\")))\nfunc place(game, who: int, position: Vector2) -> void:\n\tgame.explorers[who].position = position\n\tgame.explorers[who].region = game.Map.region_at(position)\nfunc _init() -> void:\n\tfor map_id in Maps.PRODUCTION_IDS:\n\t\tvar game := Rules.new(7, 3, map_id)\n\t\tvar own: Dictionary = game.explorers[0]\n\t\tvar other: Dictionary = game.explorers[1]\n\t\tplace(game, 0, game.Map.region_center(\"R0\"))\n\t\tplace(game, 1, own.position + Vector2(0, 110))\n\t\t# R3 is distant from R0 on all three layouts; R11 neighbours R0 on\n\t\t# the foundry and catacomb routes and is legitimately observable.\n\t\tplace(game, 2, game.Map.region_center(\"R3\"))\n\t\town.gear.map = true\n\t\town.gear.chart = true\n\t\tother.health = 1\n\t\tother.gear.gun = true\n\t\tother.ammo = 12\n\t\tother.treasure = 999\n\t\tgame.expedition.monsters.assign([{\"id\": 1, \"position\": own.position + Vector2(80, 0), \"velocity\": Vector2.LEFT, \"stun_until\": -1, \"attack_until\": -1, \"route\": [game.Map.region_center(\"R3\")], \"target\": 2}, {\"id\": 2, \"position\": game.Map.region_center(\"R3\"), \"velocity\": Vector2.ZERO, \"stun_until\": -1, \"attack_until\": -1, \"route\": [own.position], \"target\": 0}])\n\t\tgame.expedition.puzzles[1] = {\"chest\": \"T0\", \"nonce\": 778899, \"kind\": \"runes\", \"sequence\": [0, 1, 2, 3], \"progress\": 1}\n\t\tvar data := packet(game, 0)\n\t\tcheck(data.map_id == map_id and data.duration >= 600 and data.duration <= 1800, \"Public map and clock metadata is accurate\")\n\t\tcheck(data.explorers[0].health == 3 and data.explorers[0].gear.map, \"Own survival inventory is available\")\n\t\tcheck(data.explorers[1].has(\"position\"), \"Nearby lit rival is observable\")\n\t\tfor field in [\"health\", \"gear\", \"ammo\", \"treasure\", \"tank\", \"breath\", \"score\", \"stun_until\", \"hurt_until\"]:\n\t\t\tcheck(not data.explorers[1].has(field), \"Rival private field excluded: \" + field)\n\t\tcheck(data.explorers[2].size() == 2 and data.explorers[2].state == \"hidden\", \"Unseen player has only identity/hidden state\")\n\t\tcheck(data.monsters.size() == 1 and data.monsters[0].id == 1, \"Hidden monster position never enters packet\")\n\t\tfor field in [\"route\", \"target\", \"path_tick\", \"stun_until\", \"attack_until\"]: check(not data.monsters[0].has(field), \"Visible monster internals remain private\")\n\t\tcheck(data.puzzle.is_empty(), \"Another player's puzzle/nonce is not broadcast\")\n\t\tcheck(not data.has(\"inputs\") and not data.has(\"region_areas\") and not data.has(\"event_sequences\"), \"Snapshot never includes full simulation\")\n\t\tcheck(not data.chests.has(\"T7\"), \"Hidden treasure chest is not disclosed\")\n\t\tcheck(not data.chests.T0.has(\"loot\") and not data.chests.T0.has(\"treasure\"), \"Unsolved chest does not disclose inventory reward\")",
+      "why": "packet() round-trips the projection through var_to_bytes, so the test inspects what could cross the wire, not node state. The checks list rival fields that must be absent and a hidden monster that must not appear.",
+      "claimIndexes": [
+        6
+      ]
+    },
+    {
+      "id": "receipt-first",
+      "title": "Receipt before a paid request",
+      "path": "tools/assets/character_production.py",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "startLine": 56,
+      "endLine": 78,
+      "language": "python",
+      "code": "def submit(kind: str, endpoint: str, payload: dict) -> None:\n    path = receipt(kind)\n    if path.exists():\n        previous = json.loads(path.read_text())\n        # A documented HTTP 429 rejected the request before it was accepted.\n        # Ambiguous submissions and accepted jobs must never be retried.\n        if previous.get('state') != 'rate_limited' or previous.get('payload') != payload:\n            raise PipelineError(f'{kind} already has a receipt. Use status/collect; no duplicate POST.')\n    data = {'name': NAME, 'kind': kind, 'endpoint': endpoint, 'payload': payload, 'state': 'submitting'}\n    write_json(path, data)\n    try:\n        data['response'] = request('POST', endpoint, payload)\n    except PipelineError as error:\n        if str(error).startswith('PixelLab HTTP 429.'):\n            data.update(state='rate_limited', rejected_status=429)\n            write_json(path, data)\n        raise\n    data['state'] = 'processing'\n    write_json(path, data)\n    response = data['response']\n    print(json.dumps({'stage': kind, 'status': response.get('status'),\n                      'job_count': len(response.get('background_job_ids', [])) or 1,\n                      'usage': response.get('usage')}, indent=2))",
+      "why": "The 'submitting' receipt is written before request(). An existing receipt blocks a second POST unless the stored state is rate_limited with an identical payload, so an ambiguous failure cannot cause a duplicate charge.",
+      "claimIndexes": [
+        18
+      ]
+    },
+    {
+      "id": "depth-shader",
+      "title": "Depth-parallax fragment shader",
+      "path": "shaders/depth_parallax.gdshader",
+      "sha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "startLine": 17,
+      "endLine": 35,
+      "language": "gdshader",
+      "code": "void fragment() {\n\tfloat relief = texture(depth_map, UV).r;\n\tif (!near_is_white) { relief = 1.0 - relief; }\n\tvec2 sample_uv = UV + offset_pixels * TEXTURE_PIXEL_SIZE * (relief - focus_depth);\n\tsample_uv = clamp(sample_uv, TEXTURE_PIXEL_SIZE * 0.5, vec2(1.0) - TEXTURE_PIXEL_SIZE * 0.5);\n\t// Keep vertex tint and CanvasItem lighting; do not multiply two texture samples.\n\tvec4 painted = texture(TEXTURE, sample_uv);\n\tif (soft_focus > 0.0) {\n\t\tvec2 blur = TEXTURE_PIXEL_SIZE * soft_focus;\n\t\tpainted = painted * 0.4\n\t\t\t+ texture(TEXTURE, sample_uv + vec2(blur.x, 0.0)) * 0.15\n\t\t\t+ texture(TEXTURE, sample_uv - vec2(blur.x, 0.0)) * 0.15\n\t\t\t+ texture(TEXTURE, sample_uv + vec2(0.0, blur.y)) * 0.15\n\t\t\t+ texture(TEXTURE, sample_uv - vec2(0.0, blur.y)) * 0.15;\n\t}\n\tfloat value = dot(painted.rgb, vec3(0.2126, 0.7152, 0.0722));\n\tpainted.rgb = mix(painted.rgb, vec3(value), desaturation);\n\tCOLOR = painted * vertex_modulate;\n}",
+      "why": "The grayscale depth map shifts each sample's UV by offset_pixels times (depth minus focus_depth). The shader clamps to half a texel so edges do not wrap. This is the effect the Atlantis colour and depth pair was built for.",
+      "claimIndexes": [
+        23
+      ]
+    }
+  ],
+  "captures": [
+    "relic-tide-git-history",
+    "relic-tide-node-check"
+  ],
+  "assets": [
+    {
+      "id": "atlantis-colour",
+      "file": "atlantis-city-colour.png",
+      "title": "Atlantis city background (colour half of the depth pair)",
+      "category": "ai-generated",
+      "tools": [
+        "Built-in image generator (image_gen)"
+      ],
+      "alt": "Painterly night view from above of a flooded ancient limestone city: lantern-lit causeways and stairs join domed pavilions and ruins across turquoise water, with waterfalls, mist, a moon at upper right and a sailing boat at a wooden dock lower left.",
+      "provenance": "Matched copy of assets/city.png held in the depth bundle (RGBA, where city.png is RGB; pixel equality was not checked); city.png was made with the built-in image_gen tool on 2026-10-05 (assets/city.prompt.txt) and the depth manifest records its SHA-256. It is the colour half of a matched colour and depth pair for WebGL depth parallax. The repo marks this backdrop as superseded in production by the playable-map levels.",
+      "provenanceEvidence": "assets/city.prompt.txt",
+      "featured": true,
+      "sourcePath": "assets/generated/depth/atlantis-background-v1/image.png",
+      "sourceSha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "id": "atlantis-depth",
+      "file": "atlantis-city-depth.png",
+      "title": "Atlantis city depth map (depth half of the pair)",
+      "category": "ai-generated",
+      "tools": [
+        "Depth-Anything-V2 (local, vits encoder, CPU)"
+      ],
+      "alt": "Grayscale depth map of the Atlantis city view: dark far regions across the top fade to white foreground rock and ruins at the bottom, with soft silhouettes of buildings and causeways.",
+      "provenance": "Real file from assets/generated/depth/atlantis-background-v1/, produced by local Depth-Anything-V2 inference (vits, CPU) on assets/city.png per the manifest; 1536×1024, near objects white, visual inverse depth rather than metric distance. Use with the colour image of the same name; the pair is superseded in the game by the playable-map levels.",
+      "provenanceEvidence": "assets/generated/depth/atlantis-background-v1/manifest.json",
+      "featured": true,
+      "sourcePath": "assets/generated/depth/atlantis-background-v1/depth.png",
+      "sourceSha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "width": 1536,
+      "height": 1024
+    },
+    {
+      "id": "web-atlantis-backdrop",
+      "file": "web-capture-atlantis-backdrop.png",
+      "title": "Browser capture: prototype landing over the Atlantis backdrop (superseded)",
+      "category": "screenshot",
+      "alt": "Browser capture of the early prototype: two explorers, P1 and P2, stand in a torch-lit stone landing room with a pier and boat inside a circular pool of light, with darkened Atlantis-city art around it; text shows tide depth, breath and the prompt 'E · Close door'.",
+      "provenance": "Browser capture of the 7 October 2026 composition in which the Atlantis city sat behind the five-room prototype; ASSET_QUALITY.md names this file among captures taken with two real browser clients. That composition was later superseded. Scene art is generated raster (see the Atlantis entries). The file is an untracked working file (test-output/ is git-ignored), so it has no commit sha.",
+      "provenanceEvidence": "ASSET_QUALITY.md",
+      "sourcePath": "test-output/web-atlantis-peer-open-proof-v2.png",
+      "width": 1428,
+      "height": 695,
+      "featured": false
+    },
+    {
+      "id": "web-chest-reward",
+      "file": "web-capture-chest-reward.png",
+      "title": "Browser capture: two explorers after a chest reward",
+      "category": "screenshot",
+      "alt": "Browser capture of two explorers, P1 and P2, on an ochre stone floor beside a wooden dock and rowboat; three hearts and a tide gauge at the top, a map icon in the gear bar and a treasure counter reading 45 at lower right.",
+      "provenance": "Named in EXPANSION_VERIFICATION.md as the browser capture of a circuit chest solved with real mouse input, awarding a treasure chart plus 45 treasure, in a session of two browser clients on one computer. The file is an untracked working file (test-output/ is git-ignored), so it has no commit sha.",
+      "provenanceEvidence": "EXPANSION_VERIFICATION.md",
+      "sourcePath": "test-output/expansion-web-chest-reward-final.png",
+      "width": 1428,
+      "height": 695,
+      "featured": false
+    },
+    {
+      "id": "web-furnished-archive",
+      "file": "web-capture-furnished-archive.png",
+      "title": "Browser capture: furnished Foundry archive room",
+      "category": "screenshot",
+      "alt": "Browser capture of explorer P1 walking across an ochre tiled room furnished with two bookcases, a writing desk and chair on a worn green rug, a potted fern, grain sacks and a chest; hearts, a tide gauge and Guide and Leave buttons overlay the top.",
+      "provenance": "Named in EXPANSION_VERIFICATION.md (8 October 2026 furnishing pass) as the browser capture of P1 walking the Landing to Archive corridor in the furnished Foundry, with desks, rug, bookshelves and open routes. The file is an untracked working file (test-output/ is git-ignored), so it has no commit sha.",
+      "provenanceEvidence": "EXPANSION_VERIFICATION.md",
+      "featured": true,
+      "sourcePath": "test-output/furnished-web-archive.png",
+      "width": 1440,
+      "height": 707
+    },
+    {
+      "id": "native-lagoon",
+      "file": "native-capture-lagoon-landing.png",
+      "title": "Native capture: Lagoon landing, three explorers",
+      "category": "screenshot",
+      "alt": "Native capture of three explorers P1, P2 and P3 on a blue-grey tiled floor beside a rowboat and wooden dock; crates, barrels and rope at upper left, a chart table, a chair, grain sacks and two chests, with hearts, tide bar and Guide and Leave buttons on top.",
+      "provenance": "File named in EXPANSION_VERIFICATION.md among current native Godot 4.7.2 captures (Compatibility/OpenGL, Apple M1). Its modification time and furniture show it was regenerated in the 8 October furnishing pass. The file is an untracked working file (test-output/ is git-ignored), so it has no commit sha.",
+      "provenanceEvidence": "EXPANSION_VERIFICATION.md",
+      "sourcePath": "test-output/expansion-lagoon-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "featured": false
+    },
+    {
+      "id": "native-catacombs",
+      "file": "native-capture-catacombs-landing.png",
+      "title": "Native capture: Catacombs landing",
+      "category": "screenshot",
+      "alt": "Native capture of three explorers on a green-grey mossy tiled floor beside a rowboat and wooden dock, with crates and barrels at upper left, a chart table, chair, sacks and two chests; same layout as the Lagoon capture in a different floor theme.",
+      "provenance": "File named in EXPANSION_VERIFICATION.md among current native Godot 4.7.2 captures; shows the third floor theme next to the Lagoon capture. Modification time shows regeneration in the 8 October furnishing pass. The file is an untracked working file (test-output/ is git-ignored), so it has no commit sha.",
+      "provenanceEvidence": "EXPANSION_VERIFICATION.md",
+      "sourcePath": "test-output/expansion-catacombs-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "featured": false
+    },
+    {
+      "id": "native-hunter",
+      "file": "native-capture-hunter.png",
+      "title": "Native capture: a hunter approaches",
+      "category": "screenshot",
+      "alt": "Native capture: explorer P1 on a grey-green mossy tile floor in a furnished room with bookcases, a desk on a rug and a chest; a teal armored hunter creature with ochre shoulder plates stands at the right. A map item with count 2 sits in the gear bar.",
+      "provenance": "The file name is not listed in the repo docs; EXPANSION_VERIFICATION.md lists native captures of the 'original hunter' and DESIGN.md names an expansion-* capture set, and this file matches that naming and subject. Hunter sprites are PixelLab output (see the brine stalker sheet). The file is an untracked working file (test-output/ is git-ignored), so it has no commit sha.",
+      "provenanceEvidence": "EXPANSION_VERIFICATION.md",
+      "sourcePath": "test-output/expansion-hunter-desktop.png",
+      "width": 1440,
+      "height": 900,
+      "featured": false
+    },
+    {
+      "id": "native-blackout",
+      "file": "native-capture-blackout.png",
+      "title": "Native capture: blackout limits sight",
+      "category": "screenshot",
+      "alt": "Native capture of three explorers on an ochre tile floor lit only inside a circular pool of light; everything outside it is black. A rowboat and dock sit at lower centre, with hearts and a tide bar at the top.",
+      "provenance": "The file name is not listed in the repo docs; EXPANSION_VERIFICATION.md lists native captures of 'powered/dark/lantern floor visibility', and the file name and image match that set. The file is an untracked working file (test-output/ is git-ignored), so it has no commit sha.",
+      "provenanceEvidence": "EXPANSION_VERIFICATION.md",
+      "sourcePath": "test-output/expansion-foundry-blackout.png",
+      "width": 1440,
+      "height": 900,
+      "featured": false
+    },
+    {
+      "id": "native-water",
+      "file": "native-capture-flooded-room.png",
+      "title": "Native capture: flooded room with oxygen gauge",
+      "category": "screenshot",
+      "alt": "Native capture of a furnished room whose tiled floor is tinted turquoise as if flooded, with bookcases, a desk on a rug, grain sacks and a chest; explorer P1 stands in the centre, an oxygen bar sits under the hearts and a gear slot shows 35s.",
+      "provenance": "The file name is not listed in the repo docs; EXPANSION_VERIFICATION.md lists native captures of 'wet/dry surfaces', and the file name and image match that set. The file is an untracked working file (test-output/ is git-ignored), so it has no commit sha.",
+      "provenanceEvidence": "EXPANSION_VERIFICATION.md",
+      "sourcePath": "test-output/expansion-catacombs-water.png",
+      "width": 1440,
+      "height": 900,
+      "featured": false
+    },
+    {
+      "id": "furniture-sheet",
+      "file": "environment-furniture-sheet.png",
+      "title": "Furniture sheet: sixteen room props",
+      "category": "ai-generated",
+      "tools": [
+        "Built-in image generator (image_gen)"
+      ],
+      "alt": "Sheet of sixteen isolated pixel-art room props on a transparent background: desk, chair, bookcase, cot, crates, barrels, rope and net, sacks, workbench, anvil, brass pump, chart table, fern planter, armillary sphere, votive altar and bone niche.",
+      "provenance": "Ships in the project. ASSET_PIPELINE.md and expedition-furnishing-v1.manifest.json record the built-in image_gen tool, an unmodified RGBA source, the exact prompt text and the SHA-256; no PixelLab or DepthFlow call was used for this sheet.",
+      "provenanceEvidence": "assets/generated/environment/expedition-furnishing-v1.manifest.json",
+      "sourcePath": "assets/generated/environment/expedition-furniture-v1.png",
+      "sourceSha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "width": 1254,
+      "height": 1254,
+      "featured": false
+    },
+    {
+      "id": "sluice-sheet",
+      "file": "environment-sluice-parts.png",
+      "title": "Gate and valve parts sheet",
+      "category": "ai-generated",
+      "tools": [
+        "Built-in image generator (image_gen)"
+      ],
+      "alt": "Sheet of four painted game parts on a dark background: a limestone gate frame with brass rails, a horizontal brass-banded wooden slab, a side-view door panel with a crescent emblem, and a brass valve wheel on a stone pedestal over a pipe.",
+      "provenance": "Ships in the project (used by scripts/world_mechanisms.gd). Its origin file records generation with the built-in imagegen tool on 2026-10-07, using assets/ruin-movement.png as style reference; the manifest records the SHA-256.",
+      "provenanceEvidence": "assets/generated/environment/sluice-set-v2.origin.txt",
+      "sourcePath": "assets/generated/environment/sluice-set-v2.png",
+      "sourceSha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "width": 1536,
+      "height": 1024,
+      "featured": false
+    },
+    {
+      "id": "brine-stalker-atlas",
+      "file": "sprites-brine-stalker.png",
+      "title": "Hunter sprite atlas (brine stalker, 256 frames)",
+      "category": "ai-generated",
+      "tools": [
+        "PixelLab",
+        "Aseprite"
+      ],
+      "alt": "Sprite atlas of the hunter creature: a teal amphibian humanoid with ochre armored shoulders and a dark waist wrap, repeated in many small frames across eight rows in different directions and poses.",
+      "provenance": "Ships in the project. origin.txt and ASSET_PIPELINE.md record an original PixelLab character with walk, idle, attack and stun in eight directions (256 frames, 32 tags); frames were packed onto one 120×120 canvas locally by tools/assets/monster_production.py.",
+      "provenanceEvidence": "assets/generated/sprites/brine-stalker-v1/origin.txt",
+      "sourcePath": "assets/generated/sprites/brine-stalker-v1/atlas.png",
+      "sourceSha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "width": 4026,
+      "height": 976,
+      "featured": false
+    },
+    {
+      "id": "explorer-atlas",
+      "file": "sprites-explorer-p1.png",
+      "title": "Explorer sprite atlas (palette 1, 1,376 frames)",
+      "category": "ai-generated",
+      "tools": [
+        "PixelLab",
+        "Aseprite"
+      ],
+      "alt": "Sprite atlas of the explorer: about fourteen hundred small frames of a red-haired figure in a teal cloak in walking, carrying, pickup and collapse poses, some holding a lantern or relic.",
+      "provenance": "Ships in the project. ASSET_PIPELINE.md records PixelLab-generated frames with local native authoring for grips and pickups, packed by assemble_holding.py with an Aseprite master; this is palette 1 of four cloth variants.",
+      "provenanceEvidence": "ASSET_PIPELINE.md",
+      "sourcePath": "assets/generated/sprites/explorer-holding-p1-v2/atlas.png",
+      "sourceSha": "0fba7cc531ad618262928ebe3d94222ff76d2e72",
+      "width": 4050,
+      "height": 2790,
+      "featured": false
+    }
+  ],
+  "diagram": {
+    "nodes": [
+      {
+        "id": "main",
+        "label": "main.gd (client)",
+        "group": "client",
+        "note": "Presentation, input, HUD"
+      },
+      {
+        "id": "pred",
+        "label": "movement_client.gd",
+        "group": "client",
+        "note": "Bounded prediction"
+      },
+      {
+        "id": "session",
+        "label": "session.gd",
+        "group": "transport",
+        "note": "WebSocket client or server mode"
+      },
+      {
+        "id": "proxy",
+        "label": "web/serve.mjs",
+        "group": "transport",
+        "note": "Node: static files, /rooms proxy"
+      },
+      {
+        "id": "server",
+        "label": "room_server.gd",
+        "group": "server",
+        "note": "Headless Godot entry"
+      },
+      {
+        "id": "dir",
+        "label": "room_directory.gd",
+        "group": "server",
+        "note": "Rooms, validation, rate budgets"
+      },
+      {
+        "id": "rules",
+        "label": "game.gd",
+        "group": "server",
+        "note": "Fixed-step rules, 20 Hz"
+      },
+      {
+        "id": "systems",
+        "label": "expedition_systems.gd",
+        "group": "server",
+        "note": "Seeded survival, puzzles, hunters"
+      },
+      {
+        "id": "map",
+        "label": "expedition_map.gd",
+        "group": "shared",
+        "note": "Per-match geometry and sight"
+      },
+      {
+        "id": "view",
+        "label": "player_view.gd",
+        "group": "server",
+        "note": "Per-recipient snapshot"
+      },
+      {
+        "id": "assets",
+        "label": "tools/assets",
+        "group": "pipeline",
+        "note": "PixelLab, DA-V2, Aseprite wrappers"
+      },
+      {
+        "id": "tests",
+        "label": "tests/*.gd",
+        "group": "verification",
+        "note": "Headless suites, socket runner"
+      }
+    ],
+    "edges": [
+      {
+        "from": "main",
+        "to": "pred",
+        "label": "direction"
+      },
+      {
+        "from": "main",
+        "to": "session",
+        "label": "intent + seq + token"
+      },
+      {
+        "from": "session",
+        "to": "proxy",
+        "label": "WS /rooms"
+      },
+      {
+        "from": "proxy",
+        "to": "server",
+        "label": "spawns, forwards"
+      },
+      {
+        "from": "server",
+        "to": "dir",
+        "label": "serve()"
+      },
+      {
+        "from": "dir",
+        "to": "rules",
+        "label": "20 Hz step, events"
+      },
+      {
+        "from": "rules",
+        "to": "systems"
+      },
+      {
+        "from": "rules",
+        "to": "map"
+      },
+      {
+        "from": "pred",
+        "to": "map",
+        "label": "same geometry"
+      },
+      {
+        "from": "dir",
+        "to": "view",
+        "label": "every 2nd tick"
+      },
+      {
+        "from": "view",
+        "to": "session",
+        "label": "filtered snapshot"
+      },
+      {
+        "from": "assets",
+        "to": "main",
+        "label": "sprites, sheets"
+      },
+      {
+        "from": "tests",
+        "to": "rules",
+        "label": "checks"
+      }
+    ]
+  },
+  "demo": {
+    "url": null,
+    "note": "Runs locally: a Node script serves the Godot web export and proxies /rooms to a headless Godot room service. No public deployment; the server README says none exists."
+  },
+  "limitations": [
+    "No WAN playtest: 'Public HTTPS/WSS, other browser engines, real internet sessions and human balance remain unverified.' (EXPANSION_VERIFICATION.md)",
+    "No public deployment: the server README says no public server or domain exists. The game runs locally with a Godot room service on loopback.",
+    "Reconnect and host migration are not implemented; leaving, reloading or disconnecting during an active round aborts it.",
+    "The delayed-relay tests model reliable TCP delay and stalls, not packet loss; the record says no frame-rate or zero-stutter claim is made.",
+    "Human balance and sustained multi-person sessions still need playtesting; numeric tuning is provisional.",
+    "Test counts are assertion counts, 'not coverage percentages or human playtest quality'. This site's review re-ran none of the Godot suites, so every count is reported by the repo.",
+    "Hunter spawn and pathfinding quality are not established by the repo's evidence.",
+    "The Atlantis city backdrop, its depth map and the DepthFlow clips are superseded and are not part of the production levels.",
+    "Room, connection and rate limits are implementation bounds, not capacity figures.",
+    "Gallery screenshots are untracked working files from the git-ignored test-output/ folder and carry no commit sha."
+  ],
+  "contribution": "The git capture shows 9 commits from 2026-10-06 to 2026-10-12, all with the author email phcaradanai@gmail.com. Eight carry the author name phcaradanai; the first carries a different author-name string with the same address. No other author email appears.",
+  "lastVerified": "2026-10-24"
+}

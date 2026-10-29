@@ -1,0 +1,292 @@
+{
+  "slug": "pvp-td",
+  "accession": "PK-2026-017",
+  "title": "PvP Tower Tactics prototype",
+  "kind": "game",
+  "tier": "B",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Prototype of a 1v1 tower-tactics game built around a shared draft pool, with in-memory backend contracts and a Godot scene prototype.",
+  "summary": "A prototype of a 1v1 tower-tactics game in which both players' cost-limited arsenals merge into a shared pool that they draft from. The repo holds design notes, data validation, in-memory backend contracts (idempotency, sessions, match store, persistence) with node:test suites, a plain HTML and JavaScript UI prototype, and a Godot 4.6.2 scene prototype of a seven-screen flow. The Godot prototype has no real combat or networking, and its tests check file contents rather than play.",
+  "period": {
+    "start": "2026-05-27",
+    "end": "2026-05-28"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/pvp_td",
+    "pinnedSha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+    "ownerCommits": 7,
+    "totalCommits": 7,
+    "languages": {
+      "JavaScript": 289633,
+      "GDScript": 29613,
+      "CSS": 5080,
+      "HTML": 2785
+    },
+    "checkedAt": "2026-10-25"
+  },
+  "stack": [
+    "JavaScript (Node ESM)",
+    "node:test",
+    "GDScript",
+    "Godot 4.6.2"
+  ],
+  "aiRole": {
+    "summary": "AGENT_CONTEXT.md is a project brief with technical rules (file-size limits, a non-authoritative client) written for coding agents (E12), and DEV_CHANGELOG.md logs each milestone with files changed, risk and tests run (E13). No AI tool is named in any markdown file (searched with git grep). Test counts are the repo's own reports and were not re-run.",
+    "tools": []
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "source",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "godot_prototype/scripts/pvp_flow_state.gd",
+      "lines": [
+        120,
+        143
+      ],
+      "note": "can_pick_item_without_breaking_draft."
+    },
+    {
+      "id": "E2",
+      "level": "source",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "godot_prototype/scripts/pvp_flow_state.gd",
+      "lines": [
+        148,
+        161
+      ],
+      "note": "is_draft_deadlocked: true when no affordable remaining item keeps the draft completable."
+    },
+    {
+      "id": "E3",
+      "level": "source",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "backend/idempotency/idempotency_contract.mjs",
+      "lines": [
+        72,
+        102
+      ],
+      "note": "checkIdempotency: new, replay or conflict by key and payload fingerprint."
+    },
+    {
+      "id": "E4",
+      "level": "source",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "backend/idempotency/idempotency_contract.mjs",
+      "lines": [
+        12,
+        29
+      ],
+      "note": "normalize sorts object keys; the fingerprint is the JSON of the normalized payload."
+    },
+    {
+      "id": "E5",
+      "level": "reported",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "backend/README.md",
+      "lines": [
+        9,
+        9
+      ],
+      "quote": "It does not connect to a real database yet."
+    },
+    {
+      "id": "E6",
+      "level": "reported",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "TEST_REPORT.md",
+      "lines": [
+        8,
+        8
+      ],
+      "quote": "**Total tests**: 388"
+    },
+    {
+      "id": "E7",
+      "level": "reported",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "TEST_REPORT.md",
+      "lines": [
+        41,
+        41
+      ],
+      "quote": "Godot 4 editor runtime (requires Godot 4.6.2 installed — manual test only)"
+    },
+    {
+      "id": "E8",
+      "level": "reported",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "TEST_REPORT.md",
+      "lines": [
+        20,
+        20
+      ],
+      "quote": "pvp_flow_state.gd contains can_pick_item_without_breaking_draft, is_draft_deadlocked, get_player_requirement_status"
+    },
+    {
+      "id": "E9",
+      "level": "reported",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "ARCHITECTURE_NOTES.md",
+      "lines": [
+        52,
+        52
+      ],
+      "quote": "Godot prototype has no real combat, networking, WebSocket, backend calls, matchmaking, or database."
+    },
+    {
+      "id": "E10",
+      "level": "reported",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "ARCHITECTURE_NOTES.md",
+      "lines": [
+        25,
+        25
+      ],
+      "quote": "Server validates all actions, determines victory, rewards, and unlock progression."
+    },
+    {
+      "id": "E11",
+      "level": "source",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "package.json",
+      "lines": [
+        3,
+        6
+      ],
+      "note": "npm test runs node --test over tools, client prototype and backend test folders; validate:data runs the data validator."
+    },
+    {
+      "id": "E12",
+      "level": "source",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "AGENT_CONTEXT.md",
+      "lines": [
+        1,
+        1
+      ],
+      "note": "Project brief for coding agents; no tool is named."
+    },
+    {
+      "id": "E13",
+      "level": "source",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "DEV_CHANGELOG.md",
+      "lines": [
+        3,
+        20
+      ],
+      "note": "Milestone entry format: task name, files, what and why, risk, tests run."
+    },
+    {
+      "id": "E14",
+      "level": "reported",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "DEV_CHANGELOG.md",
+      "lines": [
+        20,
+        20
+      ],
+      "quote": "`npm test` passes 393 tests, `npm run validate:data` passes."
+    },
+    {
+      "id": "E15",
+      "level": "source",
+      "repo": "phcaradanai/pvp_td",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "path": "TEST_REPORT.md",
+      "lines": [
+        40,
+        47
+      ],
+      "note": "Untested Areas list: Godot runtime, real combat, WebSocket and backend calls, real DB adapter, JWT and login, production HTTP server."
+    }
+  ],
+  "claims": [
+    {
+      "text": "The Godot prototype guards the shared draft against dead ends. A pick of the last remaining tower or creep that the other player still needs is refused, and is_draft_deadlocked reports a deadlock when no affordable remaining item keeps the draft completable.",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "text": "The backend is contracts plus in-memory test doubles. The idempotency check fingerprints a request payload with object keys sorted, then returns new, replay (stored response) or conflict when a key is reused with a different payload. The backend README says the persistence layer does not connect to a real database yet.",
+      "evidence": [
+        "E3",
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "text": "The repo's own reports give 388 passing tests for the 2026-05-28 M25 run and 393 for M26. The Godot checks are structure tests that look for names in files; the Godot runtime is listed as untested and manual. None of this was re-run here.",
+      "evidence": [
+        "E6",
+        "E7",
+        "E8",
+        "E14"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "draft-dead-end-guard",
+      "title": "Refusing a draft pick that would strand the other player",
+      "path": "godot_prototype/scripts/pvp_flow_state.gd",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "startLine": 120,
+      "endLine": 143,
+      "language": "gdscript",
+      "code": "func can_pick_item_without_breaking_draft(item_id: String) -> Dictionary:\n\tvar item := get_item_by_id(item_id)\n\tvar item_name := str(item.get(\"name\", item_id))\n\tvar item_cat := str(item.get(\"category\", \"\"))\n\tif item_cat != \"tower\" and item_cat != \"creep\":\n\t\treturn {\"ok\": true, \"error\": \"\"}\n\tvar other := \"player_b\" if current_drafter == \"player_a\" else \"player_a\"\n\tvar other_label := \"Player B\" if other == \"player_b\" else \"Player A\"\n\tvar other_picks := draft_picks_b if other == \"player_b\" else draft_picks_a\n\tvar other_status := _picks_status(other_picks)\n\tvar other_needs_cat: bool = (item_cat == \"tower\" and not other_status[\"has_tower\"]) \\\n\t\tor (item_cat == \"creep\" and not other_status[\"has_creep\"])\n\tif not other_needs_cat:\n\t\treturn {\"ok\": true, \"error\": \"\"}\n\tvar remaining_of_cat := 0\n\tfor pool_item in pool_items:\n\t\tvar iid := str(pool_item.get(\"id\", \"\"))\n\t\tif iid == item_id or is_drafted(iid):\n\t\t\tcontinue\n\t\tif pool_item.get(\"category\", \"\") == item_cat:\n\t\t\tremaining_of_cat += 1\n\tif remaining_of_cat == 0:\n\t\treturn {\"ok\": false, \"error\": \"Cannot pick %s: %s still needs a %s.\" % [item_name, other_label, item_cat]}\n\treturn {\"ok\": true, \"error\": \"\"}",
+      "why": "Each player must end with at least one tower and one creep. If the other player still lacks the category of the item being picked and no other item of that category remains, the pick is refused with a message. Items that are neither tower nor creep are always allowed.",
+      "claimIndexes": [
+        0
+      ]
+    },
+    {
+      "id": "idempotency-check",
+      "title": "Idempotency: new, replay or conflict",
+      "path": "backend/idempotency/idempotency_contract.mjs",
+      "sha": "4a822a3cc1b92523c2fe0ea1ddb7c37c12b793fa",
+      "startLine": 72,
+      "endLine": 102,
+      "language": "javascript",
+      "code": "  const fingerprint = buildRequestFingerprint(input.request_payload);\n  const existing = store.getRecord(input.idempotency_key);\n\n  if (!existing) {\n    return {\n      ok: true,\n      mode: \"new\",\n      fingerprint,\n      stored_response: null,\n      errors: []\n    };\n  }\n\n  if (existing.fingerprint !== fingerprint) {\n    return {\n      ok: false,\n      mode: null,\n      fingerprint,\n      stored_response: null,\n      errors: [createIdempotencyError(\"IDEMPOTENCY_CONFLICT\", \"idempotency_key was reused with a different request payload\", \"idempotency_key\")]\n    };\n  }\n\n  return {\n    ok: true,\n    mode: \"replay\",\n    fingerprint,\n    stored_response: clone(existing.response),\n    errors: []\n  };\n}",
+      "why": "The same key with the same fingerprint replays the stored response (a clone), a new key is accepted, and a reused key with a different payload is an IDEMPOTENCY_CONFLICT error. The store is passed in, so the logic does not depend on a database.",
+      "claimIndexes": [
+        1
+      ]
+    }
+  ],
+  "captures": [],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Runs locally: node tests for the JavaScript parts, and a Godot 4.6.2 project opened in the editor. No public deployment."
+  },
+  "limitations": [
+    "The Godot prototype has no real combat, networking, WebSocket, backend calls, matchmaking or database (E9), and the Godot editor runtime was tested manually only (E7).",
+    "The Godot tests check that files contain certain names and structure (E8); they show the code was written as described, not that the draft or planning screens work when played.",
+    "The backend is contracts and in-memory doubles. The report's untested list includes real combat, WebSocket and backend calls, a real DB adapter, JWT and login, and a production HTTP server (E15). The 'server validates everything' design (E10) is a plan, not a running service.",
+    "Test counts are the repo's own: TEST_REPORT.md's latest entry is M25 (388) while DEV_CHANGELOG.md reports 393 for M26 (E6, E14), so the report lags the changelog. Nothing was re-run here.",
+    "Fairness and balance are design goals in ARCHITECTURE_NOTES.md; no balance data or playtest record was examined. The README is a one-line title."
+  ],
+  "contribution": "All 7 commits are attributed to the owner's account, 2026-05-27 to 2026-05-28. No other contributors.",
+  "lastVerified": "2026-10-25"
+}

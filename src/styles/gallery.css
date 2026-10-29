@@ -1,0 +1,211 @@
+/* The gallery: rooms, walls, vinyl lettering, frames, wall labels, doorways. */
+
+@layer gallery {
+  /* ───────── Ceiling rail (site header) ───────── */
+  .rail {
+    position: sticky; top: 0; z-index: 50;
+    background: oklch(0.14 0.012 262);
+    border-bottom: 1px solid oklch(1 0 0 / 0.08);
+    box-shadow: 0 8px 18px -10px oklch(0 0 0 / 0.7);
+  }
+  .rail__in {
+    max-width: var(--wall-max); margin-inline: auto; padding: var(--s-3) var(--gutter);
+    display: flex; align-items: center; justify-content: space-between; gap: var(--s-5);
+  }
+  .rail__mark {
+    font-family: var(--font-vinyl); font-weight: 800; font-stretch: 70%; text-transform: uppercase;
+    font-size: 1.125rem; line-height: 1; text-decoration: none; color: var(--vinyl);
+    display: inline-flex; align-items: center; gap: var(--s-3);
+  }
+  .rail__mark small {
+    font-family: var(--font-label); font-weight: 450; font-stretch: 100%; text-transform: none;
+    font-size: var(--step--1); color: var(--vinyl-soft); letter-spacing: 0;
+  }
+  .rail__nav { display: flex; align-items: center; gap: clamp(var(--s-3), 2vw, var(--s-6)); }
+  .rail__link {
+    position: relative; text-decoration: none; font-size: 0.9375rem; font-weight: 550; color: var(--vinyl-soft);
+    padding-block: var(--s-2); transition: color 160ms var(--ease-out);
+  }
+  .rail__link:hover { color: var(--vinyl); }
+  .rail__link[aria-current="page"] { color: var(--vinyl); }
+  .rail__link[aria-current="page"]::after {
+    content: ""; position: absolute; inset: auto 0 -2px 0; height: 2px; background: var(--thread);
+  }
+  .rail__plan { width: 44px; height: 26px; flex: none; }
+  .rail__menu { display: none; }
+
+  @media (max-width: 52rem) {
+    .rail__nav, .rail__mark small { display: none; }
+    .rail__menu { display: block; }
+    .rail__menu > summary {
+      list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: var(--s-2);
+      padding: var(--s-2) var(--s-4); background: var(--paper); color: var(--ink); font-weight: 650; border-radius: 2px;
+      min-height: 44px;
+    }
+    .rail__menu > summary::-webkit-details-marker { display: none; }
+    .rail__menu[open] > summary { background: var(--thread); color: oklch(0.99 0 0); }
+    .rail__sheet {
+      position: fixed; inset: 3.75rem 0 0 0; background: oklch(0.14 0.012 262);
+      padding: var(--s-6) var(--gutter); overflow-y: auto; display: grid; align-content: start; gap: var(--s-2);
+    }
+    .rail__sheet a {
+      font-family: var(--font-vinyl); font-weight: 800; font-stretch: 62%; text-transform: uppercase;
+      font-size: var(--step-3); line-height: 1; text-decoration: none; padding-block: var(--s-3);
+      border-bottom: 1px solid oklch(1 0 0 / 0.1); min-height: 44px;
+    }
+    .rail__sheet a[aria-current="page"] { color: var(--thread); }
+  }
+
+  /* ───────── Rooms ───────── */
+  .room {
+    --wall: var(--wall-studio);
+    position: relative; isolation: isolate; background: var(--wall); color: var(--vinyl);
+    overflow-x: clip; /* lamp glows extend past frames; never past the wall */
+  }
+  .room[data-room="works"] { --wall: var(--wall-works); }
+  .room[data-room="lab"] { --wall: var(--wall-lab); }
+  .room[data-room="gallery"] { --wall: var(--wall-gallery); }
+  .room[data-room="journey"] { --wall: var(--wall-journey); }
+  .room[data-room="storage"] { --wall: var(--wall-storage); }
+  .room::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(85% 60% at 50% -8%, color-mix(in oklch, var(--wall) 62%, var(--lamp) 38%) 0%, transparent 68%),
+      linear-gradient(to bottom, transparent 50%, color-mix(in oklch, var(--wall) 78%, black) 100%);
+  }
+  .room__body {
+    max-width: var(--wall-max); margin-inline: auto;
+    padding: var(--s-8) var(--gutter) var(--s-9);
+  }
+  .room__floor {
+    height: clamp(2.25rem, 4.5vw, 3.75rem);
+    border-top: 8px solid color-mix(in oklch, var(--wall) 75%, white 12%);
+    background: linear-gradient(to bottom, color-mix(in oklch, var(--wall) 45%, oklch(0.24 0.025 60)) 0%, color-mix(in oklch, var(--wall) 30%, oklch(0.16 0.02 60)) 100%);
+    box-shadow: inset 0 12px 16px -12px oklch(0 0 0 / 0.6);
+  }
+  .wall { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--s-5); row-gap: var(--s-7); }
+  @media (max-width: 52rem) { .wall { grid-template-columns: minmax(0, 1fr); row-gap: var(--s-6); } .wall > * { grid-column: 1 / -1 !important; } }
+
+  /* ───────── Vinyl lettering ───────── */
+  .vinyl {
+    font-family: var(--font-vinyl); font-weight: 800; font-stretch: 62%; text-transform: uppercase;
+    letter-spacing: -0.005em; line-height: 0.92; color: var(--vinyl); text-shadow: 0 1px 0 oklch(0 0 0 / 0.28);
+    overflow-wrap: anywhere;
+  }
+  .vinyl--xl { font-size: var(--step-4); }
+  .vinyl--l { font-size: var(--step-3); }
+  .vinyl--m { font-size: var(--step-2); line-height: 1; }
+  .wall-text { font-size: var(--step-1); line-height: 1.5; color: var(--vinyl); max-inline-size: 38ch; }
+  .wall-text--soft { color: var(--vinyl-soft); font-size: var(--step-0); }
+
+  /* ───────── Frames (works on the wall) ───────── */
+  .frame { position: relative; margin: 0; isolation: isolate; }
+  .frame::before {
+    content: ""; position: absolute; z-index: -1; pointer-events: none; mix-blend-mode: screen;
+    inset: -30% -14% auto -14%; height: 150%;
+    background: radial-gradient(50% 34% at 50% 36%, oklch(0.96 0.07 85 / 0.2), transparent 100%);
+  }
+  .frame__mat {
+    display: block; background: oklch(0.1 0.01 260); padding: clamp(6px, 0.7vw, 10px);
+    box-shadow: var(--shadow-frame);
+  }
+  .frame__mat > img, .frame__mat > canvas, .frame__mat > .frame__live { display: block; width: 100%; height: auto; background: oklch(0.14 0.01 260); }
+  .frame--link { display: block; text-decoration: none; color: inherit; }
+  .frame--link .frame__mat { transition: transform 280ms var(--ease-out), box-shadow 280ms var(--ease-out); }
+  .frame--link:hover .frame__mat { transform: translateY(-3px); box-shadow: 0 1px 1px oklch(0 0 0 / 0.5), 0 16px 26px -8px oklch(0 0 0 / 0.6), 0 36px 56px -16px oklch(0 0 0 / 0.55); }
+
+  /* ───────── Wall labels (paper) ───────── */
+  .label {
+    background: var(--paper); color: var(--ink); border-radius: 2px;
+    padding: var(--s-4) var(--s-5) var(--s-5); box-shadow: var(--shadow-label);
+    font-size: 0.9375rem; line-height: 1.5; max-inline-size: 26rem;
+  }
+  .label__acc { font-family: var(--font-mono); font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.04em; color: var(--ink-soft); }
+  .label__sub { font-size: 0.8125rem; color: var(--ink-soft); margin-top: calc(-1 * var(--s-2)); }
+  .label__acc--foot { margin-top: var(--s-3); padding-top: var(--s-2); border-top: 1px solid var(--paper-edge); }
+  .label__title { font-size: var(--step-1); font-weight: 750; line-height: 1.2; margin-block: 0 var(--s-3); color: var(--ink); }
+  .label__title small { font-weight: 450; color: var(--ink-soft); font-size: 0.9375rem; margin-inline-start: var(--s-2); }
+  .label__fields { display: grid; gap: var(--s-1); margin-bottom: var(--s-3); }
+  .label__fields dt { display: inline; font-weight: 650; }
+  .label__fields dt::after { content: ": "; }
+  .label__fields dd { display: inline; }
+  .label__text { color: var(--ink); margin-bottom: var(--s-3); }
+  .label__text:last-child { margin-bottom: 0; }
+  .label a:not(.btn) { color: var(--ink); }
+  .label a:not([class]) { text-decoration-color: var(--thread-ink); text-decoration-thickness: 2px; }
+
+  /* Evidence chips: shape + word, never colour alone */
+  .chips { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+  .chip {
+    display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.15rem 0.5rem 0.15rem 0.4rem;
+    font-size: 0.75rem; font-weight: 650; line-height: 1.4; border: 1px solid currentColor; border-radius: 2px;
+    color: var(--vinyl); background: transparent; text-decoration: none; white-space: nowrap;
+  }
+  .chip svg { width: 0.875rem; height: 0.875rem; flex: none; }
+  .chip--private { border-style: dashed; }
+  .label .chip, .paper .chip { color: var(--ink); }
+  .label .chip--source, .paper .chip--source { color: oklch(0.32 0.1 155); }
+  .label .chip--reported, .paper .chip--reported { color: oklch(0.36 0.1 60); }
+  .label .chip--ran, .paper .chip--ran { color: oklch(0.36 0.12 262); }
+  a.chip:hover { background: oklch(1 0 0 / 0.14); text-decoration: underline; }
+  .label a.chip:hover, .paper a.chip:hover { background: oklch(0 0 0 / 0.08); }
+
+  /* ───────── Buttons ───────── */
+  .btn {
+    display: inline-flex; align-items: center; gap: var(--s-3); min-height: 48px; padding: 0 var(--s-5);
+    background: var(--paper); color: var(--ink); font-weight: 700; font-size: 1rem; text-decoration: none;
+    border: 0; border-radius: 2px; box-shadow: var(--shadow-label);
+    transition: transform 200ms var(--ease-out), background-color 160ms;
+  }
+  .btn svg { width: 1.125rem; height: 1.125rem; transition: transform 200ms var(--ease-out); }
+  .btn:hover { transform: translateY(-2px); background: oklch(1 0 0); }
+  .btn:hover svg { transform: translateX(3px); }
+  .btn:active { transform: translateY(0); }
+  .btn--ghost { background: transparent; color: var(--vinyl); box-shadow: inset 0 0 0 2px oklch(1 0 0 / 0.5); }
+  .btn--ghost:hover { background: oklch(1 0 0 / 0.1); }
+  .btn[aria-disabled="true"], .btn:disabled { opacity: 0.55; pointer-events: none; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: var(--s-3); }
+
+  /* ───────── Doorway ───────── */
+  .doorway {
+    display: grid; justify-items: start; gap: var(--s-3); text-decoration: none; color: var(--vinyl);
+    width: fit-content;
+  }
+  .doorway__sign { display: flex; align-items: center; gap: var(--s-3); }
+  .doorway:hover .doorway__sign svg { transform: translateX(4px); }
+  .doorway__sign svg { transition: transform 200ms var(--ease-out); }
+
+  /* ───────── Lobby (footer) ───────── */
+  .lobby { background: oklch(0.13 0.012 262); color: var(--vinyl-soft); padding: var(--s-8) var(--gutter) var(--s-7); }
+  .lobby__in { max-width: var(--wall-max); margin-inline: auto; display: grid; gap: var(--s-7); grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); }
+  .lobby h2 { font-size: var(--step-1); font-weight: 750; color: var(--vinyl); margin-bottom: var(--s-3); }
+  .lobby a { color: var(--vinyl); }
+  .lobby ul { display: grid; gap: var(--s-2); }
+  .lobby__legend dt { display: flex; align-items: center; gap: var(--s-2); color: var(--vinyl); font-weight: 650; }
+  .lobby__legend dd { margin: 0 0 var(--s-3) 0; font-size: 0.9375rem; }
+  .lobby__legend .chip { color: var(--vinyl); }
+  .lobby__fine { grid-column: 1 / -1; font-size: var(--step--1); border-top: 1px solid oklch(1 0 0 / 0.1); padding-top: var(--s-5); }
+}
+
+@layer gallery {
+  .chip--ai { border-style: double; border-width: 3px; padding-block: 0; color: var(--vinyl); }
+  .label .chip--ai, .paper .chip--ai { color: var(--ink); }
+
+  /* Foyer */
+  .foyer__intro { grid-column: 1 / span 6; grid-row: 1; display: grid; gap: var(--s-5); align-content: start; padding-top: var(--s-5); }
+  .foyer__lede { max-inline-size: 36ch; }
+  .foyer__hero { grid-column: 7 / span 6; grid-row: 1 / span 2; align-self: center; }
+  .foyer__label { grid-column: 1 / span 6; grid-row: 2; align-self: end; }
+  .onwall { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--s-5); row-gap: var(--s-5); align-items: end; }
+  .onwall > .frame { grid-row: 1; }
+  .onwall > .label { grid-row: 1; }
+  .onwall[data-side="left"] > .frame { grid-column: 1 / span 7; }
+  .onwall[data-side="left"] > .label { grid-column: 8 / span 5; }
+  .onwall[data-side="right"] > .frame { grid-column: 6 / span 7; }
+  .onwall[data-side="right"] > .label { grid-column: 1 / span 5; justify-self: end; }
+  @media (max-width: 52rem) {
+    .foyer__intro, .foyer__hero, .foyer__label { grid-row: auto; }
+    .onwall { grid-template-columns: minmax(0, 1fr); }
+    .onwall > .frame, .onwall > .label { grid-column: 1 / -1 !important; grid-row: auto; justify-self: stretch !important; }
+  }
+}

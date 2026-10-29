@@ -1,0 +1,13 @@
+{
+  "id": "cursed-market-source-counts",
+  "repo": "phcaradanai/Cursed-Market",
+  "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+  "cwd": ".",
+  "command": "printf 'test files: '; git ls-tree -r --name-only b34c5e59816cb6606bb7f98cd264b6d399e25c30 -- tests | grep -c '\\.test\\.ts$'; printf 'test( or it( call sites: '; git grep -E '^[[:space:]]*(test|it)\\(' b34c5e59816cb6606bb7f98cd264b6d399e25c30 -- 'tests/*.test.ts' | wc -l; printf 'src/game/appraisal files: '; git ls-tree -r --name-only b34c5e59816cb6606bb7f98cd264b6d399e25c30 -- src/game/appraisal | wc -l; printf 'src/game/appraisal lines: '; git grep -c '' b34c5e59816cb6606bb7f98cd264b6d399e25c30 -- 'src/game/appraisal/*.ts' | awk -F: '{s+=$NF} END {print s}'; printf 'docs/validation files: '; git ls-tree -r --name-only b34c5e59816cb6606bb7f98cd264b6d399e25c30 -- docs/validation | wc -l; printf '.trail/learnings files: '; git ls-tree -r --name-only b34c5e59816cb6606bb7f98cd264b6d399e25c30 -- .trail/learnings | wc -l; printf '.trail/learnings with a cost line: '; git grep -l '^cost:' b34c5e59816cb6606bb7f98cd264b6d399e25c30 -- .trail/learnings | wc -l",
+  "capturedAt": "2026-10-24T17:16:07Z",
+  "exitCode": 0,
+  "durationMs": 2154,
+  "output": "test files: 53\ntest( or it( call sites:      488\nsrc/game/appraisal files:       41\nsrc/game/appraisal lines: 5301\ndocs/validation files:      162\n.trail/learnings files:       54\n.trail/learnings with a cost line:       26",
+  "truncated": false,
+  "environment": "macOS Darwin 25.5.0 (uname -m x86_64), git 2.55.0, /bin/sh"
+}

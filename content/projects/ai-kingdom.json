@@ -1,0 +1,1343 @@
+{
+  "slug": "ai-kingdom",
+  "accession": "PK-2026-004",
+  "title": "AI Kingdom",
+  "kind": "ai",
+  "tier": "A",
+  "maturity": "production-style",
+  "visibility": "public",
+  "tagline": "Local-first control plane: a decree goes through council, work order, sandboxed runner, validation and review before a human accepts it.",
+  "summary": "AI Kingdom is a local-first control plane for AI agents, built as an npm-workspaces monorepo: an Express and Prisma API on PostgreSQL, a React dashboard and a token-authenticated sandbox runner. Its documented DECREE_TO_DONE workflow takes a build request through context check, council, work order, agent choice, runner dispatch, validation, review, retry and a human-gated Accept and Learn step. Provider routing is provider-agnostic with fallback chains, and every AI call records usage and estimated cost. Auto-created patch jobs are documented as never pushing.",
+  "period": {
+    "start": "2026-06-06",
+    "end": "2026-07-03"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/AI_Kingdom",
+    "pinnedSha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+    "ownerCommits": 270,
+    "totalCommits": 270,
+    "languages": {
+      "TypeScript": 5068882,
+      "CSS": 8219,
+      "JavaScript": 7003,
+      "Python": 1716,
+      "Dockerfile": 1544,
+      "Shell": 969,
+      "HTML": 297
+    },
+    "checkedAt": "2026-10-25"
+  },
+  "stack": [
+    "TypeScript",
+    "Express",
+    "Prisma + PostgreSQL",
+    "React + Vite",
+    "TailwindCSS",
+    "Zustand",
+    "Node.js sandbox runner",
+    "JWT auth with refresh sessions"
+  ],
+  "aiRole": {
+    "summary": "AI tooling appears in the repository in four ways. Guidance files are checked in: AGENTS.md and CLAUDE.md, and a WORK_IN_PROGRESS.md board that splits work between Codex (UX/UI) and Claude (core system). Commit trailers, counted with read-only git, name Claude Sonnet 4.6 (47) and Claude Opus 4.8 (45) as co-authors. An archivist skill file tells agents how to update status files after a milestone. And the product itself calls AI providers and dispatches build work to external coding-agent CLIs, with one recorded run of Claude Code. The repo documents verification per milestone (typecheck, tests, build, and acceptance-gate runs), so the AI-assisted work is described as having documented verification; those results are the repo's reports and none was re-run here.",
+    "tools": [
+      {
+        "name": "Claude (Co-Authored-By commit trailers)",
+        "use": "Named as co-author in commit trailers: Claude Sonnet 4.6 and Claude Opus 4.8, with the counts shown in the capture.",
+        "evidence": "E13"
+      },
+      {
+        "name": "CLAUDE.md (guidance for Claude Code)",
+        "use": "Commands, architecture notes and conventions addressed to Claude Code. Its instructions are repository text and were not acted on by this review.",
+        "evidence": "E49"
+      },
+      {
+        "name": "AGENTS.md agent guidelines",
+        "use": "Repository guidelines for coding agents: commands, style, testing and safety rules, including a mandatory context-binding check.",
+        "evidence": "E54"
+      },
+      {
+        "name": "Codex and Claude work split (WORK_IN_PROGRESS.md)",
+        "use": "A coordination board that states Codex owns UX/UI and Claude owns the core system.",
+        "evidence": "E50"
+      },
+      {
+        "name": "Claude Code CLI as an external agent",
+        "use": "The product's bridge dispatched a work order to a real Claude Code CLI in one recorded acceptance run (2026-06-30).",
+        "evidence": "E9"
+      },
+      {
+        "name": "AI providers called by the product",
+        "use": "Runtime provider options: mock, openai, openrouter, deepseek, anthropic, gemini and openai-compatible endpoints.",
+        "evidence": "E61"
+      },
+      {
+        "name": "Archivist skill",
+        "use": "A skill file that tells an agent to update PROJECT_STATUS.md and NEXT_TASK.md and create an ADR when architecture changes.",
+        "evidence": "E53"
+      }
+    ]
+  },
+  "narrative": {
+    "problem": "The README describes a Kingdom Control Plane in which a human, called the King, issues commands to specialised AI agents, reviews source-linked work and governs automation through explicit safety gates. The engineering problem the docs describe is keeping AI-agent work traceable and bounded: every step from a request to an accepted patch must be recorded, executed in a sandbox, and gated by a person.\n\nThe repo's architecture document adds a data rule: generated records must pass a value gate, because a smaller trusted store is preferred to a large polluted one.",
+    "approach": "The API owns persistence, authentication, role checks, provider routing and execution policy. The runner executes only claimed jobs in prepared workspaces and reports redacted evidence back, so it is not a second source of truth. A persisted workflow record tracks one build request through its steps while the owning records (task, council session, work order, job, review) stay authoritative.\n\nSafety is layered rather than central: the API validates context before creating a job, the runner re-checks it before running, commands are allowlisted, and push is refused by policy for auto-created jobs.",
+    "architecture": "Three applications live in the monorepo: apps/api (Express, Prisma, PostgreSQL, JWT), apps/web (React, Vite, Zustand) and apps/runner (a token-authenticated sandbox worker). The principal execution chain in the docs is Task, CouncilSession, WorkOrder, AutomationJob, ImplementationReport and PatchArtifact, then AgentReviewSummary.\n\nInside the API, grandVizierOrchestrator runs the council, aiProviderRouter and generateWithFallback choose and call providers, decreeToDoneWorkflowService drives the BUILD lifecycle, and livingLoopService with an in-process scheduler proposes optional, gated automation. Usage and cost are written per AI call.",
+    "implementation": "The workflow service is a resumable state machine. Each call re-enters at the right step: it repairs project context from approved local-document roots, reuses a finished council, links one work order, resolves an external agent, creates and approves a runner job, then reconciles the result into Retry, Accept and Learn or a King decision. Re-entry is guarded by an in-process map and a unique key on the source task.\n\nThe runner's policy code is pure and small: a push-eligibility function that refuses auto-created jobs, a context-binding function that refuses stale context for patching jobs, and an allowlist that limits git to kingdom/job-* branches. The API side adds an eight-check risk policy for automatic patches.\n\nRouting ranks providers by cost mode and task mode and walks a fallback chain; every call needs a trace id, and the result records which provider and model were attempted and which answered. Cost comes from a static table with alias rules.",
+    "outcome": "At the pinned commit the repo holds the API, web dashboard and runner, 270 commits from 2026-06-06 to 2026-07-03, and status documents that label it a V1 Release Candidate and report passing API, runner and web suites. A status entry records one real Claude Code CLI run that reached Accept and Learn. No public deployment is recorded; the README gives a staging recipe.",
+    "lessons": "What the repo's records say is still open or was learned.\n\nOpen: the README says there is no Ollama runtime client; several UI milestones note that rendered-browser verification was outstanding; an earlier status entry lists five environment-dependent test failures; provider reliability varied (free-tier timeouts, a 402, 404 and 429 responses). The archivist skill refers to ADRs but none exist, and AGENTS.md still describes external agent work as manual only.\n\nLearned, as recorded: relabelling council summaries as lessons produced circular, low-signal knowledge, so capture is off by default and learning comes from review evidence; a request body carrying two reasoning parameters made OpenRouter reject every call until it was fixed; and parallel specialists halved council time in one A/B while changing the deliberation model, so it first shipped behind a setting."
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "A local-first Kingdom Control Plane where the King issues commands to specialized AI agents, reviews source-linked work, and governs sandboxed automation through explicit safety gates."
+    },
+    {
+      "id": "E2",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        18,
+        18
+      ],
+      "quote": "The DECREE_TO_DONE workflow is implemented, acceptance-gate verified, and locked. Mission Control owns the full BUILD decree execution lifecycle from context gate through council, work order, external agent dispatch, validation, review, retry, and Accept & Learn."
+    },
+    {
+      "id": "E3",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        18,
+        18
+      ],
+      "quote": "All 969 API tests, 103 runner tests, and 241 web tests pass."
+    },
+    {
+      "id": "E4",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "ARCHITECTURE.md",
+      "lines": [
+        149,
+        149
+      ],
+      "quote": "The DECREE_TO_DONE persisted workflow (`decreeToDoneWorkflowService.ts`) makes Mission Control the single interaction surface for BUILD decrees. A `WorkflowRun` record with idempotent `WorkflowStepRun` children tracks progress; the owning records (Task, CouncilSession, WorkOrder, AutomationJob, AgentReviewSummary) remain the source of truth."
+    },
+    {
+      "id": "E5",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "ARCHITECTURE.md",
+      "lines": [
+        11,
+        11
+      ],
+      "quote": "The runner executes only claimed jobs inside prepared workspaces and reports redacted evidence back to the API; it is not a second source of truth."
+    },
+    {
+      "id": "E6",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "ARCHITECTURE.md",
+      "lines": [
+        62,
+        62
+      ],
+      "quote": "The default fallback chain is `deepseek -> openrouter -> openai -> mock`. Fallback notices are stored on `CouncilSession.fallbackNotice`."
+    },
+    {
+      "id": "E7",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "ARCHITECTURE.md",
+      "lines": [
+        50,
+        50
+      ],
+      "quote": "`UsageRecord` captures one row per AI call: provider, providerId, model, token counts (prompt/completion/total), and estimated USD cost calculated from a static pricing table in `src/pricing/providerPricing.ts`."
+    },
+    {
+      "id": "E8",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        395,
+        395
+      ],
+      "quote": "Every auto-created `SANDBOX_PATCH` job carries `commandPolicy: \"SANDBOX_PATCH_NO_PUSH\"`. The runner refuses to attempt a branch push for these jobs regardless of the server's `LIVING_LOOP_ALLOW_BRANCH_PUSH` setting"
+    },
+    {
+      "id": "E9",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "PROJECT_STATUS.md",
+      "lines": [
+        27,
+        27
+      ],
+      "quote": "The non-seeded DECREE_TO_DONE path is proven with a real Claude Code CLI invocation."
+    },
+    {
+      "id": "E10",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        78,
+        78
+      ],
+      "quote": "The built-in local sandbox baseline is the final deterministic fallback. Local/Ollama registry metadata exists, but there is no Ollama runtime client yet."
+    },
+    {
+      "id": "E11",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "PROJECT_STATUS.md",
+      "lines": [
+        54,
+        54
+      ],
+      "quote": "Rendered browser verification remains outstanding because the in-app browser was unavailable, Playwright had no installed Chromium binary, and local Chrome headless launch was blocked by the environment; no visual-pass claim is made."
+    },
+    {
+      "id": "E12",
+      "level": "ran",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "captureId": "ai-kingdom-shortlog",
+      "note": "git shortlog -sn: 270 commits, all under the author name phcaradanai."
+    },
+    {
+      "id": "E13",
+      "level": "ran",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "captureId": "ai-kingdom-claude-trailers",
+      "note": "git shortlog --group=trailer:co-authored-by: Claude Sonnet 4.6 (47), Claude Opus 4.8 (45)."
+    },
+    {
+      "id": "E14",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/services/decreeToDoneWorkflowService.ts",
+      "lines": [
+        44,
+        90
+      ],
+      "note": "Entry point: in-process dedup map, BUILD-only guard, upsert keyed on sourceTaskId."
+    },
+    {
+      "id": "E15",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/services/decreeToDoneWorkflowService.ts",
+      "lines": [
+        195,
+        221
+      ],
+      "note": "RESOLVE_AGENT: one ready agent is assigned, several block on a King choice matter, none blocks with reasons."
+    },
+    {
+      "id": "E16",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/services/decreeToDoneWorkflowService.ts",
+      "lines": [
+        262,
+        288
+      ],
+      "note": "reconcileResult: missing report, patch or review blocks; verdicts route to Retry, Accept & Learn or Review Result."
+    },
+    {
+      "id": "E17",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/runner/src/sandboxPatchPolicy.ts",
+      "lines": [
+        37,
+        56
+      ],
+      "note": "evaluateBranchPushEligibility and shouldPushWithoutApproval."
+    },
+    {
+      "id": "E18",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/runner/src/sandboxPatchPolicy.ts",
+      "lines": [
+        102,
+        140
+      ],
+      "note": "evaluateJobContextBinding: SANDBOX_PATCH and EXTERNAL_AGENT refuse STALE, MISSING or PARTIAL context; validation only warns."
+    },
+    {
+      "id": "E19",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/services/livingLoopRiskPolicyService.ts",
+      "lines": [
+        24,
+        80
+      ],
+      "note": "BLOCKED_PATHS and isAutoPatchEligible with its eight ordered checks."
+    },
+    {
+      "id": "E20",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/services/aiProviderRouter.ts",
+      "lines": [
+        361,
+        399
+      ],
+      "note": "orderByPolicy and costModeRank: provider order from cost mode and task-mode list."
+    },
+    {
+      "id": "E21",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/ai/generateWithFallback.ts",
+      "lines": [
+        21,
+        44
+      ],
+      "note": "GenerateWithFallbackResult: attempted versus final provider and model, fallbackUsed, usage, finishReason."
+    },
+    {
+      "id": "E22",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/ai/generateWithFallback.ts",
+      "lines": [
+        71,
+        78
+      ],
+      "note": "A provider call without trace context throws: 'Refusing unattributed provider call.'"
+    },
+    {
+      "id": "E23",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/pricing/providerPricing.ts",
+      "lines": [
+        55,
+        90
+      ],
+      "note": "resolveKey, getPricing, calculateCostUSD: alias rules and $0 with a warning for unknown models."
+    },
+    {
+      "id": "E24",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/services/runnerResultReviewService.ts",
+      "lines": [
+        24,
+        32
+      ],
+      "note": "normalizeKingRecommendation pairs PASS with APPROVE."
+    },
+    {
+      "id": "E25",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/runner/src/commandValidator.ts",
+      "lines": [
+        15,
+        110
+      ],
+      "note": "Command allowlist: git subcommands, safe branch pattern, protected branches, npm scripts and workspaces."
+    },
+    {
+      "id": "E26",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/runner/src/sandbox.ts",
+      "lines": [
+        58,
+        97
+      ],
+      "note": "runCommand: validate, assert cwd inside workspace, spawn with shell false and a timeout."
+    },
+    {
+      "id": "E27",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/runner/src/sandbox.ts",
+      "lines": [
+        1,
+        10
+      ],
+      "note": "Header comment listing the sandbox invariants."
+    },
+    {
+      "id": "E28",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/middleware/rbac.ts",
+      "lines": [
+        7,
+        19
+      ],
+      "note": "Readable and writable resources per role."
+    },
+    {
+      "id": "E29",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/services/auditService.ts",
+      "lines": [
+        22,
+        49
+      ],
+      "note": "Sensitive key patterns and recursive sanitizeMetadata."
+    },
+    {
+      "id": "E30",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/services/safePathService.ts",
+      "lines": [
+        38,
+        64
+      ],
+      "note": "DEFAULT_BLOCKED_GLOBS: .env files, keys, secrets, node_modules, build output, databases, images."
+    },
+    {
+      "id": "E31",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/services/safePathService.ts",
+      "lines": [
+        75,
+        100
+      ],
+      "note": "resolveInsideRoot rejects absolute paths, '..' segments and paths escaping the root."
+    },
+    {
+      "id": "E32",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/services/grandVizierOrchestrator.ts",
+      "lines": [
+        511,
+        538
+      ],
+      "note": "UsageRecord per council agent response: provider, model, token counts, cache tokens, estimated cost, pricing source and confidence."
+    },
+    {
+      "id": "E33",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/services/supervisedRetryService.ts",
+      "lines": [
+        30,
+        30
+      ],
+      "note": "MECHANICAL_RETRY_VERDICTS = PATCH_FAILED, VALIDATION_FAILED."
+    },
+    {
+      "id": "E34",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "ARCHITECTURE.md",
+      "lines": [
+        109,
+        109
+      ],
+      "quote": "`shouldPushWithoutApproval()` only allows unattended push for `riskLevel: \"LOW\"` + `validationStatus: \"PENDING\"`, and `SANDBOX_PATCH_NO_PUSH` blocks push entirely for these auto-created jobs either way."
+    },
+    {
+      "id": "E35",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "ARCHITECTURE.md",
+      "lines": [
+        169,
+        169
+      ],
+      "quote": "AI Kingdom is quality-first, not data-first."
+    },
+    {
+      "id": "E36",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "ARCHITECTURE.md",
+      "lines": [
+        172,
+        172
+      ],
+      "quote": "Generated data must pass a value gate before becoming Kingdom state."
+    },
+    {
+      "id": "E37",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "PROJECT_STATUS.md",
+      "lines": [
+        29,
+        29
+      ],
+      "quote": "No push, PR, merge, deploy, seeded patch, or mock runner evidence was used."
+    },
+    {
+      "id": "E38",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "PROJECT_STATUS.md",
+      "lines": [
+        31,
+        31
+      ],
+      "quote": "Final verification: API 978/978, runner 103/103, and web 241/241 tests pass; root typecheck, production build, and `git diff --check` pass."
+    },
+    {
+      "id": "E39",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "PROJECT_STATUS.md",
+      "lines": [
+        78,
+        78
+      ],
+      "quote": "Operational note: free-tier OpenRouter models (`*:free`) time out at 90s, native DeepSeek returns 402 Insufficient Balance, and Gemini returns 404/429 — only OpenRouter-hosted DeepSeek models are currently reliable for the planner.",
+      "note": "Entry dated around 2026-06; provider behaviour at that time."
+    },
+    {
+      "id": "E40",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "PROJECT_STATUS.md",
+      "lines": [
+        76,
+        76
+      ],
+      "quote": "full `npm run test:api` 788/793 with only 5 pre-existing environment-dependent failures"
+    },
+    {
+      "id": "E41",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "PROJECT_STATUS.md",
+      "lines": [
+        68,
+        68
+      ],
+      "quote": "Live A/B on the same PLAN decree (real OpenRouter providers): sequential ≈ 356s vs parallel ≈ 173s (~51% faster)"
+    },
+    {
+      "id": "E42",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "PROJECT_STATUS.md",
+      "lines": [
+        57,
+        57
+      ],
+      "quote": "also proved that the prior council-synthesis capture path produced circular, low-signal knowledge."
+    },
+    {
+      "id": "E43",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "PROJECT_STATUS.md",
+      "lines": [
+        79,
+        79
+      ],
+      "quote": "Conservative boundaries: mechanical failures only (semantic `NEEDS_FIX` / `RISK_REVIEW` stay with the King), the auto path additionally requires LOW priority and an online runner, both paths are capped at `maxAutoRetries`"
+    },
+    {
+      "id": "E44",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        368,
+        368
+      ],
+      "quote": "`apps/runner` is an optional sandbox executor that claims approved `AutomationJob` work from the API and runs it in an isolated workspace."
+    },
+    {
+      "id": "E45",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        269,
+        269
+      ],
+      "quote": "remain execution workers only. AI Kingdom remains the source of truth for objective, scope, constraints, acceptance criteria, and status."
+    },
+    {
+      "id": "E46",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        345,
+        345
+      ],
+      "quote": "This router remains deterministic and synchronous; it does not use embeddings, a vector database, or an autonomous routing worker."
+    },
+    {
+      "id": "E47",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "AGENTS.md",
+      "lines": [
+        32,
+        32
+      ],
+      "quote": "External agent work orders are manual handoff artifacts only."
+    },
+    {
+      "id": "E48",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "AGENTS.md",
+      "lines": [
+        39,
+        39
+      ],
+      "quote": "agents must check the project's context binding before planning or patching."
+    },
+    {
+      "id": "E49",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "CLAUDE.md",
+      "lines": [
+        3,
+        3
+      ],
+      "note": "Guidance file addressed to Claude Code."
+    },
+    {
+      "id": "E50",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "WORK_IN_PROGRESS.md",
+      "lines": [
+        5,
+        5
+      ],
+      "quote": "Division of labor: **Codex owns UX/UI**, **Claude owns the core system** (`claude/main`). Integrate through `main`."
+    },
+    {
+      "id": "E51",
+      "level": "ran",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "captureId": "ai-kingdom-git-history",
+      "note": "git rev-list --count, first and last author dates, author-address counts."
+    },
+    {
+      "id": "E52",
+      "level": "ran",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "captureId": "ai-kingdom-source-counts",
+      "note": "File counts at the pinned sha: 105 API, 12 runner and 35 web test files; 58 Prisma migrations; 93 API service files; 0 ADR files."
+    },
+    {
+      "id": "E53",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "skills/archivist/SKILL.md",
+      "lines": [
+        1,
+        10
+      ],
+      "note": "Archivist skill: after a milestone update status files and, if architecture changed, create an ADR and update the ADR index."
+    },
+    {
+      "id": "E54",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "AGENTS.md",
+      "lines": [
+        1,
+        3
+      ],
+      "note": "Repository guidelines file; points to CLAUDE.md."
+    },
+    {
+      "id": "E55",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        97,
+        97
+      ],
+      "quote": "If a selected provider fails, times out, or returns an empty response, the orchestrator tries the next provider in the fallback chain."
+    },
+    {
+      "id": "E56",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        153,
+        153
+      ],
+      "quote": "Every AI call records a `UsageRecord` with provider, providerId, model, token counts, and an estimated USD cost."
+    },
+    {
+      "id": "E57",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        120,
+        120
+      ],
+      "quote": "Audit logs are written for login, logout, user creation/deactivation, settings changes, agent changes, and memory deletion."
+    },
+    {
+      "id": "E58",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "ARCHITECTURE.md",
+      "lines": [
+        56,
+        56
+      ],
+      "quote": "Frontend navigation mirrors these roles but is not the security boundary."
+    },
+    {
+      "id": "E59",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        421,
+        421
+      ],
+      "quote": "file access only happens inside approved `LocalDocumentRoot` paths through the safe path resolver"
+    },
+    {
+      "id": "E60",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "ARCHITECTURE.md",
+      "lines": [
+        167,
+        167
+      ],
+      "quote": "`WorkflowRun.sourceTaskId @unique` prevents duplicate runs at the schema level."
+    },
+    {
+      "id": "E61",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "README.md",
+      "lines": [
+        68,
+        76
+      ],
+      "quote": "Supported runtime providers today: - `mock` - `openai` - `openrouter` - `deepseek` - `anthropic` (native Messages API client) - `gemini` (OpenAI-compatible endpoint) - `openai-compatible`"
+    },
+    {
+      "id": "E63",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "PROJECT_STATUS.md",
+      "lines": [
+        53,
+        53
+      ],
+      "quote": "`COUNCIL_PARALLEL_SPECIALISTS` promoted to default ON"
+    },
+    {
+      "id": "E64",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "PROJECT_STATUS.md",
+      "lines": [
+        68,
+        68
+      ],
+      "quote": "This is a deliberation-model change, not just a speed knob, so it ships behind a King-flipped setting with an A/B rather than flipped by default."
+    },
+    {
+      "id": "E65",
+      "level": "reported",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "PROJECT_STATUS.md",
+      "lines": [
+        78,
+        78
+      ],
+      "quote": "That failed every real provider in the chain, so the planner silently degraded to the Local Sandbox Baseline (mock)"
+    },
+    {
+      "id": "E62",
+      "level": "source",
+      "repo": "phcaradanai/AI_Kingdom",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "path": "apps/api/src/services/decreeToDoneWorkflowService.ts",
+      "lines": [
+        225,
+        231
+      ],
+      "note": "DISPATCH_RUNNER blocks when the bridge setting is off or no runner is online."
+    }
+  ],
+  "claims": [
+    {
+      "text": "The README describes AI Kingdom as a local-first Kingdom Control Plane where a human issues commands to specialised AI agents, reviews source-linked work and governs sandboxed automation through explicit safety gates.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "text": "DECREE_TO_DONE is a persisted workflow: a WorkflowRun with idempotent WorkflowStepRun children tracks a BUILD request through context gate, council, work order, external agent dispatch, validation, review, retry and Accept and Learn, while the owning records stay the source of truth.",
+      "evidence": [
+        "E2",
+        "E4"
+      ]
+    },
+    {
+      "text": "Only BUILD tasks may start the workflow. Starting it again for the same task reuses one run: an in-process map returns the pending promise and the run is upserted on sourceTaskId, which is unique in the schema.",
+      "evidence": [
+        "E14",
+        "E60"
+      ]
+    },
+    {
+      "text": "The workflow stops for a human in concrete places: with several ready external agents and REQUIRE_KING_EXTERNAL_AGENT_CHOICE on (default true) it blocks at RESOLVE_AGENT and raises a decision matter, and dispatch is blocked while the external agent bridge is off or no runner is online.",
+      "evidence": [
+        "E15",
+        "E62"
+      ]
+    },
+    {
+      "text": "After a runner result the workflow checks that an Implementation Report, a PatchArtifact (or an explicit NO_CHANGES) and a review summary exist. Mechanical failure verdicts lead to Retry, PASS leads to Accept and Learn for explicit King acceptance, and every other verdict goes to the King as Review Result.",
+      "evidence": [
+        "E16"
+      ]
+    },
+    {
+      "text": "A PASS review is always paired with the APPROVE recommendation: normalizeKingRecommendation rewrites REQUEST_REVISION, RETRY_WITH_FIXED_PATCH and REJECT to APPROVE, and the workflow applies it when it serialises a run.",
+      "evidence": [
+        "E24",
+        "E14"
+      ]
+    },
+    {
+      "text": "Automatic retry is limited: the mechanical verdicts are PATCH_FAILED and VALIDATION_FAILED, semantic verdicts stay with the King, the auto path needs LOW priority and an online runner, and both paths are capped at maxAutoRetries.",
+      "evidence": [
+        "E33",
+        "E43"
+      ]
+    },
+    {
+      "text": "The runner is an optional sandbox executor that claims approved AutomationJob work from the API and runs it in an isolated workspace; it executes only claimed jobs and reports redacted evidence back, and is not a second source of truth.",
+      "evidence": [
+        "E44",
+        "E5"
+      ]
+    },
+    {
+      "text": "Every runner command passes the same steps: validate against an allowlist, assert the working directory is inside the workspace, then spawn with shell false and a timeout; output is redacted before it is returned.",
+      "evidence": [
+        "E26",
+        "E27"
+      ]
+    },
+    {
+      "text": "The runner's allowlist admits only a few commands. git is limited to status, diff, log, show, checkout -b, add, commit and push; a push must name a kingdom/job-* branch and protected names such as main or release are refused; npm runs only typecheck, test, build and lint for the three workspaces.",
+      "evidence": [
+        "E25"
+      ]
+    },
+    {
+      "text": "Branch push has two independent guards. The runner never attempts a push when the job's commandPolicy is SANDBOX_PATCH_NO_PUSH, whatever the server's push setting, and unattended push is allowed only for LOW-risk artifacts whose validation is still PENDING.",
+      "evidence": [
+        "E17",
+        "E34",
+        "E8"
+      ]
+    },
+    {
+      "text": "An automatically created sandbox patch must pass eight ordered checks: daily limit, minimum confidence, LOW risk, an online runner, a linked project, no active job, no job inside the cooldown, and no file hint touching a blocked path such as auth, rbac, provider, runner, migration, docker or .env.",
+      "evidence": [
+        "E19"
+      ]
+    },
+    {
+      "text": "Context binding is enforced at the runner too: SANDBOX_PATCH and EXTERNAL_AGENT jobs are refused when the bound context is STALE, MISSING or PARTIAL and fresh context is required, while VALIDATION_ONLY jobs proceed with a warning.",
+      "evidence": [
+        "E18",
+        "E48"
+      ]
+    },
+    {
+      "text": "Local project documents are read only through approved roots: the path resolver rejects absolute paths, '..' segments and paths that escape the root, and the default block list covers .env files, keys, secrets, node_modules, build output, databases and images.",
+      "evidence": [
+        "E31",
+        "E30",
+        "E59"
+      ]
+    },
+    {
+      "text": "Provider routing is a ranking, not a hard-coded choice: providers are sorted by cost-mode rank, then by the task mode's preferred list, then priority; the documented routing order is agent override, task mode, cost mode, then the fallback chain (default deepseek, openrouter, openai, mock).",
+      "evidence": [
+        "E20",
+        "E6",
+        "E55"
+      ]
+    },
+    {
+      "text": "A provider call without a trace id throws instead of running. The result records the attempted and the final provider and model, whether fallback was used, the token usage and the finish reason, and a failed primary leaves a fallback notice on the council session.",
+      "evidence": [
+        "E22",
+        "E21",
+        "E6"
+      ]
+    },
+    {
+      "text": "Each council agent response writes a UsageRecord with provider, model, prompt, completion and cache token counts, an estimated USD cost, and the pricing source, status and confidence; the synthesis pass is recorded separately.",
+      "evidence": [
+        "E32",
+        "E7",
+        "E56"
+      ]
+    },
+    {
+      "text": "Cost estimates come from a pricing table keyed by provider and model with DeepSeek alias rules; a model not in the table is recorded at $0.00 with a console warning, which the code comments call a safety net behind database pricing.",
+      "evidence": [
+        "E23"
+      ]
+    },
+    {
+      "text": "Access is role-based with four roles. SCRIBE has no write access, MINISTER can write reports and tasks, CROWN_PRINCE adds memory and council, KING can write everything; the architecture document says frontend navigation is not the security boundary.",
+      "evidence": [
+        "E28",
+        "E58"
+      ]
+    },
+    {
+      "text": "Audit metadata is sanitised recursively before it leaves the API: keys containing password, tokenhash, refreshtoken, accesstoken, apikey, secret, credential, authorization or bearer are dropped.",
+      "evidence": [
+        "E29",
+        "E57"
+      ]
+    },
+    {
+      "text": "The architecture document states a quality-first rule: generated data must pass a value gate before it becomes Kingdom state, and a smaller trusted Kingdom is preferred to a large polluted one.",
+      "evidence": [
+        "E35",
+        "E36"
+      ]
+    },
+    {
+      "text": "Providers named as runtime options are mock, openai, openrouter, deepseek, anthropic (native Messages client), gemini and openai-compatible; the README says there is no Ollama runtime client yet.",
+      "evidence": [
+        "E61",
+        "E10"
+      ]
+    },
+    {
+      "text": "The project reports passing suites in several documents with different totals: the README says 969 API, 103 runner and 241 web tests, and a later status entry says 978, 103 and 241. These are the repo's reports; none was re-run here. Git lists 105 API, 12 runner and 35 web test files.",
+      "evidence": [
+        "E3",
+        "E38",
+        "E52"
+      ]
+    },
+    {
+      "text": "A status entry records a real Claude Code CLI run on 2026-06-30 that completed the non-seeded DECREE_TO_DONE path; the entry says no push, PR, merge, deploy, seeded patch or mock runner evidence was used.",
+      "evidence": [
+        "E9",
+        "E37"
+      ]
+    },
+    {
+      "text": "The status document records an A/B of the council on the same decree with real providers: sequential about 356 s, parallel about 173 s, with the same canonical order of roles. Parallel specialists were later promoted to the default.",
+      "evidence": [
+        "E41",
+        "E64",
+        "E63"
+      ]
+    },
+    {
+      "text": "The status document records two corrections it found by running the system: council synthesis relabelled as lessons produced circular, low-signal knowledge, so capture was gated off by default; and a conflicting reasoning parameter made real providers fail until the planner silently fell back to the sandbox baseline.",
+      "evidence": [
+        "E42",
+        "E65"
+      ]
+    },
+    {
+      "text": "Live provider reliability was limited when the status entry was written: free-tier OpenRouter models timed out at 90 s, native DeepSeek returned 402, Gemini returned 404 or 429, and only OpenRouter-hosted DeepSeek models were reliable for the planner.",
+      "evidence": [
+        "E39"
+      ]
+    },
+    {
+      "text": "AI tooling is named in the repo's own files: CLAUDE.md addressed to Claude Code, an AGENTS.md guidelines file, and a coordination board that assigns UX/UI to Codex and the core system to Claude. Commit trailers name Claude Sonnet 4.6 (47) and Claude Opus 4.8 (45).",
+      "evidence": [
+        "E49",
+        "E54",
+        "E50",
+        "E13"
+      ]
+    },
+    {
+      "text": "The repo's documents disagree in places: AGENTS.md says external agent work orders are manual handoff artifacts only, while the README documents two gated paths in which the runner invokes an external agent CLI. The archivist skill tells agents to create ADRs, but git lists no ADR file.",
+      "evidence": [
+        "E47",
+        "E45",
+        "E53",
+        "E52"
+      ]
+    },
+    {
+      "text": "The project's router for project assignment is deterministic and synchronous; the README says it does not use embeddings, a vector database or an autonomous routing worker.",
+      "evidence": [
+        "E46"
+      ]
+    },
+    {
+      "text": "All 270 commits carry the author name phcaradanai and the address phcaradanai@gmail.com, between 2026-06-06 and 2026-07-03.",
+      "evidence": [
+        "E51",
+        "E12"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "agent-choice-gate",
+      "title": "Resolving the external agent: assign, ask the King, or block",
+      "path": "apps/api/src/services/decreeToDoneWorkflowService.ts",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "startLine": 195,
+      "endLine": 221,
+      "language": "typescript",
+      "code": "  if (!job) {\n    run = await setRun(run.id, \"RUNNING\", \"RESOLVE_AGENT\", \"Choose Agent\");\n    await startStep(run.id, \"RESOLVE_AGENT\", \"WorkOrder\", workOrder.id);\n    const readiness = await getExternalAgentReadiness();\n    const readyAgents = readiness.agents.filter((agent) => agent.ready);\n    const assignedReady = readyAgents.find((agent) => agent.agentId === workOrder!.assignedExternalAgentId);\n    const requireKingChoice = await getBooleanSetting(\"REQUIRE_KING_EXTERNAL_AGENT_CHOICE\", true);\n\n    if (!assignedReady) {\n      if (readyAgents.length === 1) {\n        workOrder = await assignExternalAgent(workOrder.id, readyAgents[0]!.agentId);\n      } else if (readyAgents.length > 1 && requireKingChoice) {\n        await prisma.workOrder.update({ where: { id: workOrder.id }, data: { assignedExternalAgentId: null } });\n        const choice = await requestKingExternalAgentChoice({ workOrderId: workOrder.id, workOrderTitle: workOrder.title, projectId: workOrder.projectId });\n        await blockStep(run.id, \"RESOLVE_AGENT\", `King choice required; decision item ${choice.matterId} lists ${readyAgents.length} ready agents.`);\n        await setRun(run.id, \"BLOCKED\", \"RESOLVE_AGENT\", \"Choose Agent\", null, workOrder.id);\n        return loadWorkflowView(run.id);\n      } else if (readyAgents.length > 1) {\n        workOrder = await assignExternalAgent(workOrder.id, readyAgents[0]!.agentId);\n      } else {\n        const reasons = readiness.agents.length\n          ? readiness.agents.map((agent) => `${agent.name}: ${agent.reason}`).join(\"; \")\n          : \"No active external agents are configured.\";\n        return block(run.id, \"RESOLVE_AGENT\", reasons, \"Choose Agent\", workOrder.id);\n      }\n    }\n    await completeStep(run.id, \"RESOLVE_AGENT\", \"ExternalAgent\", workOrder.assignedExternalAgentId, \"A bridge-ready external agent is selected.\");",
+      "why": "One ready agent is assigned automatically. Several ready agents, with REQUIRE_KING_EXTERNAL_AGENT_CHOICE on, block the run and raise a decision item. With none ready, the run blocks and lists each agent's reason.",
+      "claimIndexes": [
+        3
+      ]
+    },
+    {
+      "id": "review-routing",
+      "title": "From runner result to the next human action",
+      "path": "apps/api/src/services/decreeToDoneWorkflowService.ts",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "startLine": 262,
+      "endLine": 288,
+      "language": "typescript",
+      "code": "  if (job.status === \"FAILED\") {\n    return block(runId, \"RETRY_OR_ESCALATE\", \"Runner job failed without a reviewable result. Inspect the job and decide the next action.\", \"Review Result\", workOrderId, jobId);\n  }\n  if (!report) {\n    return block(runId, \"VALIDATE_RESULT\", \"Runner completed without an Implementation Report.\", \"Review Result\", workOrderId, jobId);\n  }\n  const noChanges = report.filesChanged.length === 0 && /\\bNO_CHANGES\\b/i.test(`${report.summary}\\n${report.rawOutput ?? \"\"}`);\n  if (patches.length === 0 && !noChanges) {\n    return block(runId, \"VALIDATE_RESULT\", \"Runner result is missing a PatchArtifact and did not explicitly report NO_CHANGES.\", \"Review Result\", workOrderId, jobId);\n  }\n  await completeStep(runId, \"VALIDATE_RESULT\", \"ImplementationReport\", report.id, `Validation result: ${report.testResult}.`);\n  if (!review) {\n    return block(runId, \"REVIEW_RESULT\", \"Implementation Report exists but AgentReviewSummary is missing.\", \"Review Result\", workOrderId, jobId);\n  }\n  await completeStep(runId, \"REVIEW_RESULT\", \"AgentReviewSummary\", review.id, `${review.verdict}: ${review.summary}`);\n\n  if (MECHANICAL_RETRY_VERDICTS.has(review.verdict)) {\n    await reviewStep(runId, \"RETRY_OR_ESCALATE\", \"AgentReviewSummary\", review.id, \"Mechanical failure can be retried under the supervised retry policy.\");\n    await setRun(runId, \"NEEDS_REVIEW\", \"RETRY_OR_ESCALATE\", \"Retry\", review.summary, workOrderId, jobId);\n  } else if (review.verdict === \"PASS\") {\n    await reviewStep(runId, \"ARCHIVE_LEARNING\", \"AgentReviewSummary\", review.id, \"Passing work is ready for explicit King acceptance.\");\n    await setRun(runId, \"NEEDS_REVIEW\", \"ARCHIVE_LEARNING\", \"Accept & Learn\", null, workOrderId, jobId);\n  } else if (SEMANTIC_ESCALATION_VERDICTS.has(review.verdict) || review.verdict !== \"PASS\") {\n    await reviewStep(runId, \"RETRY_OR_ESCALATE\", \"AgentReviewSummary\", review.id, \"Semantic or risky result requires a King decision.\");\n    await setRun(runId, \"NEEDS_REVIEW\", \"RETRY_OR_ESCALATE\", \"Review Result\", review.summary, workOrderId, jobId);\n  }\n  return loadWorkflowView(runId);",
+      "why": "A missing report, patch or review blocks instead of passing. Mechanical failures route to Retry, PASS routes to Accept & Learn, which still needs the King, and anything else goes to Review Result.",
+      "claimIndexes": [
+        4
+      ]
+    },
+    {
+      "id": "no-push",
+      "title": "No-push policy and unattended-push test",
+      "path": "apps/runner/src/sandboxPatchPolicy.ts",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "startLine": 37,
+      "endLine": 56,
+      "language": "typescript",
+      "code": "/** Decide whether the runner should even attempt a branch push for a job. */\nexport function evaluateBranchPushEligibility(input: BranchPushEligibilityInput): BranchPushEligibilityResult {\n  if (!input.allowBranchPush) return { attemptPush: false, reason: \"Branch push disabled\" };\n  if (!input.hasArtifact) return { attemptPush: false, reason: \"No patch artifact\" };\n  if (!input.branchName) return { attemptPush: false, reason: \"No branch name\" };\n  if (input.commandPolicy === SANDBOX_PATCH_NO_PUSH) {\n    return { attemptPush: false, reason: \"commandPolicy restricts branch push\" };\n  }\n  return { attemptPush: true };\n}\n\nexport interface ApprovalArtifactState {\n  validationStatus: string;\n  riskLevel: string;\n}\n\n/** Decide whether a patch can be pushed without explicit King approval. */\nexport function shouldPushWithoutApproval(artifact: ApprovalArtifactState): boolean {\n  return artifact.riskLevel === \"LOW\" && artifact.validationStatus === \"PENDING\";\n}",
+      "why": "The runner refuses a push for SANDBOX_PATCH_NO_PUSH jobs even when the server allows branch push. Unattended push needs a LOW-risk artifact whose validation is still PENDING.",
+      "claimIndexes": [
+        10
+      ]
+    },
+    {
+      "id": "auto-patch-risk",
+      "title": "Eight ordered checks before an automatic patch job",
+      "path": "apps/api/src/services/livingLoopRiskPolicyService.ts",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "startLine": 42,
+      "endLine": 80,
+      "language": "typescript",
+      "code": "export function isAutoPatchEligible(ctx: RiskPolicyContext): RiskPolicyResult {\n  if (ctx.todayJobCount >= ctx.maxDailyJobs) {\n    return { eligible: false, skippedReason: \"Daily auto patch limit reached\", auditAction: \"auto_patch_daily_limit_blocked\" };\n  }\n  if (ctx.candidate.confidence < ctx.minConfidence) {\n    return { eligible: false, skippedReason: `Confidence ${ctx.candidate.confidence} below threshold ${ctx.minConfidence}`, auditAction: \"living_loop_auto_sandbox_patch_skipped\" };\n  }\n  if (ctx.candidate.riskLevel !== \"LOW\") {\n    return { eligible: false, skippedReason: `Risk level ${ctx.candidate.riskLevel} is not LOW`, auditAction: \"auto_patch_risk_policy_blocked\" };\n  }\n  if (!ctx.runnerOnline) {\n    return { eligible: false, skippedReason: \"No online runner available\", auditAction: \"living_loop_auto_sandbox_patch_skipped\" };\n  }\n  if (!ctx.workOrder.projectId) {\n    return { eligible: false, skippedReason: \"Work order not linked to project\", auditAction: \"living_loop_auto_sandbox_patch_skipped\" };\n  }\n  if (ctx.activeJobCount > 0) {\n    return { eligible: false, skippedReason: \"Active automation job already exists\", auditAction: \"living_loop_auto_sandbox_patch_skipped\" };\n  }\n  if (ctx.recentJobCount > 0) {\n    return { eligible: false, skippedReason: \"Auto patch job within cooldown\", auditAction: \"auto_patch_cooldown_blocked\" };\n  }\n\n  // Check proposedAction hints for blocked paths\n  const action = ctx.candidate.proposedAction as any;\n  if (action && typeof action === \"object\") {\n    const hints: string[] = [];\n    if (Array.isArray(action.fileHints)) hints.push(...action.fileHints);\n    if (Array.isArray(action.expectedFiles)) hints.push(...action.expectedFiles);\n\n    for (const hint of hints) {\n      const lowerHint = hint.toLowerCase();\n      if (BLOCKED_PATHS.some(b => lowerHint.includes(b))) {\n        return { eligible: false, skippedReason: `Blocked path hint detected: ${hint}`, auditAction: \"auto_patch_risk_policy_blocked\" };\n      }\n    }\n  }\n\n  return { eligible: true };",
+      "why": "A pure function returns eligible or a skip reason plus an audit action. Limits, confidence and risk come first, then runner and project, then active and recent jobs, then blocked-path hints.",
+      "claimIndexes": [
+        11
+      ]
+    },
+    {
+      "id": "routing-order",
+      "title": "Ranking providers by cost mode and task mode",
+      "path": "apps/api/src/services/aiProviderRouter.ts",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "startLine": 361,
+      "endLine": 399,
+      "language": "typescript",
+      "code": "export function orderByPolicy(providers: AIProviderConfig[], taskMode: TaskMode, costMode: AICostMode): AIProviderConfig[] {\n  const taskOrder = TASK_MODE_PROVIDER_ORDER[taskMode];\n  const ranked = [...providers].sort((a, b) => {\n    const taskRank = rankInList(a.id, taskOrder) - rankInList(b.id, taskOrder);\n    const costRank = costModeRank(a, costMode) - costModeRank(b, costMode);\n    return costRank || taskRank || a.priority - b.priority || a.name.localeCompare(b.name);\n  });\n\n  return ranked;\n}\n\nexport function supportsRequiredCapabilities(provider: AIProviderConfig, required: RequiredAICapabilities = {}): boolean {\n  if (required.chat !== false && !provider.supportsChat) return false;\n  if (required.tools && !provider.supportsTools) return false;\n  if (required.vision && !provider.supportsVision) return false;\n  if (required.jsonMode && !provider.supportsJsonMode) return false;\n  return true;\n}\n\nasync function resolveCostMode(agentPreference?: string | null): Promise<AICostMode> {\n  if (agentPreference === \"LOW\") return \"low\";\n  if (agentPreference === \"QUALITY\") return \"quality\";\n  if (agentPreference === \"BALANCED\") return \"balanced\";\n  const settingValue = await getSettingValue(\"AI_COST_MODE\", env.AI_COST_MODE);\n  if ([\"low\", \"balanced\", \"quality\"].includes(settingValue)) return settingValue as AICostMode;\n  return env.AI_COST_MODE;\n}\n\nfunction rankInList(id: string, values: string[]): number {\n  const index = values.indexOf(id);\n  return index === -1 ? 1000 : index;\n}\n\nfunction costModeRank(provider: AIProviderConfig, costMode: AICostMode): number {\n  const costRank = { FREE: 0, LOW: 1, MEDIUM: 2, HIGH: 3, PREMIUM: 4 }[provider.costTier];\n  if (costMode === \"low\") return costRank;\n  if (costMode === \"quality\") return 4 - costRank;\n  return Math.abs(costRank - 2);\n}",
+      "why": "Sorting is by cost-mode rank, then the task mode's preferred list, then priority and name. In low mode cheaper tiers rank first, in quality mode the reverse, and balanced prefers the middle.",
+      "claimIndexes": [
+        14
+      ]
+    },
+    {
+      "id": "fallback-result",
+      "title": "What a provider call must report",
+      "path": "apps/api/src/ai/generateWithFallback.ts",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "startLine": 21,
+      "endLine": 44,
+      "language": "typescript",
+      "code": "export type GenerateWithFallbackResult = {\n  response: string;\n  providerName: string;\n  providerId?: string;\n  modelUsed: string;\n  fallbackNotice?: string;\n  attemptedProviders: string[];\n  usage: TokenUsage;\n  attemptedProviderId?: string;\n  attemptedModel?: string;\n  finalProviderId?: string;\n  finalModel?: string;\n  fallbackUsed: boolean;\n  fallbackReason?: string;\n  errorCode?: string;\n  errorMessage?: string;\n  configuredModel?: string;\n  actualSentModel?: string;\n  responseModel?: string | null;\n  // Completion reason of the winning provider (\"length\"/\"max_tokens\" = truncated).\n  finishReason?: string | null;\n  // Resolved provider type of the winner (\"sandbox\" when it fell to mock).\n  finalProviderType?: string;\n};",
+      "why": "The result keeps the attempted provider and model apart from the final ones, plus fallbackUsed, usage and finishReason, which is how usage and cost stay attributable when a fallback answers.",
+      "claimIndexes": [
+        15
+      ]
+    },
+    {
+      "id": "sandbox-run",
+      "title": "Running a command: validate, confine, no shell",
+      "path": "apps/runner/src/sandbox.ts",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "startLine": 58,
+      "endLine": 97,
+      "language": "typescript",
+      "code": "export async function runCommand(\n  command: string,\n  args: string[],\n  opts: RunCommandOptions\n): Promise<ExecutionResult> {\n  // 1. Validate against allowlist\n  const validation = validateCommand(command, args, opts.jobAllowedCommands);\n  if (!validation.allowed) {\n    return {\n      exitCode: -1,\n      stdout: \"\",\n      stderr: \"\",\n      output: `[BLOCKED] ${validation.reason}`,\n      durationMs: 0,\n      cwd: path.resolve(opts.cwd ?? opts.workspaceRoot),\n      allowed: false,\n      timedOut: false,\n      outputTruncated: false,\n      blockReason: validation.reason\n    };\n  }\n\n  // 2. Assert cwd is inside workspace\n  const effectiveCwd = opts.cwd ?? opts.workspaceRoot;\n  assertCwdInWorkspace(opts.workspaceRoot, effectiveCwd);\n\n  const startedAt = Date.now();\n  const timeout = opts.timeoutMs ?? getCommandTimeoutMs(opts.env);\n\n  return new Promise((resolve) => {\n    let stdout = \"\";\n    let stderr = \"\";\n    let timedOut = false;\n\n    const child = spawn(command, args, {\n      cwd: path.resolve(effectiveCwd),\n      env: buildValidationChildEnv(opts.env).env,\n      shell: false,           // NEVER shell: true\n      timeout\n    });",
+      "why": "Validation happens before spawn, the working directory must stay inside the workspace, and spawn uses shell false with a timeout. A blocked command returns allowed false and a reason.",
+      "claimIndexes": [
+        8
+      ]
+    },
+    {
+      "id": "git-validator",
+      "title": "What git may do in the runner",
+      "path": "apps/runner/src/commandValidator.ts",
+      "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+      "startLine": 39,
+      "endLine": 72,
+      "language": "typescript",
+      "code": "function validateGitArgs(args: string[]): boolean {\n  const sub = args[0] ?? \"INVALID\";\n  if (!allowedGitSubcommands.has(sub)) return false;\n\n  switch (sub) {\n    case \"status\": case \"log\": return true;\n    case \"diff\": return args.length <= 3;\n    case \"show\": return args.length <= 2;\n    case \"checkout\": {\n      if (args[1] !== \"-b\") return false;\n      const branch = args[2];\n      if (!branch) return false;\n      return SAFE_BRANCH_PATTERN.test(branch);\n    }\n    case \"add\": {\n      if (args.length < 2) return false;\n      return args.slice(1).every((a) => !a.startsWith(\"../\") && !a.startsWith(\"/\") && a !== \"--\");\n    }\n    case \"commit\": {\n      if (args[1] !== \"-m\" || !args[2]) return false;\n      const msg = args[2];\n      return !/[`$<>|;&]/.test(msg) && msg.length <= 200;\n    }\n    case \"push\": {\n      if (args[1] !== \"origin\") return false;\n      const branch = args[2];\n      if (!branch || isProtectedBranch(branch)) return false;\n      if (!SAFE_BRANCH_PATTERN.test(branch)) return false;\n      if (args.length > 3) return false;\n      return true;\n    }\n    default: return false;\n  }\n}",
+      "why": "Each git subcommand has its own argument rule. Checkout must create a kingdom/job branch, commit messages reject shell metacharacters, and push must target a safe branch that is not protected.",
+      "claimIndexes": [
+        9
+      ]
+    }
+  ],
+  "captures": [
+    "ai-kingdom-shortlog",
+    "ai-kingdom-claude-trailers",
+    "ai-kingdom-git-history",
+    "ai-kingdom-source-counts"
+  ],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Runs locally with Docker for PostgreSQL and npm scripts; the README documents a staging deployment recipe but no public URL is recorded."
+  },
+  "limitations": [
+    "Local/Ollama registry metadata exists, but there is no Ollama runtime client yet (README).",
+    "Several UI milestones record that rendered-browser verification was outstanding when written (PROJECT_STATUS.md); no visual-pass claim is made there.",
+    "Test counts are the repo's own statements and differ between documents written on different dates (969, 978 API tests); this review re-ran none of them.",
+    "An earlier status entry lists 5 pre-existing environment-dependent API test failures (788/793); later entries report all passing.",
+    "Provider reliability noted in the status document: free-tier OpenRouter timeouts, native DeepSeek 402, Gemini 404/429 at the time of writing.",
+    "Single-King, local-first design with a seeded demo account documented in the README (not reproduced here); no public deployment, user count or hosted demo is recorded.",
+    "AGENTS.md says external agent work orders are manual handoff only, while the README documents gated runner execution paths; the archivist skill mentions ADRs but git lists none.",
+    "The repo contains character portraits and a kingdom scene image used by the UI, but no screenshots or diagrams, so no images are shown here."
+  ],
+  "contribution": "git shows 270 commits, all with the author name phcaradanai and the address phcaradanai@gmail.com, from 2026-06-06 to 2026-07-03. No other author name appears. Co-Authored-By trailers name Claude Sonnet 4.6 (47) and Claude Opus 4.8 (45).",
+  "lastVerified": "2026-10-25",
+  "diagram": {
+    "nodes": [
+      {
+        "id": "king",
+        "label": "King (human)",
+        "group": "people",
+        "note": "Issues decrees, chooses agents, accepts results"
+      },
+      {
+        "id": "web",
+        "label": "apps/web (React)",
+        "group": "ui",
+        "note": "Mission Control, role-aware navigation"
+      },
+      {
+        "id": "api",
+        "label": "apps/api (Express)",
+        "group": "server",
+        "note": "Auth, RBAC, policy, persistence"
+      },
+      {
+        "id": "db",
+        "label": "PostgreSQL (Prisma)",
+        "group": "storage",
+        "note": "Records, usage, audit"
+      },
+      {
+        "id": "workflow",
+        "label": "decreeToDoneWorkflowService",
+        "group": "server",
+        "note": "WorkflowRun and steps"
+      },
+      {
+        "id": "council",
+        "label": "grandVizierOrchestrator",
+        "group": "server",
+        "note": "Council and usage records"
+      },
+      {
+        "id": "router",
+        "label": "aiProviderRouter + generateWithFallback",
+        "group": "server",
+        "note": "Ranking and fallback chain"
+      },
+      {
+        "id": "providers",
+        "label": "AI providers",
+        "group": "external",
+        "note": "openai, openrouter, deepseek, anthropic, gemini, mock"
+      },
+      {
+        "id": "living",
+        "label": "livingLoopService + scheduler",
+        "group": "server",
+        "note": "Opt-in automation, risk policy"
+      },
+      {
+        "id": "runner",
+        "label": "apps/runner (sandbox)",
+        "group": "runner",
+        "note": "Allowlist, no shell, no-push policy"
+      },
+      {
+        "id": "agentcli",
+        "label": "External agent CLI",
+        "group": "external",
+        "note": "Claude Code and others"
+      }
+    ],
+    "edges": [
+      {
+        "from": "king",
+        "to": "web",
+        "label": "decree, approvals"
+      },
+      {
+        "from": "web",
+        "to": "api",
+        "label": "REST, JWT"
+      },
+      {
+        "from": "api",
+        "to": "db",
+        "label": "Prisma"
+      },
+      {
+        "from": "api",
+        "to": "workflow",
+        "label": "BUILD decree"
+      },
+      {
+        "from": "workflow",
+        "to": "council",
+        "label": "run council"
+      },
+      {
+        "from": "council",
+        "to": "router",
+        "label": "per-agent calls"
+      },
+      {
+        "from": "router",
+        "to": "providers",
+        "label": "chain with fallback"
+      },
+      {
+        "from": "workflow",
+        "to": "db",
+        "label": "WorkflowRun, steps"
+      },
+      {
+        "from": "living",
+        "to": "db",
+        "label": "candidates, gated jobs"
+      },
+      {
+        "from": "runner",
+        "to": "api",
+        "label": "claim job, heartbeat, report"
+      },
+      {
+        "from": "runner",
+        "to": "agentcli",
+        "label": "spawn, no shell"
+      }
+    ]
+  }
+}

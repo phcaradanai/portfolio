@@ -1,0 +1,388 @@
+{
+  "slug": "vending-3d-ctl-agent",
+  "accession": "PK-2026-015",
+  "title": "Vending serial control API",
+  "kind": "hardware",
+  "tier": "B",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Node.js API that drives a vending cabinet over three serial ports, with optional MQTT and NATS JetStream publishing of QR and NFC scans.",
+  "summary": "An Express 5 service in Node.js ESM that bridges HTTP to three serial channels on a vending cabinet: vending (hex payloads, HTTP waits for the device reply), navigation lights (JSON lines) and a QR/NFC reader (continuous read). Scans can be published over MQTT and, as a unified event, to a core service over NATS JetStream. Routes sit behind an optional Bearer token. The repo has eight node:test files, a Docker setup and ISO/IEC 29110 style documents. The owner made 37 of its 55 commits.",
+  "period": {
+    "start": "2026-05-07",
+    "end": "2026-07-31"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/vending-3d-ctl-agent",
+    "pinnedSha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+    "ownerCommits": 37,
+    "totalCommits": 55,
+    "languages": {
+      "JavaScript": 375532,
+      "CSS": 39568,
+      "HTML": 15736,
+      "Go": 7841,
+      "Dockerfile": 1244,
+      "Makefile": 411,
+      "Batchfile": 161
+    },
+    "checkedAt": "2026-10-25"
+  },
+  "stack": [
+    "JavaScript (ESM)",
+    "Node.js",
+    "Express 5",
+    "serialport",
+    "MQTT",
+    "NATS JetStream",
+    "Docker",
+    "Swagger UI",
+    "node:test"
+  ],
+  "aiRole": {
+    "summary": "A CLAUDE.md for Claude Code (E16) and a .claude/ folder with an oh-my-claudecode reference skill (E17) are committed. A security decision note names Hermes Agent as its author (E19), and a task brief is written as instructions to an agent (E20). Eight test files exist, but no run output is stored; CLAUDE.md says 46 tests (E14) while AGENTS.md still calls the test script a placeholder (E15), so the docs disagree and neither was checked here.",
+    "tools": [
+      {
+        "name": "Claude Code",
+        "use": "CLAUDE.md gives it commands and architecture notes for the repo.",
+        "evidence": "E16"
+      },
+      {
+        "name": "oh-my-claudecode",
+        "use": "A committed .claude skill file documents its agent catalog and commit protocol.",
+        "evidence": "E17"
+      },
+      {
+        "name": "Hermes Agent",
+        "use": "Named as the author of a security decision note in docs/security.",
+        "evidence": "E19"
+      }
+    ]
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "src/services/nats.service.js",
+      "lines": [
+        70,
+        103
+      ],
+      "note": "publishScannerEvent: JetStream publish with the event id as message id; failures are logged and return false."
+    },
+    {
+      "id": "E2",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "src/services/nats.service.js",
+      "lines": [
+        56,
+        68
+      ],
+      "note": "Optional publisher: disabled unless enabled, and a failed first connection does not stop boot."
+    },
+    {
+      "id": "E3",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "src/middleware/validateSerialWrite.middleware.js",
+      "lines": [
+        1,
+        26
+      ],
+      "note": "validateSerialWrite: non-empty string, even-length hex after stripping whitespace."
+    },
+    {
+      "id": "E4",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "src/middleware/validateSerialWrite.middleware.js",
+      "lines": [
+        30,
+        45
+      ],
+      "note": "validateSerialWriteNavigationLights: data must be a plain JSON object."
+    },
+    {
+      "id": "E5",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "src/routes/serial.routes.js",
+      "lines": [
+        54,
+        54
+      ],
+      "note": "validateSerialWrite is in a serial route's middleware chain."
+    },
+    {
+      "id": "E6",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "src/app.js",
+      "lines": [
+        114,
+        121
+      ],
+      "note": "Health router mounted before requireApiBearerToken; other API routes after it."
+    },
+    {
+      "id": "E7",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "src/middleware/apiBearerAuth.middleware.js",
+      "lines": [
+        4,
+        25
+      ],
+      "note": "timingSafeEqual comparison; passes everything through when no token is set unless bearer auth is required (then 503)."
+    },
+    {
+      "id": "E8",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "src/services/serial.service.js",
+      "lines": [
+        327,
+        327
+      ],
+      "note": "scheduleReconnect(channel, connectFn, timerRefName); called for the vending and qr-nfc channels (lines 388 to 465)."
+    },
+    {
+      "id": "E9",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "src/services/mqtt.service.js",
+      "lines": [
+        135,
+        135
+      ],
+      "note": "MQTT publish call."
+    },
+    {
+      "id": "E10",
+      "level": "reported",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "README.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "API for vending control with three serial channels"
+    },
+    {
+      "id": "E11",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "package.json",
+      "lines": [
+        9,
+        13
+      ],
+      "note": "test script is node --test."
+    },
+    {
+      "id": "E12",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "package.json",
+      "lines": [
+        14,
+        25
+      ],
+      "note": "Dependencies include mqtt, nats, serialport, express."
+    },
+    {
+      "id": "E13",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "test/serial-write-validation.test.js",
+      "note": "One of eight test files under test/."
+    },
+    {
+      "id": "E14",
+      "level": "reported",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "CLAUDE.md",
+      "lines": [
+        15,
+        15
+      ],
+      "quote": "currently 46 tests covering the SY600/cabinet frame codecs, the dispenser order flow, the manual-test command catalog, and the manual-test LED geometry."
+    },
+    {
+      "id": "E15",
+      "level": "reported",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "AGENTS.md",
+      "lines": [
+        19,
+        19
+      ],
+      "quote": "currently runs the placeholder package script and exits with failure until real tests are added"
+    },
+    {
+      "id": "E16",
+      "level": "reported",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "CLAUDE.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "E17",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": ".claude/skills/omc-reference/SKILL.md",
+      "lines": [
+        2,
+        3
+      ],
+      "note": "Skill file omc-reference: OMC agent catalog, team routing, commit protocol."
+    },
+    {
+      "id": "E19",
+      "level": "reported",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "docs/security/2026-07-14-token-history-rewrite-decision.md",
+      "lines": [
+        5,
+        5
+      ],
+      "quote": "(Hermes Agent)"
+    },
+    {
+      "id": "E20",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "next-prompt-token-rotate-dev.md",
+      "lines": [
+        1,
+        1
+      ],
+      "note": "Task brief written as instructions to an agent; its content was not followed or copied."
+    },
+    {
+      "id": "E21",
+      "level": "ran",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "captureId": "vending-3d-ctl-agent-git-facts"
+    },
+    {
+      "id": "E22",
+      "level": "source",
+      "repo": "phcaradanai/vending-3d-ctl-agent",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "path": "README.md",
+      "lines": [
+        37,
+        42
+      ],
+      "note": "Serial port variables: SERIAL_VENDING, SERIAL_NAVIGATION_LIGHTS, SERIAL_QR_NFC and their baud rates."
+    }
+  ],
+  "claims": [
+    {
+      "text": "The service bridges HTTP to three serial channels (vending, navigation lights, QR/NFC reader), each with its own port variable. Reconnect scheduling exists per channel (the vending and qr-nfc calls are visible), and QR/NFC scans can also be published over MQTT.",
+      "evidence": [
+        "E8",
+        "E9",
+        "E10",
+        "E22"
+      ]
+    },
+    {
+      "text": "Hardware-facing input is checked before it reaches a port: the vending write must be a non-empty even-length hex string after whitespace is stripped, and the navigation-lights write must carry a plain JSON object. API routes sit behind a Bearer middleware that compares tokens with timingSafeEqual, while the health route is mounted before it.",
+      "evidence": [
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "E7"
+      ]
+    },
+    {
+      "text": "The NATS JetStream publisher is optional and does not block start-up. It reconnects without an attempt limit, uses the scan event id as the JetStream message id for de-duplication, and on a failed publish logs the error and returns false instead of throwing.",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "text": "Repository facts from a git run: 55 commits, 37 by the owner's account and 18 by one other contributor, between 2026-05-07 and 2026-07-31; eight files under test/.",
+      "evidence": [
+        "E21"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "serial-write-validation",
+      "title": "Validating a hex payload before it is written to the port",
+      "path": "src/middleware/validateSerialWrite.middleware.js",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "startLine": 1,
+      "endLine": 26,
+      "language": "javascript",
+      "code": "export async function validateSerialWrite(req, res, next) {\n  const { data } = req.body;\n\n  if (typeof data !== \"string\" || !data.trim().length) {\n    return res.status(400).json({\n      error: \"Body must include non-empty string field: data\",\n    });\n  }\n\n  // Remove whitespace to support space-separated hex payloads\n  const normalizedHex = data.replace(/\\s+/g, \"\");\n\n  if (normalizedHex.length % 2 !== 0) {\n    return res.status(400).json({\n      error: \"Serial payload must be a valid even-length hex string\",\n    });\n  }\n\n  if (!/^[0-9a-fA-F]+$/.test(normalizedHex)) {\n    return res.status(400).json({\n      error: \"Serial payload must be a valid even-length hex string\",\n    });\n  }\n\n  return next();\n}",
+      "why": "The body must hold a non-empty string. Whitespace is stripped so space-separated hex is accepted, then the length must be even and every character a hex digit. Anything else gets a 400 before any serial write happens.",
+      "claimIndexes": [
+        1
+      ]
+    },
+    {
+      "id": "jetstream-publish",
+      "title": "Publishing a scanner event to JetStream with de-duplication",
+      "path": "src/services/nats.service.js",
+      "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+      "startLine": 70,
+      "endLine": 103,
+      "language": "javascript",
+      "code": "/**\n * Publish the canonical scanner envelope to Core's JetStream subject.\n * The event id is used as the JetStream message id for de-duplication.\n */\nexport async function publishScannerEvent(event) {\n  if (!NATS_ENABLED) return false;\n  try {\n    await connectPublisher();\n    if (!jetstream) return false;\n    const data = codec.encode(JSON.stringify(event));\n    const ack = await jetstream.publish(NATS_SCANNER_SUBJECT, data, {\n      msgID: event.eventId,\n    });\n    logAgent.app({\n      event: \"nats.scanner.publish\",\n      subject: NATS_SCANNER_SUBJECT,\n      stream: ack?.stream || NATS_SCANNER_STREAM,\n      sequence: ack?.seq ?? null,\n      eventId: event.eventId,\n      kioskCode: event.kioskCode,\n    });\n    return true;\n  } catch (error) {\n    lastError = error.message;\n    logAgent.error({\n      event: \"nats.scanner.publish.failed\",\n      subject: NATS_SCANNER_SUBJECT,\n      eventId: event?.eventId ?? null,\n      kioskCode: event?.kioskCode ?? KIOSK_CODE,\n      message: error.message,\n    });\n    return false;\n  }\n}",
+      "why": "The event id is passed as msgID, so JetStream can drop a duplicate. A publish error is caught, logged with the subject and event id, and turned into a false return value, so a scan is not lost to an exception in the caller.",
+      "claimIndexes": [
+        2
+      ]
+    }
+  ],
+  "captures": [
+    "vending-3d-ctl-agent-git-facts"
+  ],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Needs serial hardware (or configured ports); runs locally or in Docker. No public deployment."
+  },
+  "limitations": [
+    "No hardware run is recorded in the repo that this entry could check, and nothing was run here against a device. Tests were not run either; CLAUDE.md claims 46 tests (E14) while AGENTS.md still says the test script is a placeholder (E15).",
+    "Bearer authentication applies only when a token is configured: with no token, and bearer auth not required, requests pass through unauthenticated (E7). The health route is public by design (E6). The README says to leave the token empty only for local development.",
+    "The repo holds hardware spreadsheets and exported CSV under docs/ and customer-specific configuration examples; these were not reviewed and are not described here.",
+    "Only part of serial.service.js was read (reconnect scheduling); the serial framing and SY600 helper code were not examined."
+  ],
+  "contribution": "37 of the 55 commits are attributed to the owner's account; the other 18 come from one other contributor. First commit 2026-05-07, last 2026-07-31.",
+  "lastVerified": "2026-10-25"
+}

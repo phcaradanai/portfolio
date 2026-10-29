@@ -1,0 +1,86 @@
+{
+ "generatedAt": "2026-10-24T11:54:23.309Z",
+ "source": "gh repo list phcaradanai (GitHub API)",
+ "note": "Repositories created per year, excluding forks and generated verification repositories. Private repositories are counted by language only.",
+ "totals": {
+  "owned": 79,
+  "counted": 57,
+  "generatedExcluded": 22,
+  "forksExcluded": 2,
+  "public": 39,
+  "private": 18
+ },
+ "years": {
+  "2020": {
+   "public": 1,
+   "private": 0,
+   "languages": {
+    "Other": 1
+   }
+  },
+  "2021": {
+   "public": 5,
+   "private": 1,
+   "languages": {
+    "C#": 1,
+    "HTML": 1,
+    "C++": 2,
+    "Other": 1,
+    "COBOL": 1
+   }
+  },
+  "2022": {
+   "public": 3,
+   "private": 1,
+   "languages": {
+    "Other": 3,
+    "TypeScript": 1
+   }
+  },
+  "2023": {
+   "public": 1,
+   "private": 1,
+   "languages": {
+    "TypeScript": 1,
+    "Other": 1
+   }
+  },
+  "2024": {
+   "public": 4,
+   "private": 6,
+   "languages": {
+    "HTML": 2,
+    "Vue": 3,
+    "CSS": 1,
+    "TypeScript": 1,
+    "Python": 1,
+    "Java": 1,
+    "Other": 1
+   }
+  },
+  "2025": {
+   "public": 2,
+   "private": 3,
+   "languages": {
+    "Other": 1,
+    "Vue": 3,
+    "JavaScript": 1
+   }
+  },
+  "2026": {
+   "public": 23,
+   "private": 6,
+   "languages": {
+    "TypeScript": 13,
+    "HTML": 1,
+    "Rust": 2,
+    "GDScript": 2,
+    "JavaScript": 5,
+    "Go": 4,
+    "C#": 1,
+    "Other": 1
+   }
+  }
+ },
+ "firstRepoCreatedAt": "2020-01-21T05:31:27Z"
+}

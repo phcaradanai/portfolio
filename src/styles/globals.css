@@ -1,0 +1,118 @@
+/* Tokens, reset, type. The gallery world lives in gallery.css. */
+
+@layer reset, tokens, base, gallery, utilities;
+
+@layer tokens {
+  :root {
+    color-scheme: dark;
+
+    /* Surfaces of the building */
+    --ink: oklch(0.17 0.014 258);          /* text on paper labels */
+    --ink-soft: oklch(0.38 0.02 258);      /* secondary text on paper (≥ 7:1 on --paper) */
+    --paper: oklch(0.975 0.006 92);        /* wall-label card */
+    --paper-edge: oklch(0.86 0.01 92);
+    --vinyl: oklch(0.955 0.012 85);        /* cut-vinyl wall lettering */
+    --vinyl-soft: oklch(0.82 0.018 85);    /* secondary text directly on a wall */
+    --thread: oklch(0.64 0.21 29);         /* the one accent: evidence thread */
+    --thread-ink: oklch(0.5 0.2 29);       /* thread colour on paper (≥ 4.5:1) */
+    --lamp: oklch(0.94 0.07 85);           /* spotlight tint */
+
+    /* Wall colours, one per room */
+    --wall-studio: oklch(0.3 0.08 245);    /* Prussian */
+    --wall-works: oklch(0.3 0.09 22);      /* oxblood */
+    --wall-lab: oklch(0.285 0.055 178);    /* verdigris */
+    --wall-gallery: oklch(0.2 0.01 270);   /* graphite */
+    --wall-journey: oklch(0.32 0.065 68);  /* umber */
+    --wall-storage: oklch(0.35 0.014 235); /* concrete */
+
+    /* Type */
+    --font-vinyl: var(--f-archivo), "Arial Narrow", sans-serif;
+    --font-label: var(--f-hanken), system-ui, sans-serif;
+    --font-mono: var(--f-martian), ui-monospace, "SF Mono", monospace;
+
+    --step--1: clamp(0.8125rem, 0.79rem + 0.1vw, 0.875rem);
+    --step-0: clamp(0.9375rem, 0.91rem + 0.15vw, 1.0625rem);
+    --step-1: clamp(1.125rem, 1.05rem + 0.35vw, 1.375rem);
+    --step-2: clamp(1.5rem, 1.3rem + 0.9vw, 2.125rem);
+    --step-3: clamp(2rem, 1.5rem + 2.2vw, 3.5rem);
+    --step-4: clamp(2.75rem, 1.6rem + 4.6vw, 6rem); /* vinyl display; 6rem is the ceiling */
+
+    /* Space (4px base) */
+    --s-1: 0.25rem; --s-2: 0.5rem; --s-3: 0.75rem; --s-4: 1rem; --s-5: 1.5rem;
+    --s-6: 2rem; --s-7: 3rem; --s-8: 4.5rem; --s-9: 7rem; --s-10: 10rem;
+    --gutter: clamp(1rem, 4vw, 3rem);
+    --wall-max: 90rem;
+
+    /* Light and depth */
+    --shadow-frame: 0 1px 1px oklch(0 0 0 / 0.5), 0 10px 18px -6px oklch(0 0 0 / 0.55), 0 28px 48px -16px oklch(0 0 0 / 0.5);
+    --shadow-label: 0 1px 0 oklch(1 0 0 / 0.6) inset, 0 2px 3px oklch(0 0 0 / 0.35), 0 12px 20px -10px oklch(0 0 0 / 0.55);
+
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --focus: oklch(0.86 0.15 85);
+  }
+}
+
+@layer reset {
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; scroll-padding-top: 5rem; }
+  body, h1, h2, h3, h4, p, figure, blockquote, dl, dd, ul, ol { margin: 0; }
+  ul, ol { padding: 0; list-style: none; }
+  img, svg, canvas, video { display: block; max-width: 100%; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  a { color: inherit; }
+  :where(button) { cursor: pointer; }
+}
+
+@layer base {
+  html { background: var(--wall-studio); }
+  body {
+    min-height: 100dvh;
+    font-family: var(--font-label);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    color: var(--vinyl);
+    background: var(--wall-studio);
+    font-feature-settings: "tnum" 1, "kern" 1;
+    font-variant-numeric: tabular-nums;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+  ::selection { background: var(--thread); color: oklch(0.99 0 0); }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
+  a:not([class]) { text-decoration-line: underline; text-decoration-thickness: 1px; text-underline-offset: 0.22em; text-decoration-color: color-mix(in oklch, currentColor 50%, transparent); }
+  a:not([class]):hover { text-decoration-color: currentColor; text-decoration-thickness: 2px; }
+  :where(h1, h2, h3) { text-wrap: balance; }
+  :where(p, li, dd) { text-wrap: pretty; }
+  code, kbd, samp, pre { font-family: var(--font-mono); font-size: 0.8125rem; }
+
+  /* Scrollbars follow the building, not the OS */
+  html { scrollbar-color: oklch(0.55 0.02 260) var(--wall-gallery); scrollbar-width: thin; }
+
+  .skip-link {
+    position: fixed; left: var(--s-4); top: var(--s-4); z-index: 100;
+    background: var(--paper); color: var(--ink); padding: var(--s-3) var(--s-4);
+    font-weight: 650; text-decoration: none; transform: translateY(-200%);
+  }
+  .skip-link:focus { transform: none; }
+}
+
+@layer utilities {
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+  }
+  .measure { max-inline-size: 68ch; }
+  .tabular { font-variant-numeric: tabular-nums; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+}
+
+@media (forced-colors: active) {
+  :focus-visible { outline-color: Highlight; }
+}
+
+/* Unlayered on purpose: an !important inside a layer would outrank the <noscript> reveal rule in the lab. */
+[hidden] { display: none !important; }

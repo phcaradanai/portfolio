@@ -1,0 +1,13 @@
+{
+  "id": "cursed-market-commit-history",
+  "repo": "phcaradanai/Cursed-Market",
+  "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+  "cwd": ".",
+  "command": "git rev-list --count b34c5e59816cb6606bb7f98cd264b6d399e25c30 && git log b34c5e59816cb6606bb7f98cd264b6d399e25c30 --format=%ae | sort | uniq -c && git log b34c5e59816cb6606bb7f98cd264b6d399e25c30 --format=%ad --date=short | sed -n '1p;$p'",
+  "capturedAt": "2026-10-24T17:16:04Z",
+  "exitCode": 0,
+  "durationMs": 3410,
+  "output": "45\n  45 phcaradanai@gmail.com\n2026-10-24\n2026-10-14",
+  "truncated": false,
+  "environment": "macOS Darwin 25.5.0 (uname -m x86_64), git 2.55.0, /bin/sh"
+}

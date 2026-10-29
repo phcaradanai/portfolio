@@ -1,0 +1,1515 @@
+/* ───────── Awwwards Future Museum Experience Styles ───────── */
+
+/* 1. Cinematic Intro Sequence Overlay */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: oklch(0.08 0.016 265);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s-4);
+  animation: introFadeIn 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes introFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.intro-card {
+  width: min(100%, 38rem);
+  background: oklch(0.12 0.016 265 / 0.96);
+  border: 1px solid oklch(1 0 0 / 0.22);
+  border-radius: 2px;
+  box-shadow: 0 24px 64px oklch(0 0 0 / 0.7);
+  padding: var(--s-6);
+  display: grid;
+  gap: var(--s-4);
+}
+
+.intro-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.intro-code {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  color: var(--lamp);
+  letter-spacing: 0.06em;
+}
+
+.intro-skip {
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  border: 1.5px solid var(--paper) !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  min-height: 36px !important;
+  padding: 0 var(--s-3) !important;
+}
+
+.intro-title {
+  font-family: var(--font-display, Archivo);
+  font-weight: 800;
+  font-stretch: 62%;
+  text-transform: uppercase;
+  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  line-height: 0.95;
+  color: var(--vinyl);
+  margin: 0;
+  display: grid;
+  gap: var(--s-1);
+}
+
+.intro-sub {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--vinyl-soft);
+}
+
+.intro-bar-box {
+  width: 100%;
+  height: 4px;
+  background: oklch(1 0 0 / 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.intro-bar-fill {
+  height: 100%;
+  background: var(--thread);
+  transition: width 80ms linear;
+}
+
+.intro-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--vinyl-soft);
+}
+
+.intro-stage {
+  color: var(--vinyl);
+  letter-spacing: 0.02em;
+}
+
+.intro-pct {
+  font-weight: 700;
+  color: var(--lamp);
+}
+
+/* 2. Future Museum 3D Hero on Foyer */
+.foyer-future-stage {
+  position: relative;
+  width: 100%;
+  height: clamp(34rem, 64vh, 52rem);
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: var(--shadow-frame);
+  margin-bottom: var(--s-5);
+  background: #101326;
+}
+
+.world-canvas-container {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.foyer-hero-hud {
+  position: absolute;
+  top: var(--s-4);
+  left: var(--s-4);
+  right: var(--s-4);
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  pointer-events: none;
+}
+
+.foyer-hero-hud > * {
+  pointer-events: auto;
+}
+
+.foyer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-2) var(--s-3);
+  background: oklch(0.12 0.016 265 / 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid oklch(1 0 0 / 0.2);
+  border-radius: 2px;
+  color: var(--vinyl);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.foyer-badge__pulse {
+  width: 7px;
+  height: 7px;
+  background: #39ff14;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #39ff14;
+  animation: radarPulse 1.8s infinite;
+}
+
+@keyframes radarPulse {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
+}
+
+.foyer-waypoint-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+}
+
+.foyer-waypoint-btn {
+  min-height: 36px;
+  padding: 0 var(--s-3);
+  background: oklch(0.18 0.016 262 / 0.92);
+  backdrop-filter: blur(8px);
+  color: var(--vinyl);
+  border: 1px solid oklch(1 0 0 / 0.2);
+  border-radius: 2px;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms, border-color 150ms;
+}
+
+.foyer-waypoint-btn:hover {
+  background: oklch(0.26 0.02 262);
+  color: oklch(1 0 0);
+}
+
+.foyer-waypoint-btn[aria-pressed="true"] {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--paper);
+  font-weight: 750;
+}
+
+/* 3. Reduced Motion Safety */
+@media (prefers-reduced-motion: reduce) {
+  .intro-overlay {
+    display: none !important;
+  }
+  .foyer-badge__pulse {
+    animation: none !important;
+  }
+  .foyer-future-stage {
+    min-height: auto !important;
+  }
+}
+
+/* 4. Ceiling Rail Controls (Sound & View Mode) */
+.rail__controls {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+@media (max-width: 52rem) {
+  .rail__controls {
+    display: none;
+  }
+}
+
+.rail__ctrl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 32px;
+  padding: 0 0.55rem;
+  background: oklch(0.18 0.016 262 / 0.8);
+  color: var(--vinyl-soft);
+  border: 1px solid oklch(1 0 0 / 0.16);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 150ms var(--ease-out);
+}
+
+.rail__ctrl-btn:hover {
+  background: oklch(0.24 0.02 262);
+  color: var(--vinyl);
+  border-color: oklch(1 0 0 / 0.3);
+}
+
+.rail__ctrl-btn[data-active="true"] {
+  background: oklch(0.2 0.03 190 / 0.6);
+  color: #7cf5e6;
+  border-color: rgba(124, 245, 230, 0.45);
+}
+
+.rail__audio-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 10px;
+  width: 10px;
+}
+
+.rail__audio-bar {
+  width: 2px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.rail__audio-bar:nth-child(1) { height: 40%; }
+.rail__audio-bar:nth-child(2) { height: 100%; }
+.rail__audio-bar:nth-child(3) { height: 70%; }
+
+.rail__ctrl-btn[data-active="true"] .rail__audio-bar:nth-child(1) {
+  animation: audioEq 0.7s infinite alternate ease-in-out;
+}
+.rail__ctrl-btn[data-active="true"] .rail__audio-bar:nth-child(2) {
+  animation: audioEq 0.9s infinite alternate 0.2s ease-in-out;
+}
+.rail__ctrl-btn[data-active="true"] .rail__audio-bar:nth-child(3) {
+  animation: audioEq 0.6s infinite alternate 0.4s ease-in-out;
+}
+
+@keyframes audioEq {
+  0% { height: 30%; }
+  100% { height: 100%; }
+}
+
+/* 5. Modern Cross-Document View Transitions */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rail {
+  view-transition-name: site-rail;
+}
+
+/* 6. 3D Monument Inspector HUD Card */
+.foyer-monument-inspector {
+  position: absolute;
+  bottom: var(--s-4);
+  right: var(--s-4);
+  z-index: 10;
+  width: min(calc(100% - var(--s-8)), 22rem);
+  background: oklch(0.13 0.018 262 / 0.94);
+  border: 1px solid oklch(1 0 0 / 0.24);
+  border-left: 3px solid #7cf5e6;
+  border-radius: 2px;
+  box-shadow: 0 16px 36px oklch(0 0 0 / 0.65);
+  padding: var(--s-3) var(--s-4);
+  display: grid;
+  gap: var(--s-2);
+  animation: inspectorSlideUp 220ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes inspectorSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.foyer-inspector-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+
+.foyer-inspector-acc {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #7cf5e6;
+  letter-spacing: 0.06em;
+}
+
+.foyer-inspector-close {
+  background: transparent;
+  border: none;
+  color: var(--vinyl-soft);
+  font-size: 0.875rem;
+  padding: 0 4px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.foyer-inspector-close:hover {
+  color: var(--vinyl);
+}
+
+.foyer-inspector-title {
+  font-family: var(--font-vinyl);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--vinyl);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.foyer-inspector-metric {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--vinyl-soft);
+  margin: 0;
+}
+
+.foyer-inspector-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  font-size: 0.8125rem !important;
+  font-weight: 700 !important;
+  padding: 0.45rem 0.75rem !important;
+  border-radius: 2px !important;
+  text-decoration: none !important;
+  margin-top: 0.25rem;
+  transition: opacity 150ms;
+}
+
+.foyer-inspector-btn:hover {
+  opacity: 0.9;
+}
+
+/* 7. Lenis Smooth Scrolling Standard */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* 8. NuriTrack 3D Logistics & Supply Chain Digital Twin HUD */
+.logistics-stage-wrapper {
+  position: relative;
+  width: 100%;
+  height: clamp(38rem, 82vh, 60rem);
+  background: #0b0e1a;
+  border: 1px solid oklch(1 0 0 / 0.16);
+  border-radius: 2px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px oklch(0 0 0 / 0.7);
+}
+
+.logistics-canvas-container {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* One finger scrolls the page past the stage; camera-controls rewrites the inline value on connect. */
+.logistics-canvas-container canvas {
+  touch-action: pan-y !important;
+}
+
+.logistics-hud-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--s-3);
+  z-index: 10;
+}
+
+.logistics-top-bar {
+  pointer-events: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  background: oklch(0.12 0.016 262 / 0.92);
+  border: 1px solid oklch(1 0 0 / 0.2);
+  border-radius: 2px;
+  padding: var(--s-2) var(--s-3);
+  backdrop-filter: blur(8px);
+}
+
+.logistics-brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+}
+
+.logistics-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7cf5e6;
+  box-shadow: 0 0 8px #7cf5e6;
+  animation: badgePulse 1.8s infinite;
+}
+
+.logistics-brand-title {
+  color: var(--vinyl);
+  font-weight: 700;
+}
+
+.logistics-brand-sub {
+  color: #7cf5e6;
+  font-size: 0.6875rem;
+  padding-left: var(--s-2);
+  border-left: 1px solid oklch(1 0 0 / 0.2);
+}
+
+.logistics-control-groups {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.logistics-pill-group {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 2px;
+  background: oklch(0.18 0.016 262 / 0.8);
+  border: 1px solid oklch(1 0 0 / 0.14);
+  border-radius: 2px;
+  padding: 2px 4px;
+}
+
+.logistics-pill-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--vinyl-soft);
+  font-weight: 600;
+  padding-inline: 4px;
+  white-space: nowrap;
+}
+
+.logistics-ctrl-btn {
+  background: transparent;
+  color: var(--vinyl-soft);
+  border: none;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 650;
+  padding: 4px 6px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 120ms ease-out;
+}
+
+.logistics-ctrl-btn:hover {
+  background: oklch(0.24 0.02 262);
+  color: var(--vinyl);
+}
+
+.logistics-ctrl-btn[data-active="true"] {
+  background: rgba(14, 165, 233, 0.22);
+  color: #ffffff;
+  border: 1px solid #38bdf8;
+  font-weight: 750;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.35);
+}
+
+.logistics-side-telemetry {
+  position: absolute;
+  top: 4.5rem;
+  right: var(--s-3);
+  width: min(300px, 92vw);
+  display: grid;
+  gap: var(--s-2);
+  pointer-events: auto;
+}
+
+.logistics-telemetry-box,
+.logistics-ai-stream-box {
+  background: oklch(0.12 0.016 262 / 0.94);
+  border: 1px solid oklch(1 0 0 / 0.2);
+  border-radius: 2px;
+  padding: var(--s-3);
+  backdrop-filter: blur(8px);
+}
+
+.logistics-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 750;
+  color: var(--vinyl);
+  letter-spacing: 0.05em;
+  padding-bottom: var(--s-2);
+  border-bottom: 1px solid oklch(1 0 0 / 0.12);
+  margin-bottom: var(--s-2);
+}
+
+.logistics-active-pulse {
+  color: #2ecc71;
+  font-size: 0.625rem;
+}
+
+.logistics-agent-tag {
+  color: #7cf5e6;
+  font-size: 0.625rem;
+}
+
+.logistics-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+}
+
+.logistics-stat-card {
+  display: flex;
+  flex-direction: column;
+  background: oklch(0.16 0.016 262 / 0.6);
+  border: 1px solid oklch(1 0 0 / 0.08);
+  border-radius: 2px;
+  padding: 4px 6px;
+}
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  color: var(--vinyl-soft);
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #7cf5e6;
+}
+
+.logistics-log-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 140px;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.35;
+}
+
+.logistics-log-row {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.log-time {
+  color: var(--vinyl-soft);
+  font-size: 0.625rem;
+}
+
+.log-agent {
+  font-weight: 700;
+  font-size: 0.625rem;
+}
+
+.agent-router { color: #ff7aa8; }
+.agent-safety { color: #f1c40f; }
+.agent-dispatch { color: #7cf5e6; }
+.agent-telematics { color: #a8ccff; }
+
+.log-msg {
+  color: var(--vinyl);
+  font-size: 0.6875rem;
+}
+
+/* Bottom Journey Scrubber */
+.logistics-bottom-scrubber {
+  pointer-events: auto;
+  background: oklch(0.12 0.016 262 / 0.95);
+  border: 1px solid oklch(1 0 0 / 0.22);
+  border-radius: 2px;
+  padding: var(--s-3);
+  backdrop-filter: blur(8px);
+  display: grid;
+  gap: var(--s-2);
+}
+
+.logistics-scrubber-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+
+.logistics-pkg-info {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.pkg-id {
+  color: #7cf5e6;
+  font-weight: 750;
+}
+
+.pkg-name {
+  color: var(--vinyl);
+  font-weight: 600;
+}
+
+.pkg-route {
+  color: var(--vinyl-soft);
+  font-size: 0.6875rem;
+}
+
+.logistics-transport-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.logistics-transport-btn {
+  background: oklch(0.18 0.016 262);
+  color: var(--vinyl);
+  border: 1px solid oklch(1 0 0 / 0.16);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  cursor: pointer;
+  transition: all 120ms;
+}
+
+.logistics-transport-btn:hover {
+  background: oklch(0.24 0.02 262);
+}
+
+.logistics-transport-btn[data-active="true"] {
+  background: #7cf5e6;
+  color: #0b0e1a;
+  border-color: #7cf5e6;
+}
+
+.logistics-stepper-bar {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.logistics-step-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 140ms ease-out;
+}
+
+.logistics-step-tab:hover {
+  background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.logistics-step-tab[data-active="true"] {
+  background: rgba(14, 165, 233, 0.22);
+  border: 1.5px solid #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.28);
+}
+
+.logistics-step-tab[data-active="true"] .step-num {
+  color: #38bdf8;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.logistics-step-tab[data-active="true"] .step-title {
+  color: #ffffff;
+  font-weight: 750;
+}
+
+.logistics-step-tab[data-active="true"] .step-facility {
+  color: #cbd5e1;
+}
+
+.logistics-step-tab[data-completed="true"] {
+  border-color: rgba(16, 185, 129, 0.45);
+  background: rgba(6, 78, 59, 0.2);
+}
+
+.logistics-step-tab[data-completed="true"] .step-num {
+  color: #34d399;
+}
+
+.logistics-step-tab[data-completed="true"] .step-title {
+  color: #f1f5f9;
+}
+
+.logistics-step-tab[data-completed="true"] .step-facility {
+  color: #94a3b8;
+}
+
+.step-num {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 750;
+  color: var(--vinyl-soft);
+}
+
+.step-meta {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.step-title {
+  font-family: var(--font-vinyl);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--vinyl);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.step-facility {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  color: var(--vinyl-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logistics-status-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-2);
+  padding-top: var(--s-2);
+  border-top: 1px solid oklch(1 0 0 / 0.1);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+}
+
+.status-label {
+  color: #7cf5e6;
+  font-weight: 700;
+}
+
+.status-text {
+  color: var(--vinyl);
+  flex: 1;
+}
+
+.status-machinery {
+  color: var(--vinyl-soft);
+}
+
+@media (max-width: 64rem) {
+  .logistics-side-telemetry {
+    display: none;
+  }
+  .logistics-stepper-bar {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 48rem) {
+  .logistics-stepper-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* NuriTrack scene labels: paper pills that follow vehicles and docks. */
+.lt-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.lt-layer .lt-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+  pointer-events: auto;
+  will-change: transform;
+}
+
+.lt-layer .lt-label[data-selected="true"] {
+  z-index: 1;
+}
+
+.lt-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.45rem;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  line-height: 1.4;
+  color: var(--ink);
+  background: color-mix(in oklch, var(--paper) 92%, transparent);
+  border: 1px solid var(--paper-edge);
+  border-radius: 999px;
+  box-shadow: 0 1px 3px oklch(0 0 0 / 0.25);
+  cursor: pointer;
+  user-select: none;
+}
+
+.lt-label:hover,
+.lt-label[data-selected="true"] {
+  border-color: var(--thread);
+  box-shadow: 0 0 0 2px color-mix(in oklch, var(--thread) 35%, transparent);
+}
+
+.lt-label:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.lt-label--infra {
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lt-label--dock {
+  padding: 0.05rem 0.35rem;
+  font-size: 0.5625rem;
+}
+
+.lt-status {
+  color: var(--ink-soft);
+}
+
+.lt-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  flex: none;
+  background: var(--lt-tone, oklch(0.6 0.02 258));
+}
+
+[data-tone="work"] { --lt-tone: oklch(0.62 0.14 155); }
+[data-tone="move"] { --lt-tone: oklch(0.6 0.13 245); }
+[data-tone="wait"] { --lt-tone: oklch(0.75 0.14 75); }
+[data-tone="late"] { --lt-tone: var(--thread); }
+[data-tone="idle"] { --lt-tone: oklch(0.6 0.02 258); }
+
+.lt-label[data-tone="late"] .lt-status {
+  color: var(--thread-ink);
+  font-weight: 700;
+}
+
+/* Inspector: the selected object's wall label. */
+.lt-inspector {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--paper-edge);
+  border-left: 3px solid var(--thread);
+  border-radius: 2px;
+  padding: var(--s-3);
+  box-shadow: 0 6px 18px oklch(0 0 0 / 0.35);
+}
+
+.lt-inspector__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-2);
+}
+
+.lt-inspector__kicker,
+.lt-inspector__foot {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.lt-inspector__title {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-top: 0.15rem;
+}
+
+.lt-inspector__close {
+  font-size: 1.1rem;
+  line-height: 1;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1px solid var(--paper-edge);
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.lt-inspector__close:focus-visible,
+.lt-inspector__link:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.lt-inspector__rows {
+  display: grid;
+  gap: 0.3rem;
+  margin: var(--s-2) 0;
+  font-size: 0.75rem;
+}
+
+.lt-inspector__rows > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-2);
+  border-bottom: 1px dashed var(--paper-edge);
+  padding-bottom: 0.25rem;
+}
+
+.lt-inspector__rows dt {
+  color: var(--ink-soft);
+}
+
+.lt-inspector__rows dd {
+  font-family: var(--font-mono);
+  text-align: right;
+}
+
+.lt-inspector__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.lt-inspector__link {
+  font: inherit;
+  color: var(--thread-ink);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* While inspecting, the inspector takes the AI log's place in the side column. */
+.lt-inspector ~ .logistics-ai-stream-box {
+  display: none;
+}
+
+/* ───────── NuriTrack site HUD: dark rail on top, paper cards on the sides ───────── */
+.nt-hud {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  font-family: var(--font-label);
+  display: grid;
+  grid-template-columns: min(290px, 40%) 1fr min(310px, 40%);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--s-2);
+  padding: var(--s-3);
+}
+
+.nt-hud :is(button, select, input, summary, a, .nt-card) {
+  pointer-events: auto;
+}
+
+.nt-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.nt-top {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  background: oklch(0.14 0.012 262 / 0.92);
+  border: 1px solid oklch(1 0 0 / 0.14);
+  border-radius: 2px;
+  color: var(--vinyl);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  pointer-events: auto;
+  backdrop-filter: blur(8px);
+}
+
+.nt-brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
+}
+
+.nt-brand__name {
+  font-family: var(--font-vinyl);
+  font-weight: 800;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.nt-brand__sub {
+  color: var(--vinyl-soft);
+}
+
+.nt-site select,
+.nt-pick select,
+.nt-filters select {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  padding: 0.2rem 0.4rem;
+}
+
+.nt-pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--vinyl-soft);
+}
+
+.nt-site select,
+.nt-pick select {
+  color: var(--vinyl);
+  border-color: oklch(1 0 0 / 0.3);
+}
+
+.nt-site select option,
+.nt-pick select option {
+  color: var(--ink);
+}
+
+.nt-clock {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.nt-live {
+  padding: 0.05rem 0.35rem;
+  border-radius: 2px;
+  background: oklch(1 0 0 / 0.12);
+}
+
+.nt-live[data-on="true"] {
+  background: var(--thread);
+  color: var(--paper);
+}
+
+.nt-top__view {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-left: auto;
+}
+
+.nt-seg {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid oklch(1 0 0 / 0.2);
+  border-radius: 2px;
+}
+
+.nt-seg button,
+.nt-icon-btn {
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  padding: 0.25rem 0.5rem;
+  min-height: 28px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.nt-icon-btn {
+  border: 1px solid oklch(1 0 0 / 0.2);
+  border-radius: 2px;
+}
+
+.nt-seg button[aria-pressed="true"] {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.nt-hud :is(button, select, input, summary):focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.nt-left,
+.nt-right {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.nt-left {
+  grid-column: 1;
+}
+
+.nt-right {
+  grid-column: 3;
+}
+
+.nt-card {
+  background: color-mix(in oklch, var(--paper) 95%, transparent);
+  color: var(--ink);
+  border: 1px solid var(--paper-edge);
+  border-radius: 2px;
+  padding: var(--s-2) var(--s-3);
+  box-shadow: 0 6px 18px oklch(0 0 0 / 0.22);
+  font-size: 0.75rem;
+}
+
+.nt-card > summary {
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0;
+}
+
+.nt-card[open] > summary {
+  margin-bottom: var(--s-2);
+  border-bottom: 1px solid var(--paper-edge);
+  padding-bottom: var(--s-2);
+}
+
+.nt-card__kicker {
+  color: var(--thread-ink);
+}
+
+.nt-kpis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s-2);
+}
+
+.nt-kpis > div {
+  border: 1px solid var(--paper-edge);
+  border-radius: 2px;
+  padding: 0.35rem 0.5rem;
+}
+
+.nt-kpis dt {
+  font-size: 0.625rem;
+  color: var(--ink-soft);
+}
+
+.nt-kpis dd {
+  font-family: var(--font-vinyl);
+  font-weight: 800;
+  font-size: 1.35rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.nt-alert {
+  margin-top: var(--s-2);
+  padding: 0.3rem 0.5rem;
+  border-left: 3px solid var(--thread);
+  color: var(--thread-ink);
+  font-weight: 650;
+}
+
+.nt-zones,
+.nt-rows,
+.nt-log {
+  list-style: none;
+  margin: var(--s-2) 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.nt-zones li {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed var(--paper-edge);
+  padding: 0.2rem 0;
+}
+
+.nt-zones li span:last-child {
+  font-family: var(--font-mono);
+}
+
+.nt-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--s-2);
+  margin-bottom: var(--s-1);
+}
+
+.nt-filters label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.nt-card .tabs {
+  border-bottom-color: var(--paper-edge);
+  gap: 0;
+}
+
+.nt-card .tabs button {
+  min-height: 32px;
+  padding: 0 var(--s-2);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+}
+
+.nt-card .tabs button:hover,
+.nt-card .tabs button[aria-selected="true"] {
+  color: var(--ink);
+}
+
+.nt-card--table [role="tabpanel"] {
+  max-height: 14rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.nt-rows button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: var(--s-2);
+  align-items: center;
+  padding: 0.3rem 0.25rem;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed var(--paper-edge);
+  cursor: pointer;
+}
+
+.nt-rows button:hover,
+.nt-rows button[aria-pressed="true"] {
+  background: color-mix(in oklch, var(--thread) 10%, transparent);
+}
+
+.nt-rows__id {
+  font-family: var(--font-mono);
+}
+
+.nt-rows__detail {
+  font-family: var(--font-mono);
+  color: var(--ink-soft);
+}
+
+.nt-empty {
+  padding: var(--s-2) 0;
+  color: var(--ink-soft);
+}
+
+.nt-card--parcel .nt-seg {
+  border-color: var(--paper-edge);
+}
+
+.nt-card--parcel .nt-seg button {
+  color: var(--ink);
+}
+
+.nt-seg__count {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  padding: 0 0.25rem;
+}
+
+.nt-parcel__head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-2);
+  align-items: flex-start;
+}
+
+.nt-parcel__id {
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.nt-parcel__to,
+.nt-parcel__note {
+  color: var(--ink-soft);
+  font-size: 0.6875rem;
+}
+
+.nt-tag {
+  margin-left: var(--s-2);
+  padding: 0 0.3rem;
+  border-radius: 2px;
+  background: var(--thread);
+  color: var(--paper);
+  font-size: 0.5625rem;
+  text-transform: uppercase;
+}
+
+.nt-steps {
+  list-style: none;
+  margin: var(--s-2) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(4, auto);
+  gap: 0.1rem var(--s-3);
+}
+
+.nt-steps li {
+  display: grid;
+  grid-template-columns: 0.9rem 1fr auto;
+  align-items: center;
+  gap: var(--s-2);
+  padding: 0.12rem 0;
+  color: var(--ink-soft);
+}
+
+.nt-steps__dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  border: 2px solid var(--paper-edge);
+}
+
+.nt-steps li[data-state="done"] { color: var(--ink); }
+.nt-steps li[data-state="done"] .nt-steps__dot { background: var(--ink); border-color: var(--ink); }
+.nt-steps li[data-state="now"] { color: var(--thread-ink); font-weight: 700; }
+.nt-steps li[data-state="now"] .nt-steps__dot { border-color: var(--thread); background: var(--thread); }
+
+.nt-steps__time {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+}
+
+.nt-log li {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: 0.4rem;
+  font-size: 0.6875rem;
+  border-bottom: 1px dashed var(--paper-edge);
+  padding: 0.2rem 0;
+}
+
+.nt-log__time,
+.nt-log__agent {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  color: var(--ink-soft);
+}
+
+.lt-inspector ~ .nt-card--log {
+  display: none;
+}
+
+.logistics-stage-wrapper:fullscreen {
+  height: 100vh;
+  border: 0;
+}
+
+/* Phones: bar on top, scene in the middle, overview cards in a scrollable sheet at the bottom. */
+@media (max-width: 48rem) {
+  .nt-hud {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    padding: var(--s-2);
+  }
+  /* Keep the scene visible: view toggles, zone list and parcel card are desktop-only. */
+  .nt-top__view,
+  .nt-zones,
+  .nt-card--parcel { display: none; }
+  .nt-brand__sub { display: none; }
+  /* Too many pills for a phone: show only the selected one (tap a vehicle to select). */
+  .lt-layer .lt-label:not([data-selected="true"]) { display: none; }
+  .nt-left {
+    grid-row: 3;
+    max-height: 42vh;
+  }
+  .nt-right {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+    display: none;
+  }
+  .nt-right:has(.lt-inspector) {
+    display: flex;
+  }
+  .nt-right:has(.lt-inspector) > :not(.lt-inspector) {
+    display: none;
+  }
+}

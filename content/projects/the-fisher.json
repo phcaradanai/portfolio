@@ -1,0 +1,605 @@
+{
+  "slug": "the-fisher",
+  "accession": "PK-2026-007",
+  "title": "The Fisher (King Fisher)",
+  "kind": "game",
+  "tier": "B",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Browser fishing-collection RPG: turn-based fish duels with seeded dice checks. Chapter 1 only (Village Canal and its King Fish).",
+  "summary": "Chapter 1 of a browser fishing collection RPG that the repo's documents call King Fisher, built with React, PixiJS and Zustand. Fishing is a turn-based duel: the fish telegraphs an intent each turn and the player spends 2 action points on reel, pull, release, brace or observe, resolved by seeded d20 checks. Fish, gear, spots and story are typed catalogs checked by a validator; progress is saved locally in the browser. A GitHub Pages workflow deploys it.",
+  "period": {
+    "start": "2026-09-23",
+    "end": "2026-09-27"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/the-fisher",
+    "pinnedSha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+    "ownerCommits": 12,
+    "totalCommits": 12,
+    "languages": {
+      "TypeScript": 288869,
+      "CSS": 130579,
+      "Python": 11680,
+      "HTML": 441
+    },
+    "checkedAt": "2026-10-24"
+  },
+  "stack": [
+    "TypeScript",
+    "React",
+    "PixiJS",
+    "Zustand",
+    "Zod",
+    "Vite",
+    "Vitest"
+  ],
+  "aiRole": {
+    "summary": "AI-agent working files are present at the pinned commit: AGENTS.md (repository guidelines for coding agents), two briefs in prompt/ written as instructions to an AI engineer or designer (E19, E20), and Impeccable design-tool files in .impeccable/. One Impeccable config entry says Codex reviewed a flagged line, and a build script loads an input image from a path under .gemini/antigravity. AGENTS.md names npm run check (content validation, Vitest, type-check, build) as the required gate and Vitest suites exist. The repo does not record which agent wrote which code, and no run of the gate is recorded.",
+    "tools": [
+      {
+        "name": "Codex",
+        "use": "Named once in .impeccable/config.json as the reviewer of a design-detector finding.",
+        "evidence": "E21"
+      },
+      {
+        "name": "Impeccable",
+        "use": "Design-direction and design-record files (.impeccable/, DESIGN.md, PRODUCT.md).",
+        "evidence": "E22"
+      },
+      {
+        "name": "Gemini / Antigravity (inferred from a file path only)",
+        "use": "tools/build-living-canal-v2.py loads a second 'clean' image from a .gemini/antigravity directory; the repo does not say what produced it.",
+        "evidence": "E23"
+      }
+    ]
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "src/game/core/fishing/turn-engine.ts",
+      "lines": [
+        621,
+        658
+      ],
+      "note": "applyTurnFishingAction: guard clause, release branch, check branch, settlement."
+    },
+    {
+      "id": "E2",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "src/game/core/fishing/random.ts",
+      "lines": [
+        6,
+        11
+      ],
+      "note": "nextRandomFloat: 32-bit LCG returning value and next seed."
+    },
+    {
+      "id": "E3",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "src/game/core/fishing/turn-engine.test.ts",
+      "lines": [
+        479,
+        490
+      ],
+      "note": "Vitest test: same seed and action sequence gives an equal session."
+    },
+    {
+      "id": "E4",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "src/game/core/fishing/skill-check.ts",
+      "lines": [
+        23,
+        61
+      ],
+      "note": "resolveSkillCheck and its outcome classification."
+    },
+    {
+      "id": "E5",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "src/game/core/fishing/turn-engine.ts",
+      "lines": [
+        98,
+        178
+      ],
+      "note": "intentWeights: per-archetype intent weights, berserker phases."
+    },
+    {
+      "id": "E6",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "src/content/fish.ts",
+      "lines": [
+        293,
+        322
+      ],
+      "note": "old-river-king: berserker archetype with bossPhases frenzyAt 0.6, desperateAt 0.25."
+    },
+    {
+      "id": "E7",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "src/content/validate.ts",
+      "lines": [
+        19,
+        27
+      ],
+      "note": "EXPECTED_CATALOG_COUNTS."
+    },
+    {
+      "id": "E8",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "src/content/validate.ts",
+      "lines": [
+        456,
+        484
+      ],
+      "note": "King Fish reachability and bait-gating validation."
+    },
+    {
+      "id": "E9",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "tools/content-validator/run.ts",
+      "lines": [
+        1,
+        11
+      ],
+      "note": "Runner behind npm run content:validate."
+    },
+    {
+      "id": "E10",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "src/game/state/save.ts",
+      "lines": [
+        22,
+        39
+      ],
+      "note": "Strict versioned save schema."
+    },
+    {
+      "id": "E11",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "src/game/state/save.ts",
+      "lines": [
+        64,
+        76
+      ],
+      "note": "decodeSave returns null on bad JSON or schema failure."
+    },
+    {
+      "id": "E12",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "src/game/state/game-store.ts",
+      "lines": [
+        224,
+        234
+      ],
+      "note": "persistSave: returns false instead of overwriting an existing save that fails to decode."
+    },
+    {
+      "id": "E13",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "reported",
+      "path": "AGENTS.md",
+      "lines": [
+        31,
+        31
+      ],
+      "quote": "Keep the save version explicit and preserve unreadable saves rather than silently replacing player progress."
+    },
+    {
+      "id": "E14",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "reported",
+      "path": "PRODUCT.md",
+      "lines": [
+        31,
+        31
+      ],
+      "quote": "Chapter 1 only: Village Canal through the King Fish and scout invitation; do not build later locations or multiplayer systems yet."
+    },
+    {
+      "id": "E15",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "reported",
+      "path": "PRODUCT.md",
+      "lines": [
+        41,
+        41
+      ],
+      "quote": "No application, user research, shipped product, final art, or deployment configuration is present yet; do not invent proof points or brand claims."
+    },
+    {
+      "id": "E16",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "reported",
+      "path": "AGENTS.md",
+      "lines": [
+        41,
+        41
+      ],
+      "quote": "`src/game/core/fishing/engine.ts` — deterministic fishing state machine.",
+      "note": "Path named in AGENTS.md; the engine file at this commit is src/game/core/fishing/turn-engine.ts."
+    },
+    {
+      "id": "E17",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": ".github/workflows/deploy.yml",
+      "lines": [
+        3,
+        8
+      ],
+      "note": "Pages deploy triggers: main plus two feature branches."
+    },
+    {
+      "id": "E18",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "reported",
+      "path": "AGENTS.md",
+      "lines": [
+        49,
+        49
+      ],
+      "quote": "`npm run check` is the required project gate: content validation, all Vitest tests, TypeScript, and the Vite production build."
+    },
+    {
+      "id": "E19",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "reported",
+      "path": "prompt/#001.md",
+      "lines": [
+        1,
+        1
+      ],
+      "quote": "You are the Lead Game Engineer and Technical Architect responsible for building the first playable version of a browser-based fishing collection RPG.",
+      "note": "Brief written as an instruction to an AI agent."
+    },
+    {
+      "id": "E20",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "reported",
+      "path": "prompt/#002-turn-based-core-rework.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "You are the Lead Game Designer, Combat Systems Designer, and Senior Game Engineer responsible for restructuring the current King Fisher prototype.",
+      "note": "Second brief that triggered the turn-based rework."
+    },
+    {
+      "id": "E21",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": ".impeccable/config.json",
+      "lines": [
+        13,
+        13
+      ],
+      "note": "One detector-ignore entry whose reason says Codex reviewed the flagged line."
+    },
+    {
+      "id": "E22",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "reported",
+      "path": "PRODUCT.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "<!-- impeccable:product-schema 1 -->",
+      "note": "Marker for the Impeccable design workflow; .impeccable/ holds its direction files."
+    },
+    {
+      "id": "E23",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "source",
+      "path": "tools/build-living-canal-v2.py",
+      "lines": [
+        98,
+        98
+      ],
+      "note": "Input image path sits under a .gemini/antigravity directory; the path itself is omitted here."
+    },
+    {
+      "id": "E24",
+      "repo": "phcaradanai/the-fisher",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "level": "reported",
+      "path": "DESIGN.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "Every image used by this theme is newly generated artwork, not a crop of the supplied reference."
+    }
+  ],
+  "claims": [
+    {
+      "text": "Fishing is a pure turn engine: applyTurnFishingAction(session, action, fish, stats) returns a new session plus ordered presentation events, ignores actions outside the player's turn or without AP, and takes every random number from an explicit seed (a 32-bit LCG). A Vitest test replays one seed and action list twice and expects equal results.",
+      "evidence": [
+        "E1",
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "text": "A check is a seeded d20 roll, with advantage or disadvantage meaning the higher or lower of two dice, plus a gear modifier against the fish intent's difficulty. The result is classed as critical failure, failure, partial success, success or critical success.",
+      "evidence": [
+        "E4"
+      ]
+    },
+    {
+      "text": "Fish behave by archetype: each archetype has its own weighted mix of five intents (steady pull, power dash, deep dive, thrash, recover). The King Fish uses the berserker archetype with phase changes at 60% and 25% stamina.",
+      "evidence": [
+        "E5",
+        "E6"
+      ]
+    },
+    {
+      "text": "Content is typed catalogs checked by a validator that expects 1 area, 4 spots, 12 fish, 18 gear items and 6 story events, requires Thai and English text, and rejects a King Fish locked behind an event that cannot happen before the king-caught event. npm run content:validate runs it.",
+      "evidence": [
+        "E7",
+        "E8",
+        "E9"
+      ]
+    },
+    {
+      "text": "Saves use a strict, versioned Zod schema (version 1). decodeSave returns null for unreadable input, and the store refuses to overwrite an existing save that does not decode.",
+      "evidence": [
+        "E10",
+        "E11",
+        "E12",
+        "E13"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "skill-check",
+      "title": "Seeded d20 check with advantage and disadvantage",
+      "path": "src/game/core/fishing/skill-check.ts",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "startLine": 23,
+      "endLine": 61,
+      "language": "typescript",
+      "code": "export function resolveSkillCheck(\n  seed: number,\n  mode: CheckMode,\n  modifier: number,\n  difficulty: number,\n  modeReason: CheckModeReason = 'neutral',\n): { seed: number; result: SkillCheckResult } {\n  const first = rollOne(seed);\n  let finalSeed = first.seed;\n  let die = first.die;\n  const rolls = [first.die];\n\n  if (mode !== 'normal') {\n    const second = rollOne(first.seed);\n    finalSeed = second.seed;\n    rolls.push(second.die);\n    die = mode === 'advantage'\n      ? Math.max(first.die, second.die)\n      : Math.min(first.die, second.die);\n  }\n\n  const safeModifier = Number.isFinite(modifier) ? Math.trunc(modifier) : 0;\n  const safeDifficulty = Math.max(1, Math.trunc(Number.isFinite(difficulty) ? difficulty : 10));\n  const total = die + safeModifier;\n\n  return {\n    seed: finalSeed,\n    result: {\n      mode,\n      modeReason,\n      rolls,\n      die,\n      modifier: safeModifier,\n      total,\n      difficulty: safeDifficulty,\n      outcome: classifyOutcome(die, total, safeDifficulty),\n    },\n  };\n}",
+      "why": "The check is a function of (seed, mode, modifier, difficulty) and returns the next seed, so randomness is threaded explicitly and replays are exact. Bad modifier or difficulty values are coerced, and a natural 1 or 20 overrides the margin.",
+      "claimIndexes": [
+        1
+      ]
+    },
+    {
+      "id": "apply-action",
+      "title": "One player action as a pure state transition",
+      "path": "src/game/core/fishing/turn-engine.ts",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "startLine": 621,
+      "endLine": 658,
+      "language": "typescript",
+      "code": "export function applyTurnFishingAction(\n  session: TurnFishingSession,\n  action: TurnFishingAction,\n  fish: TurnFishProfile,\n  stats: TurnGearStats,\n): TurnActionResolution {\n  if (session.phase !== 'player-turn' || session.ap <= 0 || session.fishId !== fish.id) {\n    return { session, observationSucceeded: false, events: [] };\n  }\n\n  let next: TurnFishingSession;\n  let observationSucceeded = false;\n\n  if (action === 'release') {\n    next = markEvent({\n      ...session,\n      ap: session.ap - 1,\n      tension: clamp(session.tension - (18 + stats.control * 0.7), 0, 120),\n      distance: clamp(session.distance + 5 + fish.stats.speed * 0.025, 0, MAX_DISTANCE),\n      releasedThisTurn: true,\n      lastAction: action,\n      lastIntent: session.currentIntent.type,\n      lastCheck: null,\n      insight: false,\n    }, 'action-release');\n  } else {\n    const result = applyCheckAction(session, action, fish, stats);\n    next = { ...result.session, ap: session.ap - 1 };\n    observationSucceeded = result.observationSucceeded;\n  }\n\n  const settlement = settleAfterPlayerAction(next, fish, stats);\n  return {\n    session: settlement.session,\n    observationSucceeded,\n    events: presentationEvents(session, next, settlement.session, action, settlement.fishActionResolved),\n  };\n}",
+      "why": "A guard clause returns the same session if the phase, AP or fish id does not match. Otherwise the action builds a new session, the fish may answer once AP runs out, and presentation events come back beside the session instead of inside it.",
+      "claimIndexes": [
+        0
+      ]
+    },
+    {
+      "id": "king-reachability",
+      "title": "Validator: the King Fish must be reachable before the story says it was caught",
+      "path": "src/content/validate.ts",
+      "sha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "startLine": 456,
+      "endLine": 484,
+      "language": "typescript",
+      "code": "  const kingFishId = kingFishIds.length === 1 ? kingFishIds[0] : undefined;\n  const kingFish = kingFishId ? fishById.get(kingFishId) : undefined;\n  const firstKingCatchIndex = events.findIndex((event) => event.trigger === 'king-caught');\n  if (kingFish && firstKingCatchIndex >= 0 && Array.isArray(kingFish.spotIds)) {\n    const kingReachableBeforeDefeat = kingFish.spotIds.some((spotId) => {\n      const kingSpot = spotsById.get(spotId);\n      if (!kingSpot) return false;\n      if (kingSpot.unlockAfter === undefined) return true;\n      const gateId = kingSpot.unlockAfter;\n      const gate = isNonEmptyString(gateId) ? eventsById.get(gateId) : undefined;\n      const gateIndex = isNonEmptyString(gateId) ? eventOrder.get(gateId) : undefined;\n      return (gate?.trigger === 'first-catch' || gate?.trigger === 'fish-discovered') &&\n        gateIndex !== undefined &&\n        gateIndex < firstKingCatchIndex;\n    });\n    if (!kingReachableBeforeDefeat) {\n      errors.push(`King Fish ${kingFishIds[0]} is locked behind an event that cannot occur before the king-caught story event.`);\n    }\n    if (Array.isArray(kingFish.preferredBaitIds)) {\n      for (const baitId of kingFish.preferredBaitIds) {\n        const bait = isNonEmptyString(baitId) ? gearById.get(baitId) : undefined;\n        const gateId = bait?.unlockAfter;\n        const gate = isNonEmptyString(gateId) ? eventsById.get(gateId) : undefined;\n        if (gate?.trigger === 'king-caught') {\n          errors.push(`King Fish preferred bait \"${String(baitId)}\" only unlocks after a King Fish is caught.`);\n        }\n      }\n    }\n  }",
+      "why": "Content validation checks story order, not just ids: the King Fish's spot must unlock through an event earlier than the king-caught event, and its preferred bait must not unlock only after the catch.",
+      "claimIndexes": [
+        3
+      ]
+    }
+  ],
+  "captures": [],
+  "assets": [
+    {
+      "id": "canal-night-painting",
+      "file": "canal-night-painting.png",
+      "alt": "A moonlit wooden canal at night with stilt houses, lanterns and a small arched bridge, and the dark shape of a large fish moving under the water among lily pads.",
+      "title": "Village canal at night (source painting)",
+      "category": "project-asset",
+      "tools": [],
+      "provenance": "Provenance not recorded in the repository. tools/build-living-canal-v2.py reads this file as the source painting for the layered canal scene.",
+      "sourcePath": "public/images/background_art_a/คลองหมอกจันทร์กับเงาอสูรใต้น้ำ.png",
+      "sourceSha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "provenanceEvidence": "tools/build-living-canal-v2.py",
+      "width": 1536,
+      "height": 1024,
+      "featured": true
+    },
+    {
+      "id": "moonlit-canal",
+      "file": "moonlit-canal-original.webp",
+      "alt": "A river village at night: stilt houses with glowing lanterns on both banks, a boat tied at a dock, a golden pagoda and mountains under a full moon, with lantern reflections on calm water.",
+      "title": "Moonlit village canal (theme background)",
+      "category": "project-asset",
+      "tools": [],
+      "provenance": "DESIGN.md describes the Village Canal background as newly generated artwork; the generating tool is not named in the repository.",
+      "sourcePath": "public/theme_games/moonlit-canal-original.webp",
+      "sourceSha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "provenanceEvidence": "DESIGN.md",
+      "width": 1672,
+      "height": 941,
+      "featured": true
+    },
+    {
+      "id": "brand-mark",
+      "file": "brand-mark.webp",
+      "alt": "A silver and gold koi curled in a circle above water ripples that reflect a small glowing moon, on a deep navy background.",
+      "title": "Brand mark: koi and moon",
+      "category": "project-asset",
+      "tools": [],
+      "provenance": "DESIGN.md describes the brand mark and its source atlas as newly generated artwork; the generating tool is not named in the repository.",
+      "sourcePath": "public/theme_games/brand-mark.webp",
+      "sourceSha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "provenanceEvidence": "DESIGN.md",
+      "width": 1254,
+      "height": 1254,
+      "featured": false
+    },
+    {
+      "id": "spots-atlas",
+      "file": "spots-original-atlas.jpg",
+      "alt": "Four-panel sheet of canal scenes: a willow bank with houses under a moon, an arched wooden bridge with lanterns, a pond of pink lotus flowers at sunset, and a giant banyan tree over a glowing pool.",
+      "title": "Four canal fishing spots (source atlas)",
+      "category": "project-asset",
+      "tools": [],
+      "provenance": "DESIGN.md describes the spot atlas, from which the four spot thumbnails are cut, as newly generated artwork; the generating tool is not named in the repository.",
+      "sourcePath": "public/theme_games/spots-original-atlas.jpg",
+      "sourceSha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "provenanceEvidence": "DESIGN.md",
+      "width": 1536,
+      "height": 1024,
+      "featured": false
+    },
+    {
+      "id": "tactics-atlas",
+      "file": "tactics-original-atlas.jpg",
+      "alt": "Five tall night-time panels: a reel with blue line, a gloved hand pulling a rod over splashing water, a red and white float on clear water, a rod braced against a dock post, and binoculars beside a lantern.",
+      "title": "Five tactical actions (source atlas)",
+      "category": "project-asset",
+      "tools": [],
+      "provenance": "DESIGN.md describes the tactics atlas, source of the five tactical-card images, as newly generated artwork; the generating tool is not named in the repository.",
+      "sourcePath": "public/theme_games/tactics-original-atlas.jpg",
+      "sourceSha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "provenanceEvidence": "DESIGN.md",
+      "width": 1983,
+      "height": 793,
+      "featured": false
+    },
+    {
+      "id": "canal-v2-backplate",
+      "file": "canal-v2-backplate.webp",
+      "alt": "The night canal with the foreground dock and tall reeds removed: dark water with lily pads, a large fish shadow, stilt houses and a bridge in mist, ready to be layered under separate foreground cut-outs.",
+      "title": "Canal backplate for the layered scene",
+      "category": "project-asset",
+      "tools": [],
+      "provenance": "Built by tools/build-living-canal-v2.py: pixels from the source painting blended with a second 'clean' plate that the script loads from a path outside the repository, to remove the foreground dock and reeds. The origin of that second image is not recorded; its path sits under a .gemini/antigravity directory.",
+      "sourcePath": "public/theme_games/village-canal-v2/backplate.webp",
+      "sourceSha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "provenanceEvidence": "tools/build-living-canal-v2.py",
+      "width": 1536,
+      "height": 1024,
+      "featured": false
+    },
+    {
+      "id": "fish-king",
+      "file": "fish-moon-shadow-snakehead.png",
+      "alt": "Two dark violet snakehead fish with crescent-moon markings surging through glowing water in front of a moonlit stone bridge and lanterns.",
+      "title": "Moon Shadow Snakehead (King Fish art)",
+      "category": "project-asset",
+      "tools": [],
+      "provenance": "Provenance not recorded in the repository. src/content/fish.ts assigns it as the artwork of 'Moon Shadow Snakehead' (old-river-king).",
+      "sourcePath": "public/images/fish_art_a/Moonlit Shadow Snakeheads.png",
+      "sourceSha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "provenanceEvidence": "src/content/fish.ts",
+      "width": 1448,
+      "height": 1086,
+      "featured": true
+    },
+    {
+      "id": "fish-iron-gar",
+      "file": "fish-armored-iron-gar.png",
+      "alt": "Two armoured, metal-plated gar fish in clear water in front of a ruined stone fortress with a waterfall and hanging banners.",
+      "title": "Armored Iron Gar",
+      "category": "project-asset",
+      "tools": [],
+      "provenance": "Provenance not recorded in the repository. src/content/fish.ts assigns it as the artwork of 'Armored Iron Gar' (river-pike).",
+      "sourcePath": "public/images/fish_art_a/Armored Iron Gar in Ruined Waterways.png",
+      "sourceSha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "provenanceEvidence": "src/content/fish.ts",
+      "width": 1448,
+      "height": 1086,
+      "featured": false
+    },
+    {
+      "id": "fish-goldfish",
+      "file": "fish-celestial-goldfish.png",
+      "alt": "A large white and gold goldfish with flowing translucent fins and a smaller companion in a sunlit shrine pond with a torii gate, stone lanterns, waterfalls and white lotus flowers.",
+      "title": "Celestial Goldfish",
+      "category": "project-asset",
+      "tools": [],
+      "provenance": "Provenance not recorded in the repository. src/content/fish.ts assigns it as the artwork of 'Celestial Goldfish' (golden-carp).",
+      "sourcePath": "public/images/fish_art_a/Celestial Goldfish in a Sunlit Shrine Pond.png",
+      "sourceSha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "provenanceEvidence": "src/content/fish.ts",
+      "width": 1448,
+      "height": 1086,
+      "featured": false
+    },
+    {
+      "id": "fish-lotus-koi",
+      "file": "fish-lotus-koi.png",
+      "alt": "Two koi-like fish with translucent green leaf-shaped fins beside a pink lotus bloom in a pond, with an arched stone bridge and lit houses in the background.",
+      "title": "Lotus Koi",
+      "category": "project-asset",
+      "tools": [],
+      "provenance": "Provenance not recorded in the repository. src/content/fish.ts assigns it as the artwork of 'Lotus Koi' (lotus-goby).",
+      "sourcePath": "public/images/fish_art_a/Lotus Pond Koi Companions.png",
+      "sourceSha": "6489c800f1059cbc704c4e6b2f128ab38e37f91f",
+      "provenanceEvidence": "src/content/fish.ts",
+      "width": 1448,
+      "height": 1086,
+      "featured": false
+    }
+  ],
+  "demo": {
+    "url": "https://phcaradanai.github.io/the-fisher/",
+    "note": "GitHub Pages deployment from .github/workflows/deploy.yml; the URL answered HTTP 200 on 2026-10-24. The workflow also builds two feature branches, so the live build may not match the pinned commit."
+  },
+  "limitations": [
+    "Chapter 1 only by design: one area (Village Canal), four spots, one King Fish; PRODUCT.md says not to build later locations or multiplayer yet (E14).",
+    "No user research, player feedback or playtest record is in the repo; PRODUCT.md says to invent no proof points (E15). That section also still says no application or deployment exists, which is out of date.",
+    "The repo contains no screenshots or recordings of the running game; the images shown here are art files, not captures.",
+    "Test suites exist (engine, adapter, store, save, content validation) but were not run for this entry, so no pass result is claimed.",
+    "AGENTS.md names src/game/core/fishing/engine.ts as the state machine; that file does not exist at this commit (the engine is turn-engine.ts), so agent-facing docs have drifted (E16).",
+    "The Pages workflow also deploys two feature branches, so the live site may not match the pinned commit (E17).",
+    "Art provenance is mostly unrecorded: DESIGN.md calls the theme art newly generated without naming a tool, and the fish and canal paintings have no provenance notes.",
+    "The verification gate is documented, not evidenced: AGENTS.md requires npm run check (E18) but no run output is in the repo."
+  ],
+  "contribution": "12 commits on the main history, all with the owner's identities: 11 under the author name phcaradanai (4 of them GitHub-merged pull requests) and 1 under a second local author name that uses the owner's email. First commit 2026-09-23, last 2026-09-27. No other contributors.",
+  "lastVerified": "2026-10-24"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "cursed-market-determinism-grep",
+  "repo": "phcaradanai/Cursed-Market",
+  "sha": "b34c5e59816cb6606bb7f98cd264b6d399e25c30",
+  "cwd": ".",
+  "command": "printf 'Math.random matches in src/game and src/simulation: '; git grep -c 'Math\\.random' b34c5e59816cb6606bb7f98cd264b6d399e25c30 -- src/game src/simulation | awk -F: '{s+=$NF} END {print s+0}'; printf 'Date.now matches in src/game: '; git grep -c 'Date\\.now' b34c5e59816cb6606bb7f98cd264b6d399e25c30 -- src/game | awk -F: '{s+=$NF} END {print s+0}'; printf 'randomAt( matches in src/game/appraisal: '; git grep -c 'randomAt(' b34c5e59816cb6606bb7f98cd264b6d399e25c30 -- src/game/appraisal | awk -F: '{s+=$NF} END {print s+0}'",
+  "capturedAt": "2026-10-24T17:45:22Z",
+  "exitCode": 0,
+  "durationMs": 2520,
+  "output": "Math.random matches in src/game and src/simulation: 0\nDate.now matches in src/game: 0\nrandomAt( matches in src/game/appraisal: 87",
+  "truncated": false,
+  "environment": "macOS Darwin 25.5.0 (uname -m x86_64), git 2.55.0, /bin/sh"
+}

@@ -1,0 +1,60 @@
+{
+  "slug": "storage-go-vending-service",
+  "accession": "PK-2026-021",
+  "title": "Vending service (Go)",
+  "kind": "hardware",
+  "tier": "C",
+  "maturity": "experiment",
+  "visibility": "private-redacted",
+  "tagline": "A small private Go service in the vending domain, packaged with Docker and a Makefile.",
+  "summary": "A small private Go service committed in a single commit in April 2026, with a Dockerfile and a Makefile. Its client and code are withheld.",
+  "period": {
+    "start": "2026-04-27",
+    "end": "2026-04-27"
+  },
+  "repo": null,
+  "stack": [
+    "Go",
+    "Docker",
+    "Make"
+  ],
+  "aiRole": {
+    "summary": "Not described: the repository is withheld, so its tooling is not published.",
+    "tools": []
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "private",
+      "repo": "private",
+      "note": "GitHub API metadata (languages, contributors, commit dates) queried 2026-10-25. The repository is private and its contents were not read."
+    }
+  ],
+  "claims": [
+    {
+      "text": "About 143 KB of Go plus a Dockerfile and a Makefile, according to GitHub's language statistics.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "text": "A single commit, made on 27 April 2026 from the owner's account.",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "excerpts": [],
+  "captures": [],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Private work. Details withheld; available on request."
+  },
+  "limitations": [
+    "Private work: code, screenshots, names and clients are withheld at the owner's request. Only language statistics and commit history are published."
+  ],
+  "contribution": "1 of 1 commits by phcaradanai, 2026-04-27.",
+  "lastVerified": "2026-10-25"
+}

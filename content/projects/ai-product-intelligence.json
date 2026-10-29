@@ -1,0 +1,373 @@
+{
+  "slug": "ai-product-intelligence",
+  "accession": "PK-2026-012",
+  "title": "AI Product Intelligence Advisor",
+  "kind": "ai",
+  "tier": "B",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Evidence-first promotion advisor on synthetic TV data: deterministic rules and ranking, human decision log, no LLM, not production approved.",
+  "summary": "A TypeScript monorepo for an advisor that answers which in-stock TVs to promote this month and with which promotion type. It imports internal CSV data, computes versioned metrics, applies owner-supplied policy, ranks by ordered criteria, builds structured recommendations and records human decisions. Everything runs on labelled synthetic data. The chat screen has no free-text input and no LLM. The README says owner policies and reviews are pending and the work is not production approved.",
+  "period": {
+    "start": "2026-10-10",
+    "end": "2026-10-20"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/ai-product-intelligence",
+    "pinnedSha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+    "ownerCommits": 4,
+    "totalCommits": 4,
+    "languages": {
+      "TypeScript": 300214,
+      "Python": 95532,
+      "CSS": 29067,
+      "HTML": 25694,
+      "Dockerfile": 851
+    },
+    "checkedAt": "2026-10-24"
+  },
+  "stack": [
+    "TypeScript",
+    "Zod 4",
+    "Node.js (native type stripping, node:test)",
+    "TanStack Start",
+    "React",
+    "Python (separate forecasting service)"
+  ],
+  "aiRole": {
+    "summary": "The repo is set up for Claude Code (CLAUDE.md) and the Impeccable design tooling (.impeccable/ holds config, mocks and review captures). The product itself contains no AI model: the chat screen has no free-text input and answers are preset intents read from structured data. The repo documents how the AI-assisted work was verified: a review record lists a clean install, every script with its exit code, a design detector, in-app checks and a fresh finish-review subagent, and each STEP has a verify record.",
+    "tools": [
+      {
+        "name": "Claude Code",
+        "use": "CLAUDE.md in the repository root addresses Claude Code and holds the project's working rules; .claude/launch.json defines the dev-server launch entry.",
+        "evidence": "E13"
+      },
+      {
+        "name": "Impeccable",
+        "use": "Design and review tooling: PRODUCT.md, DESIGN.md and the .impeccable/ folder with configuration, mock pages and review screenshots.",
+        "evidence": "E14"
+      }
+    ]
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "source",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "packages/domain/src/integrity.ts",
+      "lines": [
+        16,
+        139
+      ]
+    },
+    {
+      "id": "E2",
+      "level": "source",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "packages/ranking/src/rank.ts",
+      "lines": [
+        122,
+        214
+      ]
+    },
+    {
+      "id": "E3",
+      "level": "source",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "packages/recommendation/src/redact.ts",
+      "lines": [
+        5,
+        57
+      ]
+    },
+    {
+      "id": "E4",
+      "level": "source",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "packages/recommendation/src/decision.ts",
+      "lines": [
+        54,
+        90
+      ]
+    },
+    {
+      "id": "E5",
+      "level": "reported",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "README.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "Owner policies and definition reviews are pending. Not production approved."
+    },
+    {
+      "id": "E6",
+      "level": "reported",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "README.md",
+      "lines": [
+        49,
+        49
+      ],
+      "quote": "SYNTHETIC ONLY. Never real business facts."
+    },
+    {
+      "id": "E7",
+      "level": "reported",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "docs/product/REVIEW_STEP_0-7.md",
+      "lines": [
+        17,
+        17
+      ],
+      "quote": "Nothing is production-ready. Owner decisions block that (§5), not engineering."
+    },
+    {
+      "id": "E8",
+      "level": "reported",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "docs/product/REVIEW_STEP_0-7.md",
+      "lines": [
+        68,
+        68
+      ],
+      "quote": "so STEP 7's design finish is not certified `ship`"
+    },
+    {
+      "id": "E9",
+      "level": "reported",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "docs/product/REVIEW_STEP_0-7.md",
+      "lines": [
+        3,
+        9
+      ],
+      "quote": "a fresh finish-review subagent for the UI"
+    },
+    {
+      "id": "E10",
+      "level": "reported",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "docs/product/STEP_7b_UX_Redesign.md",
+      "lines": [
+        28,
+        28
+      ],
+      "quote": "There is no free-text input, because no LLM exists"
+    },
+    {
+      "id": "E11",
+      "level": "reported",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "docs/product/PLAN_Forecasting_Foundation.md",
+      "lines": [
+        5,
+        5
+      ],
+      "quote": "No automatic publication into business recommendations is included."
+    },
+    {
+      "id": "E12",
+      "level": "ran",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "captureId": "ai-product-intelligence-git-facts"
+    },
+    {
+      "id": "E13",
+      "level": "source",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "CLAUDE.md",
+      "lines": [
+        3,
+        3
+      ]
+    },
+    {
+      "id": "E14",
+      "level": "source",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": ".impeccable/config.json"
+    },
+    {
+      "id": "E15",
+      "level": "source",
+      "repo": "phcaradanai/ai-product-intelligence",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "path": "services/forecasting/README.md"
+    }
+  ],
+  "claims": [
+    {
+      "text": "checkDatasetIntegrity() runs cross-record structural checks over the product dataset: duplicate ids, missing references, invalid time ranges, accepted matches without a recorded human review (unless matched by exact identifier), and accepted matches resting on a source whose rights are not authorized.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "text": "rankCandidates() orders only eligible candidates, lexicographically over owner-supplied criteria. There are no weights and no score field. Ties share a competition rank, and candidates that cannot be ranked go to a notRanked list with a reason rather than being dropped.",
+      "evidence": [
+        "E2"
+      ]
+    },
+    {
+      "text": "redactForViewer() takes a required viewer clearance with no default and removes figures, thresholds, rule outcomes and rank order above it, while verdicts and statuses stay visible.",
+      "evidence": [
+        "E3"
+      ]
+    },
+    {
+      "text": "recordDecision() appends to a decision log without mutating the input log. It refuses redacted views, content that does not match the recommendation id, a missing rationale or approval permission, and policies not in effect at the decision time. The outcome field is always null.",
+      "evidence": [
+        "E4"
+      ]
+    },
+    {
+      "text": "Status as recorded by the repo: the whole slice runs on labelled synthetic data, owner policies and definition reviews are pending, and it is not production approved. The git history holds 4 commits, 2026-10-10 to 2026-10-20, all under the owner's account.",
+      "evidence": [
+        "E5",
+        "E6",
+        "E7",
+        "E12"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "integrity-match-rules",
+      "title": "Accepted product matches need review and authorized sources",
+      "path": "packages/domain/src/integrity.ts",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "startLine": 112,
+      "endLine": 137,
+      "language": "typescript",
+      "code": "  data.matches.forEach((r, i) => {\n    exists(\"references\", r.sourceReferenceId, `matches[${i}].sourceReferenceId`);\n    r.supportingEvidenceReferenceIds.forEach((id, j) => exists(\"references\", id, `matches[${i}].supportingEvidenceReferenceIds[${j}]`));\n    if (r.target) targetExists(r.target, `matches[${i}].target`);\n    range(r.validFrom, r.validTo, `matches[${i}].validTo`);\n    if (r.reviewStatus === \"matched\" && !r.target) {\n      issues.push({ path: `matches[${i}].target`, code: \"invalid_state\", message: \"Accepted match requires a target\" });\n    }\n    if ((r.reviewStatus === \"rejected\" || r.reviewStatus === \"unresolved\") && r.target) {\n      issues.push({ path: `matches[${i}].target`, code: \"invalid_state\", message: \"Rejected/unresolved match cannot attach an accepted target\" });\n    }\n    if ((r.matchConfidence === null) !== (r.confidenceKind === null)) {\n      issues.push({ path: `matches[${i}].confidenceKind`, code: \"invalid_state\", message: \"Confidence and kind must be supplied together\" });\n    }\n    if (r.reviewStatus === \"matched\" && r.matchMethod !== \"exact_identifier\" && (r.reviewedBy === null || r.reviewedAt === null)) {\n      issues.push({ path: `matches[${i}].reviewedBy`, code: \"invalid_state\", message: \"Non-identifier accepted match requires recorded human review\" });\n    }\n    if (r.reviewStatus === \"matched\") {\n      [r.sourceReferenceId, ...r.supportingEvidenceReferenceIds].forEach((refId) => {\n        const source = referenceSource.get(refId);\n        if (source && source.rightsStatus !== \"authorized\") {\n          issues.push({ path: `matches[${i}]`, code: \"unauthorized_source\", message: `Accepted match relies on ${source.rightsStatus} source ${source.id}` });\n        }\n      });\n    }\n  });",
+      "why": "Look at the last two checks. An accepted match that did not come from an exact identifier must carry a recorded human reviewer, and an accepted match is rejected if its source or any supporting source is not rights-authorized. The check is structural; the file's comment says it is not business approval policy.",
+      "claimIndexes": [
+        0
+      ]
+    },
+    {
+      "id": "rank-lexicographic",
+      "title": "Lexicographic comparison, no weights",
+      "path": "packages/ranking/src/rank.ts",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "startLine": 122,
+      "endLine": 131,
+      "language": "typescript",
+      "code": "/** Lexicographic comparison over owner criteria; ties broken by SKU id for display only. */\nfunction compare(a: RankedCandidate, b: RankedCandidate): number {\n  for (let i = 0; i < a.keys.length; i++) {\n    const ka = a.keys[i]!;\n    const kb = b.keys[i]!;\n    if (ka.value !== kb.value) return ka.direction === \"desc\" ? kb.value - ka.value : ka.value - kb.value;\n  }\n  return a.skuId < b.skuId ? -1 : a.skuId > b.skuId ? 1 : 0;\n}\nconst sameKeys = (a: RankedCandidate, b: RankedCandidate) => a.keys.every((k, i) => k.value === b.keys[i]!.value);",
+      "why": "Candidates are compared criterion by criterion in the order the owner policy gives, each ascending or descending. There is no weighted sum and no score field. The SKU id only breaks ties for display; tied candidates share a competition rank.",
+      "claimIndexes": [
+        1
+      ]
+    },
+    {
+      "id": "redact-requires-clearance",
+      "title": "Viewer clearance is required, never defaulted",
+      "path": "packages/recommendation/src/redact.ts",
+      "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "startLine": 5,
+      "endLine": 20,
+      "language": "typescript",
+      "code": "/**\n * Viewer-specific copy with everything above `viewerClearance` removed (S6-DEC-08, blueprint §11.4,\n * §15.2). The clearance is required: there is no default, and never full access by omission.\n * Verdicts and statuses stay visible; values, thresholds, rule outcomes and rank order do not.\n */\nexport function redactForViewer(set: RecommendationSet, viewerClearance: Sensitivity): RecommendationSet {\n  const out: RecommendationSet = structuredClone(set);\n  out.redaction = { viewerClearance };\n\n  const hiddenRankActions = new Set<string>();\n  for (const group of out.shortlist) {\n    if (!exceeds(group.sensitivity, viewerClearance)) continue;\n    hiddenRankActions.add(group.action);\n    group.rankWithheld = true;\n    group.ranked = group.ranked.map((c) => ({ skuId: c.skuId, rank: null, tied: false })).sort((a, b) => (a.skuId < b.skuId ? -1 : 1));\n  }",
+      "why": "The doc comment and signature make the viewer clearance a required argument: omission is a type error, not full access. For any rank list above the viewer's clearance, the order is withheld and every SKU's rank becomes null, sorted by id so the order itself leaks nothing.",
+      "claimIndexes": [
+        2
+      ]
+    }
+  ],
+  "captures": [
+    "ai-product-intelligence-git-facts"
+  ],
+  "assets": [
+    {
+      "id": "a1",
+      "file": "dashboard-en.png",
+      "alt": "Product dashboard in English, light theme: status filter chips, four synthetic TV cards labelled Recommended with the actions Advertise only or Hold, figures hidden behind lock icons, a detail panel for one model and a decision bar with Approve disabled.",
+      "title": "Product dashboard, internal clearance (synthetic data)",
+      "category": "screenshot",
+      "tools": [],
+      "provenance": "Captured from the running app on synthetic data during the repository's UI review and stored under .impeccable/review. The capture tool is not recorded in the repository.",
+      "sourcePath": ".impeccable/review/desktop-internal-en.png",
+      "sourceSha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "provenanceEvidence": "docs/product/STEP_7_Advisor_Workspace.md",
+      "width": 1440,
+      "height": 900,
+      "featured": true
+    },
+    {
+      "id": "a2",
+      "file": "dashboard-dark-th.png",
+      "alt": "Dark-theme dashboard in Thai on the edge-case data set: five synthetic TV cards with recommended, review required, insufficient data and blocked statuses, and a detail panel listing the rules that blocked the selected model.",
+      "title": "Dark theme, edge-case scenario, Thai",
+      "category": "screenshot",
+      "tools": [],
+      "provenance": "Captured from the running app on synthetic data during the repository's UI review and stored under .impeccable/review. The capture tool is not recorded in the repository.",
+      "sourcePath": ".impeccable/review/dark-dashboard-blocked-th.png",
+      "sourceSha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "provenanceEvidence": "docs/product/STEP_7b_UX_Redesign.md",
+      "width": 1440,
+      "height": 900,
+      "featured": true
+    },
+    {
+      "id": "a3",
+      "file": "chat-th.png",
+      "alt": "Chat and Advisor screen in Thai: the fixed question about which TVs to promote this month, an answer listing four synthetic TV models with their recommended action, an internal-data-only badge, and one preset follow-up chip about data sources.",
+      "title": "Chat and Advisor screen, Thai",
+      "category": "screenshot",
+      "tools": [],
+      "provenance": "Captured from the running app on synthetic data during the repository's UI review and stored under .impeccable/review. The capture tool is not recorded in the repository.",
+      "sourcePath": ".impeccable/review/chat.png",
+      "sourceSha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "provenanceEvidence": "docs/product/STEP_7_Advisor_Workspace.md",
+      "width": 1440,
+      "height": 900,
+      "featured": false
+    },
+    {
+      "id": "a4",
+      "file": "dashboard-mobile.png",
+      "alt": "Phone-width dashboard: search field, date range, language toggle, Internal data only and Synthetic data not real badges, status filter chips, two product cards, a decision bar and a bottom navigation bar.",
+      "title": "Dashboard at phone width",
+      "category": "screenshot",
+      "tools": [],
+      "provenance": "Captured from the running app on synthetic data during the repository's UI review and stored under .impeccable/review. The capture tool is not recorded in the repository.",
+      "sourcePath": ".impeccable/review/mobile-dashboard.png",
+      "sourceSha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+      "provenanceEvidence": "docs/product/STEP_7_Advisor_Workspace.md",
+      "width": 750,
+      "height": 1624,
+      "featured": false
+    }
+  ],
+  "demo": {
+    "url": null,
+    "note": "Runs locally on synthetic data (npm run dev:web); no public deployment."
+  },
+  "limitations": [
+    "Not production approved (the README's own status). All data is labelled synthetic (SYN- fixtures); no real business facts or real policy values exist in the repo.",
+    "Owner policies (promotion, ranking, recommendation) and metric-definition reviews are pending. The repo's own guide notes that a real dataset would show every SKU as review_required until those exist.",
+    "No LLM is integrated. External evidence enrichment and outcome measurement are not built; the decision log is held in memory and its outcome field is always null (not yet measurable).",
+    "The review record states the last batch of seven UI fixes was not re-reviewed, so the STEP 7 design finish is not certified as ship.",
+    "The README's scope line and layout predate later steps; a later commit adds a separate Python forecasting service whose plan says it does not publish into business recommendations. This page does not assess that service.",
+    "Test results are not claimed here: this site did not run the repository's tests, and passing tests would not show that the advice is useful or wanted."
+  ],
+  "contribution": "All 4 commits are attributed to the owner's GitHub account, dated 2026-10-10 to 2026-10-20. No other contributors.",
+  "lastVerified": "2026-10-24"
+}

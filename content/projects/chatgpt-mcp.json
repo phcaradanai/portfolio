@@ -1,0 +1,354 @@
+{
+  "slug": "chatgpt-mcp",
+  "accession": "PK-2026-013",
+  "title": "ChatGPT MCP bridge (Rust)",
+  "kind": "tool",
+  "tier": "B",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Rust MCP bridge that lets ChatGPT Web read and patch registered local projects through a small, path-confined tool set.",
+  "summary": "A Rust binary, mcp-bridge, that serves a Model Context Protocol endpoint over HTTP and exposes registered local workspaces through nine direct tools: list, search, read, exact-match patch, create-only write, git status and diff, and operator-defined checks. It defaults to a loopback address and supports an optional bearer token. The README is Thai and English and describes a Windows setup through a vendor tunnel; the repository holds no record of a completed ChatGPT session.",
+  "period": {
+    "start": "2026-08-25",
+    "end": "2026-08-26"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/chatgpt-mcp",
+    "pinnedSha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+    "ownerCommits": 8,
+    "totalCommits": 8,
+    "languages": {
+      "Rust": 178539,
+      "JavaScript": 3372
+    },
+    "checkedAt": "2026-10-24"
+  },
+  "stack": [
+    "Rust",
+    "rmcp (MCP SDK)",
+    "axum",
+    "tokio",
+    "SQLite (rusqlite)",
+    "clap",
+    "TOML check config"
+  ],
+  "aiRole": {
+    "summary": "Claude Code project settings with hook and status-line helper scripts are committed (.claude/); there is no CLAUDE.md or AGENTS.md. Separately, the bridge can optionally launch a locally configured Codex executable to run tasks; that is a product feature, not a record of how the code was written. The repo records no review process for AI-written code beyond its own integration tests, which this site did not run.",
+    "tools": [
+      {
+        "name": "Claude Code",
+        "use": "Project settings in .claude/settings.json register hooks and a status line.",
+        "evidence": "E16"
+      },
+      {
+        "name": "Graft",
+        "use": "Helper scripts under .claude/helpers invoked by those hooks.",
+        "evidence": "E17"
+      },
+      {
+        "name": "Codex CLI",
+        "use": "Optional runtime executor for bridge tasks, launched with fixed arguments (product feature in src/agent.rs).",
+        "evidence": "E18"
+      }
+    ]
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "src/workspace.rs",
+      "lines": [
+        954,
+        989
+      ]
+    },
+    {
+      "id": "E2",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "src/workspace.rs",
+      "lines": [
+        673,
+        701
+      ]
+    },
+    {
+      "id": "E3",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "tests/direct_workspace.rs",
+      "lines": [
+        302,
+        357
+      ]
+    },
+    {
+      "id": "E4",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "src/workspace.rs",
+      "lines": [
+        404,
+        440
+      ]
+    },
+    {
+      "id": "E5",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "src/workspace.rs",
+      "lines": [
+        442,
+        472
+      ]
+    },
+    {
+      "id": "E6",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "src/workspace.rs",
+      "lines": [
+        943,
+        951
+      ]
+    },
+    {
+      "id": "E7",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "src/workspace.rs",
+      "lines": [
+        512,
+        562
+      ]
+    },
+    {
+      "id": "E8",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "src/workspace.rs",
+      "lines": [
+        1085,
+        1106
+      ]
+    },
+    {
+      "id": "E9",
+      "level": "reported",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "README.md",
+      "lines": [
+        445,
+        445
+      ],
+      "quote": "There is no `shell_exec`, `run_command`, generic terminal, or arbitrary command tool."
+    },
+    {
+      "id": "E10",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "src/main.rs",
+      "lines": [
+        36,
+        42
+      ]
+    },
+    {
+      "id": "E11",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "src/main.rs",
+      "lines": [
+        154,
+        158
+      ]
+    },
+    {
+      "id": "E12",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "src/transport.rs",
+      "lines": [
+        27,
+        86
+      ]
+    },
+    {
+      "id": "E13",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "tests/http_transport.rs",
+      "lines": [
+        320,
+        321
+      ]
+    },
+    {
+      "id": "E14",
+      "level": "reported",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "README.md",
+      "lines": [
+        451,
+        451
+      ],
+      "quote": "never expose the bridge directly to the public Internet, use a long random token and keep it out of URLs/prompts/logs/Git"
+    },
+    {
+      "id": "E15",
+      "level": "ran",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "captureId": "chatgpt-mcp-git-facts"
+    },
+    {
+      "id": "E16",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": ".claude/settings.json",
+      "lines": [
+        1,
+        12
+      ]
+    },
+    {
+      "id": "E17",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": ".claude/helpers/graft-hooks.cjs"
+    },
+    {
+      "id": "E18",
+      "level": "source",
+      "repo": "phcaradanai/chatgpt-mcp",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "path": "src/agent.rs",
+      "lines": [
+        67,
+        67
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "text": "Workspace tools accept only project-relative paths. The parser rejects NUL bytes, leading separators, drive prefixes and '..' for both slash styles; the resolver canonicalises the target, requires it to stay inside the registered root and refuses .git. A test asserts rejection of '../', an absolute path, a drive path, '.git/config' and, where the platform allows creating one, an outside symlink.",
+      "evidence": [
+        "E1",
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "text": "workspace_write_file creates new files only (create_new, failing if the file exists) and refuses .git and the operator config file name; workspace_apply_patch replaces text only when old_text matches exactly once. Both are capped at 1 MiB.",
+      "evidence": [
+        "E4",
+        "E5",
+        "E6"
+      ]
+    },
+    {
+      "text": "workspace_run_check takes only a check id. Program, arguments and timeout (1 to 300 seconds, default 60) come from mcp-bridge.toml in the workspace root; output is captured up to 256 KiB per stream and the process is killed on timeout. The README states there is no shell_exec, run_command, generic terminal or arbitrary command tool.",
+      "evidence": [
+        "E7",
+        "E8",
+        "E9"
+      ]
+    },
+    {
+      "text": "serve-http defaults to 127.0.0.1:8765 and serves /mcp over Streamable HTTP plus an unauthenticated /health that returns only status and version. When a token is configured, /mcp requires a matching Bearer header. --bind accepts any socket address. An integration test drives the authenticated tool flow over loopback HTTP.",
+      "evidence": [
+        "E10",
+        "E11",
+        "E12",
+        "E13",
+        "E14"
+      ]
+    },
+    {
+      "text": "Repository facts: 8 commits, all under the owner's account, 2026-08-25 to 2026-08-26; three integration test files under tests/. The README is bilingual (Thai and English) and describes setup through a vendor tunnel.",
+      "evidence": [
+        "E15"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "relative-path-parser",
+      "title": "Project-relative paths only, both slash styles",
+      "path": "src/workspace.rs",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "startLine": 954,
+      "endLine": 989,
+      "language": "rust",
+      "code": "fn parse_relative_path(value: &str, allow_empty: bool) -> Result<PathBuf, WorkspaceError> {\n    if value.as_bytes().contains(&0)\n        || (!allow_empty && value.is_empty())\n        || value.starts_with('/')\n        || value.starts_with('\\\\')\n        || looks_like_windows_prefix(value)\n    {\n        return Err(WorkspaceError::InvalidRelativePath {\n            path: value.to_owned(),\n        });\n    }\n    // Parse both separators explicitly so Windows traversal is rejected even\n    // when this process is running on a Unix host.\n    let mut path = PathBuf::new();\n    let mut has_normal = false;\n    for component in value.split(['/', '\\\\']) {\n        match component {\n            \"\" | \".\" => {}\n            \"..\" => {\n                return Err(WorkspaceError::InvalidRelativePath {\n                    path: value.to_owned(),\n                });\n            }\n            normal => {\n                has_normal = true;\n                path.push(normal);\n            }\n        }\n    }\n    if !allow_empty && !has_normal {\n        return Err(WorkspaceError::InvalidRelativePath {\n            path: value.to_owned(),\n        });\n    }\n    Ok(path)\n}",
+      "why": "Every path a client sends is parsed here first. NUL bytes, leading slashes or backslashes, drive prefixes and any `..` component are rejected. The parser splits on both the forward slash and the backslash, so Windows-style traversal is rejected even when the process runs on Unix, as the comment says.",
+      "claimIndexes": [
+        0
+      ]
+    },
+    {
+      "id": "resolve-existing-path",
+      "title": "Canonicalise, then require the real path inside the root",
+      "path": "src/workspace.rs",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "startLine": 673,
+      "endLine": 701,
+      "language": "rust",
+      "code": "    fn resolve_existing(\n        &self,\n        relative: &str,\n        allow_root: bool,\n    ) -> Result<PathBuf, WorkspaceError> {\n        let relative_path = parse_relative_path(relative, allow_root)?;\n        self.ensure_not_git(relative_path.as_path())?;\n        let candidate = self.root.join(&relative_path);\n        match fs::symlink_metadata(&candidate) {\n            Ok(_) => {}\n            Err(error) if error.kind() == io::ErrorKind::NotFound => {\n                return Err(WorkspaceError::PathMissing {\n                    path: relative.to_owned(),\n                });\n            }\n            Err(source) => {\n                return Err(io_error(\n                    \"reading workspace path metadata\",\n                    &candidate,\n                    source,\n                ))\n            }\n        }\n        let canonical = fs::canonicalize(&candidate)\n            .map_err(|source| io_error(\"canonicalizing workspace path\", &candidate, source))?;\n        self.ensure_inside(&canonical)?;\n        self.ensure_not_git(canonical.strip_prefix(&self.root).unwrap_or(&canonical))?;\n        Ok(canonical)\n    }",
+      "why": "After parsing, the target is canonicalised and must still start with the registered root, so a symlink that points outside is refused after resolution. A path with a .git component is refused both before and after canonicalisation.",
+      "claimIndexes": [
+        0
+      ]
+    },
+    {
+      "id": "run-check-by-id",
+      "title": "Checks run by id from the operator's config",
+      "path": "src/workspace.rs",
+      "sha": "887f1ef9b819ebc37bc28cd691cdbe0751ad455b",
+      "startLine": 512,
+      "endLine": 523,
+      "language": "rust",
+      "code": "    pub(crate) async fn run_check(&self, check_id: &str) -> Result<CommandResult, WorkspaceError> {\n        validate_check_id(check_id)?;\n        let config = self.load_config()?;\n        let definition = config\n            .checks\n            .get(check_id)\n            .cloned()\n            .ok_or_else(|| WorkspaceError::UnknownCheck(check_id.to_owned()))?;\n        let info = self.check_info(check_id.to_owned(), definition.clone())?;\n        self.run_command(&info.program, &definition.args, info.timeout())\n            .await\n    }",
+      "why": "The check tool never receives a program or arguments from the client. It validates an id, loads the operator-authored config file from the workspace root and looks the id up; an unknown id is an error. The program, arguments and timeout all come from that file.",
+      "claimIndexes": [
+        2
+      ]
+    }
+  ],
+  "captures": [
+    "chatgpt-mcp-git-facts"
+  ],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Runs locally against registered workspaces; no public deployment. The documented ChatGPT setup needs a paid workspace plan and a vendor tunnel."
+  },
+  "limitations": [
+    "Loopback is a default and README guidance, not enforced in code: --bind accepts any socket address and nothing checks that it is loopback.",
+    "Bearer authentication applies only when a token is configured; without one /mcp accepts unauthenticated requests. The token comparison is plain string equality.",
+    "Reading the source, protection of the operator config file (mcp-bridge.toml) from modification is applied on the create-new path only; apply_text_patch resolves through a path check that refuses .git but not that file name, and no test covers it. If that reading is right, a client allowed to patch could change which programs workspace_run_check runs. This was not executed or tested here.",
+    "Checks run operator-defined programs, which may execute files that the patch tool can edit. The README leans on operator review: review every write with workspace_git_diff and use only trusted workspaces.",
+    "The README says the documented ChatGPT flow needs Full MCP write support, stated as available on Business, Enterprise and Edu plans subject to workspace policy, and does not claim ChatGPT Desktop. The repository holds no record of a completed ChatGPT session; tests drive the HTTP endpoint locally.",
+    "Besides the direct workspace tools, the server exposes project and task tools backed by SQLite; this entry examined only the direct workspace tools. Tests were not run here (they need cargo and crate downloads)."
+  ],
+  "contribution": "All 8 commits are attributed to the owner's GitHub account, dated 2026-08-25 to 2026-08-26. No other contributors.",
+  "lastVerified": "2026-10-24"
+}

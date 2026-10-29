@@ -1,0 +1,19 @@
+node_modules
+.next
+out
+.env*
+!.env.example
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+test-results
+playwright-report
+.impeccable/mocks
+.impeccable/review
+.impeccable/config.local.json
+content/assets-src
+.clones
+.tmp
+
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/

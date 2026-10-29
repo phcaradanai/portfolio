@@ -1,0 +1,13 @@
+{
+  "id": "print-ops-claude-trailers",
+  "repo": "phcaradanai/print_ops",
+  "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+  "cwd": ".",
+  "command": "git shortlog -sn --group=trailer:co-authored-by 4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+  "capturedAt": "2026-10-24T12:24:25.939Z",
+  "exitCode": 0,
+  "durationMs": 78,
+  "output": "    17\tClaude Fable 5\n    13\tClaude Opus 5\n     9\tClaude Sonnet 4.6\n     6\tClaude Sonnet 5\n     2\tgithub-actions[bot]",
+  "truncated": false,
+  "environment": "macOS 26.5.2, git 2.55.0; read-only git; git status --porcelain empty before and after"
+}

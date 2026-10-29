@@ -1,0 +1,484 @@
+{
+  "slug": "shadow-council",
+  "accession": "PK-2026-008",
+  "title": "Shadow Council",
+  "kind": "game",
+  "tier": "B",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Browser bluff-and-deduction game for 2-6 players: a typed rules engine, an authoritative Node server and a client built without a bundler.",
+  "summary": "Shadow Council is a multiplayer social bluff game: Influence is public, Power is private, and a player declares a strike without revealing how much force backs it. The repo splits a domain package (rules and phases), an application package (rooms, match coordination, per-viewer projections), a protocol package, a Node HTTP and SSE server, and a browser client of plain TypeScript compiled by tsc with no bundler. It carries an ADR, architecture notes and an empty playtest template; no playtest result is recorded.",
+  "period": {
+    "start": "2026-09-08",
+    "end": "2026-09-23"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/shadow_council",
+    "pinnedSha": "ad14b7ab89355402917af7578a268ac41959c458",
+    "ownerCommits": 16,
+    "totalCommits": 16,
+    "languages": {
+      "TypeScript": 489015,
+      "CSS": 118192,
+      "JavaScript": 5638,
+      "HTML": 413
+    },
+    "checkedAt": "2026-10-25"
+  },
+  "stack": [
+    "TypeScript",
+    "Node.js",
+    "Server-Sent Events",
+    "npm workspaces",
+    "Vitest",
+    "Playwright"
+  ],
+  "aiRole": {
+    "summary": "Six files in prompt_used/ (#001 to #006) are written as role briefs to AI agents: lead architect, gameplay designer, implementation worker, senior reviewer, refactor engineer and foundation engineer (E29 shows the first). The reviewer brief (#004) names Codex as a producer of work to be reviewed (E28). The repo has no AGENTS.md or CLAUDE.md, no record of which agent wrote which code and no review output. CI configuration and tests exist, but no run results are stored.",
+    "tools": [
+      {
+        "name": "Codex",
+        "use": "Named in the reviewer brief prompt_used/#004.md as a source of work to be reviewed; no other record of its use in the repo.",
+        "evidence": "E28"
+      }
+    ]
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "packages/domain/src/engine/decide.ts",
+      "lines": [
+        141,
+        146
+      ],
+      "note": "decide signature; randomProvider is discarded with void."
+    },
+    {
+      "id": "E2",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "packages/domain/src/transition.ts",
+      "lines": [
+        1,
+        7
+      ],
+      "note": "Transition: next state plus event list."
+    },
+    {
+      "id": "E3",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "packages/domain/src/model.ts",
+      "lines": [
+        75,
+        86
+      ],
+      "note": "MatchPhase union (ACTIVE_TURN, REACTION, FINISHED) and MatchState."
+    },
+    {
+      "id": "E4",
+      "level": "reported",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "ARCHITECTURE.md",
+      "lines": [
+        8,
+        8
+      ],
+      "quote": "Pure, deterministic state machine (Strike, Recover, Reaction, Elimination, Victory). Ambient randomness and I/O strictly forbidden."
+    },
+    {
+      "id": "E5",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "packages/domain/src/engine/decide.ts",
+      "lines": [
+        37,
+        50
+      ],
+      "note": "ensureActiveActor: only the active, living player may act."
+    },
+    {
+      "id": "E6",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "packages/domain/src/engine/decide.ts",
+      "lines": [
+        72,
+        82
+      ],
+      "note": "Defence cost is guard plus 1 if challenging; InsufficientPower otherwise."
+    },
+    {
+      "id": "E7",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "packages/domain/src/engine/decide.ts",
+      "lines": [
+        263,
+        293
+      ],
+      "note": "REACT and EXPIRE_PHASE handling in the REACTION phase."
+    },
+    {
+      "id": "E8",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "packages/application/src/views/projection.ts",
+      "lines": [
+        102,
+        117
+      ],
+      "note": "Player view: power and activeScheme included only for the viewer."
+    },
+    {
+      "id": "E9",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "packages/application/src/views/projection.ts",
+      "lines": [
+        119,
+        145
+      ],
+      "note": "Phase view: pendingForce only when the viewer is the attacker."
+    },
+    {
+      "id": "E10",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "packages/application/src/views/projection.ts",
+      "lines": [
+        161,
+        191
+      ],
+      "note": "projectEventsForViewer drops power and schemeType fields for non-actors."
+    },
+    {
+      "id": "E11",
+      "level": "reported",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "README.md",
+      "lines": [
+        35,
+        35
+      ],
+      "quote": "Private commitment data (`pendingFunding`) and opponent power are stripped server-side from views and SSE streams."
+    },
+    {
+      "id": "E12",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "tests/e2e/hidden-information.spec.ts",
+      "lines": [
+        24,
+        26
+      ],
+      "note": "Playwright test title: target and bystander DOM and client storage must not leak committed Force."
+    },
+    {
+      "id": "E13",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "package.json",
+      "lines": [
+        18,
+        18
+      ],
+      "note": "build:web is tsc -p apps/web/tsconfig.json."
+    },
+    {
+      "id": "E14",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "package.json",
+      "lines": [
+        32,
+        38
+      ],
+      "note": "devDependencies: Playwright, @types/node, Prettier, TypeScript, Vitest. No React, no bundler."
+    },
+    {
+      "id": "E15",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "apps/web/package.json",
+      "lines": [
+        1,
+        6
+      ],
+      "note": "Web package manifest with no dependencies."
+    },
+    {
+      "id": "E16",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "apps/web/index.html",
+      "lines": [
+        12,
+        12
+      ],
+      "note": "Page loads /app.js as a native module."
+    },
+    {
+      "id": "E17",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "apps/server/src/transport/http-server.ts",
+      "lines": [
+        231,
+        240
+      ],
+      "note": "The server maps /app.js to main.js under apps/web/dist and serves compiled .js files."
+    },
+    {
+      "id": "E18",
+      "level": "reported",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "README.md",
+      "lines": [
+        28,
+        28
+      ],
+      "quote": "compiled directly to native browser ES modules (`type=\"module\"`), requiring zero bundler overhead (no Vite, Webpack, or Rollup runtime wrappers)"
+    },
+    {
+      "id": "E19",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": ".github/workflows/ci.yml",
+      "lines": [
+        31,
+        50
+      ],
+      "note": "CI steps: Prettier, tsc, architecture check, size check, build, Vitest, Playwright."
+    },
+    {
+      "id": "E20",
+      "level": "reported",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "ARCHITECTURE.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "Status: Implemented and Verified with Playwright Browser E2E."
+    },
+    {
+      "id": "E21",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "README.md",
+      "lines": [
+        16,
+        19
+      ],
+      "note": "Rules table rows: Strike funding 0 or 1, Recover +1 Power, Challenge costs 0 Power."
+    },
+    {
+      "id": "E22",
+      "level": "reported",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "GAME_RULES_MVP.md",
+      "lines": [
+        43,
+        43
+      ],
+      "quote": "Gain +2 Power, capped at 3."
+    },
+    {
+      "id": "E23",
+      "level": "reported",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "ARCHITECTURE.md",
+      "lines": [
+        66,
+        66
+      ],
+      "quote": "protocol, React and presentation libraries; no domain, application, server, or raw authoritative state"
+    },
+    {
+      "id": "E24",
+      "level": "reported",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "ADR/001-initial-architecture.md",
+      "lines": [
+        9,
+        9
+      ],
+      "quote": "The immediate uncertainty is whether a small bluff interaction is fun."
+    },
+    {
+      "id": "E25",
+      "level": "reported",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "ADR/001-initial-architecture.md",
+      "lines": [
+        13,
+        13
+      ],
+      "quote": "React/Vite is a replaceable client; HTTP commands and SSE updates are sufficient for the first sequential loop."
+    },
+    {
+      "id": "E26",
+      "level": "reported",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "ADR/001-initial-architecture.md",
+      "lines": [
+        29,
+        29
+      ],
+      "quote": "In-memory matches and journals disappear on restart."
+    },
+    {
+      "id": "E27",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "PLAYTEST.md",
+      "lines": [
+        25,
+        47
+      ],
+      "note": "Per-match metric table with all result cells empty."
+    },
+    {
+      "id": "E28",
+      "level": "reported",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "prompt_used/#004.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "You review work produced by Implementation Workers and Codex."
+    },
+    {
+      "id": "E29",
+      "level": "source",
+      "repo": "phcaradanai/shadow_council",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "path": "prompt_used/#001.md",
+      "lines": [
+        1,
+        1
+      ],
+      "note": "First role brief, addressed to an AI as lead architect and game systems PM."
+    }
+  ],
+  "claims": [
+    {
+      "text": "The rules live in one function, decide(state, command, randomProvider), that returns a RuleError or a Transition: the next MatchState plus an event list, over the phases ACTIVE_TURN, REACTION and FINISHED. It rejects a non-active actor, a reaction from anyone but the target, an unaffordable defence and an expiry with a stale phaseToken. ARCHITECTURE.md calls the package pure and deterministic.",
+      "evidence": [
+        "E1",
+        "E2",
+        "E3",
+        "E4",
+        "E5",
+        "E6",
+        "E7"
+      ]
+    },
+    {
+      "text": "The server projects state per viewer. A player's own Power appears only in their view, a pending Strike's secret Force (pendingForce) only in the attacker's view, and event payloads drop power and scheme-type fields for non-actors. The README says SSE streams are stripped the same way; a Playwright spec on DOM and storage leaks exists but was not run here.",
+      "evidence": [
+        "E8",
+        "E9",
+        "E10",
+        "E11",
+        "E12"
+      ]
+    },
+    {
+      "text": "The browser client is plain TypeScript compiled by tsc to native ES modules: build:web is tsc -p apps/web/tsconfig.json, index.html loads /app.js as a module, and the Node server serves that path from apps/web/dist/main.js. package.json lists no bundler or React, and apps/web/package.json has no dependencies.",
+      "evidence": [
+        "E13",
+        "E14",
+        "E15",
+        "E16",
+        "E17",
+        "E18"
+      ]
+    },
+    {
+      "text": "CI runs on push and pull request to main: a Prettier check, tsc, an architecture-boundary script, a file-size script, the build, Vitest and Playwright. The docs call the result implemented and verified, but no CI or test output is stored in the repo.",
+      "evidence": [
+        "E19",
+        "E20"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "reaction-guards",
+      "title": "Reaction phase: who may act, and when an expiry counts",
+      "path": "packages/domain/src/engine/decide.ts",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "startLine": 263,
+      "endLine": 293,
+      "language": "typescript",
+      "code": "  if (command.type === \"REACT\") {\n    const phase = state.phase;\n    if (phase.kind !== \"REACTION\") throw new Error(\"phase narrowed incorrectly\");\n    if (phase.pendingStrike.targetId !== command.actorId) {\n      return failure({ code: \"NotYourTurn\", message: \"Only the named target may react.\" });\n    }\n    const target = state.players.find((player) => player.playerId === command.actorId);\n    if (target === undefined || target.influence <= 0) {\n      return failure({ code: \"NotYourTurn\", message: \"An eliminated player cannot react.\" });\n    }\n    const isValidChoice =\n      command.choice === \"yield\" ||\n      command.choice === \"challenge\" ||\n      (typeof command.choice === \"object\" &&\n        ((\"type\" in command.choice && command.choice.type === \"guard\") ||\n          (\"guard\" in command.choice && typeof command.choice.challenge === \"boolean\"))) ||\n      (command.choice as unknown) === \"guard\";\n    if (!isValidChoice) {\n      return failure({ code: \"InvalidReaction\", message: \"That reaction is not supported.\" });\n    }\n    return resolveReaction(state, command.choice, false);\n  }\n  if (command.type === \"EXPIRE_PHASE\") {\n    const phase = state.phase;\n    if (command.phaseToken !== phase.phaseToken) {\n      return failure({ code: \"StalePhase\", message: \"That phase has already advanced.\" });\n    }\n    return resolveReaction(state, { guard: 0, challenge: false }, true);\n  }\n  return failure({ code: \"WrongPhase\", message: \"That command is not valid during a reaction.\" });\n};",
+      "why": "Only the named target may react, and an eliminated target is refused. The accepted choice shapes include older string forms ('yield', 'challenge', 'guard') beside the DefensePlan object. EXPIRE_PHASE resolves as a no-guard, no-challenge reaction only if its phaseToken equals the current phase's; otherwise it returns StalePhase.",
+      "claimIndexes": [
+        0
+      ]
+    },
+    {
+      "id": "attacker-only-force",
+      "title": "The attacker's committed Force goes only to the attacker",
+      "path": "packages/application/src/views/projection.ts",
+      "sha": "ad14b7ab89355402917af7578a268ac41959c458",
+      "startLine": 119,
+      "endLine": 145,
+      "language": "typescript",
+      "code": "  const phase = state.phase;\n  const phaseView: PublicPhaseView =\n    phase.kind === \"ACTIVE_TURN\"\n      ? {\n          kind: \"ACTIVE_TURN\",\n          activePlayerId: phase.activePlayerId,\n          phaseToken: phase.phaseToken,\n          ...(deadlineAt !== undefined ? { deadlineAt } : {}),\n        }\n      : phase.kind === \"REACTION\"\n        ? {\n            kind: \"REACTION\",\n            activePlayerId: phase.activePlayerId,\n            attackerId: phase.pendingStrike.attackerId,\n            targetId: phase.pendingStrike.targetId,\n            phaseToken: phase.phaseToken,\n            threat: phase.pendingStrike.threat,\n            ...(deadlineAt !== undefined ? { deadlineAt } : {}),\n            // Force / funding is secret to attacker only!\n            ...(phase.pendingStrike.attackerId === viewerPlayerId\n              ? {\n                  pendingForce: phase.pendingStrike.force,\n                  pendingFunding: phase.pendingStrike.force as Funding,\n                }\n              : {}),\n          }\n        : { kind: \"FINISHED\", winnerId: phase.winnerId };",
+      "why": "The REACTION view always shows the public threat. pendingForce, and the older pendingFunding alias, are spread in only when the viewer is the attacker (line 138); every other member's view has neither field. The same function includes a player's Power only for the viewer (lines 109-110, outside this excerpt).",
+      "claimIndexes": [
+        1
+      ]
+    }
+  ],
+  "captures": [],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Runs locally from a build; the README gives the start procedure. No public deployment is documented."
+  },
+  "limitations": [
+    "Whether the bluff exchange is fun is the repo's own open question: ADR 001 names it as the immediate uncertainty (E24), and PLAYTEST.md is a facilitator template whose metric tables are empty (E27). No playtest result or player feedback is recorded.",
+    "The README rules table is out of step with the later rules: it shows Strike funding of 0 or 1, Recover of +1 Power and a Challenge that costs 0 Power (E21), while GAME_RULES_MVP.md says Recover gives +2 (E22) and decide.ts charges 1 Power for a Challenge (E6). Treat the README table as stale.",
+    "ADR 001 names React/Vite as the replaceable client (E25) and ARCHITECTURE.md's import table lists React for the web layer (E23); the shipped client is plain TypeScript and package.json lists neither React nor a bundler (E14, E15). The docs describe a plan the code did not follow.",
+    "Match state lives in server memory only and disappears on restart, by design (E26).",
+    "Nothing was executed for this entry: the Vitest suites, Playwright specs, type-check, architecture and size scripts and the build are configured (E19) but no results are stored in the repo. 'Implemented and Verified with Playwright Browser E2E' (E20) is the repo's own statement and was not re-verified."
+  ],
+  "contribution": "All 16 commits are attributed to the owner's identities: 8 under the author name phcaradanai and 8 under a second local author name that uses the owner's email. First commit 2026-09-08, last 2026-09-23. No other contributors.",
+  "lastVerified": "2026-10-25"
+}

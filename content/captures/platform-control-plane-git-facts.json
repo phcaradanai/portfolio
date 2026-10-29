@@ -1,0 +1,13 @@
+{
+  "id": "platform-control-plane-git-facts",
+  "repo": "phcaradanai/platform-control-plane",
+  "sha": "9d4eba8815fe5666005946638fbbd6a7a66b3928",
+  "cwd": ".",
+  "command": "echo \"total commits: $(git rev-list --count HEAD)\"; echo \"commits whose author matches phcaradanai: $(git rev-list --count --author=phcaradanai HEAD)\"; echo \"first commit date: $(git log --format=%ad --date=short | sort | head -1)\"; echo \"last commit date: $(git log --format=%ad --date=short | sort | tail -1)\"; echo \"ADR files under docs/adr: $(git ls-files docs/adr | wc -l | tr -d ' ')\"",
+  "capturedAt": "2026-10-24T12:27:39Z",
+  "exitCode": 0,
+  "durationMs": 4532,
+  "output": "total commits: 30\ncommits whose author matches phcaradanai: 30\nfirst commit date: 2026-08-06\nlast commit date: 2026-08-21\nADR files under docs/adr: 6",
+  "truncated": false,
+  "environment": "macOS (Darwin 25.5.0) x86_64, git 2.55.0"
+}

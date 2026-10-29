@@ -1,0 +1,62 @@
+{
+  "slug": "storage-godot-tower-defence",
+  "accession": "PK-2026-020",
+  "title": "Tower-defence game (Godot)",
+  "kind": "game",
+  "tier": "C",
+  "maturity": "prototype",
+  "visibility": "private-redacted",
+  "tagline": "A private 2D tower-defence game in Godot, with Python and Go tooling around it.",
+  "summary": "A private game project worked on from May to October 2026. GitHub's language statistics show mostly GDScript, with Python, Go and TypeScript alongside. Screenshots and code are withheld.",
+  "period": {
+    "start": "2026-05-05",
+    "end": "2026-10-12"
+  },
+  "repo": null,
+  "stack": [
+    "Godot",
+    "GDScript",
+    "Python",
+    "Go",
+    "TypeScript"
+  ],
+  "aiRole": {
+    "summary": "Not described: the repository is withheld, so its tooling is not published.",
+    "tools": []
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "private",
+      "repo": "private",
+      "note": "GitHub API metadata (languages, contributors, commit dates) queried 2026-10-25. The repository is private and its contents were not read."
+    }
+  ],
+  "claims": [
+    {
+      "text": "Written mainly in GDScript (about 3.1 MB), with Python (about 0.28 MB), Go and TypeScript, according to GitHub's language statistics.",
+      "evidence": [
+        "E1"
+      ]
+    },
+    {
+      "text": "495 commits between 5 May and 12 October 2026, all from the owner's account.",
+      "evidence": [
+        "E1"
+      ]
+    }
+  ],
+  "excerpts": [],
+  "captures": [],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Private work. Details withheld; available on request."
+  },
+  "limitations": [
+    "Private work: code, screenshots, names and clients are withheld at the owner's request. Only language statistics and commit history are published."
+  ],
+  "contribution": "495 of 495 commits by phcaradanai, 2026-05-05 to 2026-10-12.",
+  "lastVerified": "2026-10-25"
+}

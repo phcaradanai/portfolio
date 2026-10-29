@@ -1,0 +1,13 @@
+{
+  "id": "ai-product-intelligence-git-facts",
+  "repo": "phcaradanai/ai-product-intelligence",
+  "sha": "b1263b151555e13b24cb544bff8a580ce5ce3157",
+  "cwd": ".",
+  "command": "echo \"total commits: $(git rev-list --count HEAD)\"; echo \"commits whose author matches phcaradanai: $(git rev-list --count --author=phcaradanai HEAD)\"; echo \"first commit date: $(git log --format=%ad --date=short | sort | head -1)\"; echo \"last commit date: $(git log --format=%ad --date=short | sort | tail -1)\"",
+  "capturedAt": "2026-10-24T12:25:38Z",
+  "exitCode": 0,
+  "durationMs": 800,
+  "output": "total commits: 4\ncommits whose author matches phcaradanai: 4\nfirst commit date: 2026-10-10\nlast commit date: 2026-10-20",
+  "truncated": false,
+  "environment": "macOS (Darwin 25.5.0) x86_64, git 2.55.0"
+}

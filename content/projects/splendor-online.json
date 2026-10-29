@@ -1,0 +1,367 @@
+{
+  "slug": "splendor-online",
+  "accession": "PK-2026-009",
+  "title": "Splendor-Online (Nova Frontier Online)",
+  "kind": "game",
+  "tier": "B",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Online multiplayer adaptation of a gem-trading board game, reskinned as a space setting; an Express and WebSocket server holds the state.",
+  "summary": "The repo's CLAUDE.md calls it a full-stack multiplayer Splendor board game; the player-facing name in README and metadata is Nova Frontier Online. A React 19 and Vite client talks over WebSocket to one large server.ts that validates actions, runs bot turns and a turn timer, and snapshots state to a JSON file. Docs describe six expansion modes, a manual playtest checklist and an acceptance matrix with one combo phase still pending. Bot commentary can call the Gemini API.",
+  "period": {
+    "start": "2026-06-05",
+    "end": "2026-06-21"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/Splendor-Online",
+    "pinnedSha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+    "ownerCommits": 130,
+    "totalCommits": 130,
+    "languages": {
+      "TypeScript": 1024403,
+      "CSS": 37806,
+      "Dockerfile": 563,
+      "HTML": 300
+    },
+    "checkedAt": "2026-10-25"
+  },
+  "stack": [
+    "TypeScript",
+    "React 19",
+    "Vite",
+    "Express",
+    "ws (WebSocket)",
+    "Tailwind CSS",
+    "Vitest",
+    "Gemini API (bot commentary)"
+  ],
+  "aiRole": {
+    "summary": "CLAUDE.md is a guidance file for Claude Code (E16) and AGENTS.md is a repository-guidelines file for coding agents (E17); the README opens with the Google AI Studio export template (E13) and metadata.json declares a server-side Gemini API capability (E14). At runtime the server can ask Gemini for bot commentary (E15, E18). The repo records no review of agent-written code beyond its own checklists, and no run results.",
+    "tools": [
+      {
+        "name": "Claude Code",
+        "use": "CLAUDE.md gives it commands and architecture notes for the repo.",
+        "evidence": "E16"
+      },
+      {
+        "name": "Google AI Studio",
+        "use": "README opens with the AI Studio app export template.",
+        "evidence": "E13"
+      },
+      {
+        "name": "Gemini API",
+        "use": "Runtime feature: @google/genai dependency and triggerBotCommentary in server.ts; a product feature, not a record of how the code was written.",
+        "evidence": "E15"
+      }
+    ]
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "source",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "server.ts",
+      "lines": [
+        2911,
+        2924
+      ],
+      "note": "Turn check and forced-discard check before any game action."
+    },
+    {
+      "id": "E2",
+      "level": "source",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "server.ts",
+      "lines": [
+        3008,
+        3044
+      ],
+      "note": "buy_card: server-side card lookup, Special Tech ownership, canBuyCard, undo snapshot, execute."
+    },
+    {
+      "id": "E3",
+      "level": "source",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "server.ts",
+      "lines": [
+        7,
+        7
+      ],
+      "note": "Server imports canBuyCard, canTakeTokens and other rules from src/utils/nova-frontier-rules."
+    },
+    {
+      "id": "E4",
+      "level": "reported",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "CLAUDE.md",
+      "lines": [
+        20,
+        20
+      ],
+      "quote": "This is a full-stack multiplayer Splendor board game."
+    },
+    {
+      "id": "E5",
+      "level": "reported",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "CLAUDE.md",
+      "lines": [
+        23,
+        23
+      ],
+      "quote": "There is no database."
+    },
+    {
+      "id": "E6",
+      "level": "source",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "server/statePersistence.ts",
+      "lines": [
+        5,
+        15
+      ],
+      "note": "State file path from NOVA_STATE_FILE, backup path, retention of 1 hour (finished) and 30 minutes (empty waiting rooms)."
+    },
+    {
+      "id": "E7",
+      "level": "reported",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "AGENTS.md",
+      "lines": [
+        50,
+        50
+      ],
+      "quote": "Player-facing UI must not say Splendor, gem, token, noble, or prestige unless explicitly documenting legacy compatibility."
+    },
+    {
+      "id": "E8",
+      "level": "reported",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "AGENTS.md",
+      "lines": [
+        34,
+        34
+      ],
+      "quote": "No dedicated test framework is currently configured."
+    },
+    {
+      "id": "E9",
+      "level": "source",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "package.json",
+      "lines": [
+        13,
+        14
+      ],
+      "note": "test and test:run scripts run vitest."
+    },
+    {
+      "id": "E10",
+      "level": "source",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "src/utils/nova-frontier-rules.test.ts",
+      "note": "Vitest file beside the rules module."
+    },
+    {
+      "id": "E11",
+      "level": "reported",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "EXPANSION_ACCEPTANCE.md",
+      "lines": [
+        96,
+        96
+      ],
+      "quote": "Code Enabled, Pending Full Manual Validation"
+    },
+    {
+      "id": "E12",
+      "level": "source",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "PLAYTEST_CHECKLIST.md",
+      "lines": [
+        9,
+        9
+      ],
+      "note": "Checklist items are unchecked boxes."
+    },
+    {
+      "id": "E13",
+      "level": "reported",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "README.md",
+      "lines": [
+        5,
+        5
+      ],
+      "quote": "Run and deploy your AI Studio app"
+    },
+    {
+      "id": "E14",
+      "level": "source",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "metadata.json",
+      "lines": [
+        1,
+        6
+      ],
+      "note": "Name Nova Frontier Online; MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API."
+    },
+    {
+      "id": "E15",
+      "level": "source",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "package.json",
+      "lines": [
+        17,
+        17
+      ],
+      "note": "@google/genai dependency."
+    },
+    {
+      "id": "E16",
+      "level": "reported",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "CLAUDE.md",
+      "lines": [
+        3,
+        3
+      ],
+      "quote": "This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository."
+    },
+    {
+      "id": "E17",
+      "level": "source",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "AGENTS.md",
+      "lines": [
+        1,
+        1
+      ],
+      "note": "Repository Guidelines file for coding agents; no agent is named."
+    },
+    {
+      "id": "E18",
+      "level": "source",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "server.ts",
+      "lines": [
+        406,
+        406
+      ],
+      "note": "triggerBotCommentary."
+    },
+    {
+      "id": "E19",
+      "level": "reported",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "AGENTS.md",
+      "lines": [
+        28,
+        28
+      ],
+      "quote": "keep rule-heavy game logic in `src/utils/nova-frontier-rules.ts` rather than embedding it in components."
+    },
+    {
+      "id": "E20",
+      "level": "source",
+      "repo": "phcaradanai/Splendor-Online",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "path": "RECONNECT_PERSISTENCE_TEST.md",
+      "lines": [
+        1,
+        3
+      ],
+      "note": "Manual guide for restart-and-reconnect survival."
+    }
+  ],
+  "claims": [
+    {
+      "text": "The server checks game actions itself. A game_action is refused unless the sender is the active player, and other actions are refused while a cargo-limit discard is owed. For buy_card it finds the card in server-held state, checks Special Tech ownership and canBuyCard, then saves an undo snapshot before executing.",
+      "evidence": [
+        "E1",
+        "E2",
+        "E3"
+      ]
+    },
+    {
+      "text": "Rule logic is in src/utils/nova-frontier-rules.ts, imported by server.ts and tested by a Vitest file beside it; AGENTS.md tells contributors to keep rule-heavy logic there rather than in components. Tests were not run for this entry.",
+      "evidence": [
+        "E3",
+        "E10",
+        "E19"
+      ]
+    },
+    {
+      "text": "Server state is snapshotted to a JSON file (path from NOVA_STATE_FILE, with a backup path and cleanup of finished rooms after 1 hour and empty waiting rooms after 30 minutes), and a manual guide describes restart-and-reconnect checks.",
+      "evidence": [
+        "E6",
+        "E20"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "buy-card-server-side",
+      "title": "buy_card is resolved and validated on the server",
+      "path": "server.ts",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "startLine": 3008,
+      "endLine": 3044,
+      "language": "typescript",
+      "code": "            case 'buy_card': {\n              let fromReserved = true;\n              let card = player.cardsReserved.find(c => c.id === action.cardId);\n\n              if (!card) {\n                fromReserved = false;\n                card = ([1, 2, 3] as const)\n                  .flatMap(level => game.boardCards[level])\n                  .find(c => c.id === action.cardId);\n              }\n\n              if (!card) {\n                ws.send(JSON.stringify({ type: 'error', message: 'Target blueprint not found.' }));\n                return;\n              }\n\n              if (action.specialTechId) {\n                if (!player.specialTechIds?.includes(action.specialTechId)) {\n                  ws.send(JSON.stringify({ type: 'error', message: 'You do not own this Special Tech.' }));\n                  return;\n                }\n                if (player.usedSpecialTechIds?.includes(action.specialTechId)) {\n                  ws.send(JSON.stringify({ type: 'error', message: 'You have already used this Special Tech.' }));\n                  return;\n                }\n              }\n\n              const validation = canBuyCard(player, card, game, { fromReserved, specialTechId: action.specialTechId });\n              if (!validation.canBuy) {\n                ws.send(JSON.stringify({ type: 'error', message: validation.reason || 'You cannot construct this module.' }));\n                return;\n              }\n\n              undoSnapshots[gameId] = JSON.stringify(game);\n              executeBuyAction(game, activeIndex, card, fromReserved, lId!, action.specialTechId);\n              break;\n            }",
+      "why": "The client sends only a cardId. The server looks the card up in the player's reserved cards or the board, rejects unknown cards, checks the Special Tech is owned and unused, runs the shared canBuyCard rule, and only then stores an undo snapshot and mutates state.",
+      "claimIndexes": [
+        0
+      ]
+    },
+    {
+      "id": "persistence-config",
+      "title": "Snapshot file and retention settings",
+      "path": "server/statePersistence.ts",
+      "sha": "12d8dfee16d88a925348998c2ec23b420b8a51e7",
+      "startLine": 5,
+      "endLine": 15,
+      "language": "typescript",
+      "code": "// Configuration\nconst persistenceEnv = process.env.NOVA_STATE_PERSISTENCE;\nconst isEnabled = persistenceEnv !== \"off\";\nconst resolvedPath = path.resolve(process.env.NOVA_STATE_FILE || \".data/nova-frontier-state.json\");\nconst backupPath = resolvedPath.endsWith(\".json\")\n  ? resolvedPath.slice(0, -5) + \".backup.json\"\n  : resolvedPath + \".backup.json\";\n\n// TTL Retention Settings\nconst FINISHED_ROOM_RETENTION_MS = 60 * 60 * 1000;       // 1 hour\nconst WAITING_EMPTY_ROOM_RETENTION_MS = 30 * 60 * 1000; // 30 minutes",
+      "why": "Persistence is on unless NOVA_STATE_PERSISTENCE is 'off'. The snapshot path and a derived backup path are configurable, and finished and empty rooms expire on fixed timers.",
+      "claimIndexes": [
+        2
+      ]
+    }
+  ],
+  "captures": [],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Runs locally (npm run dev per the README). The README links an AI Studio app page, which is not a documented public deployment and was not checked."
+  },
+  "limitations": [
+    "Docs disagree with the code: CLAUDE.md says there is no database and names src/utils/splendor-rules.ts (E5), but the tree has server/statePersistence.ts (E6) and the rules live in nova-frontier-rules.ts. AGENTS.md says no test framework is configured (E8) while package.json runs vitest (E9) and test files exist (E10).",
+    "The acceptance matrix marks the standalone expansions passed, but those ticks are the repo's own manual statements. Combo Phase 3 is still 'Code Enabled, Pending Full Manual Validation' (E11), and the playtest checklist items are unchecked (E12). No playtest result or player feedback is recorded.",
+    "Nothing was run for this entry (type-check, Vitest, server); no CI results are in the repo.",
+    "The game is an adaptation of a commercial board game, renamed in the UI by rule (E7). Card and city artwork under public/images was not examined, and its provenance is not recorded here, so no images are shown.",
+    "Most server logic is in one 3,483-line server.ts, and a runtime state snapshot file under .data/ is committed; neither was reviewed beyond the cited lines."
+  ],
+  "contribution": "All 130 commits are attributed to the owner's account, 2026-06-05 to 2026-06-21. No other contributors.",
+  "lastVerified": "2026-10-25"
+}

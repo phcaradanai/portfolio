@@ -1,0 +1,888 @@
+{
+ "ai-product-intelligence/a1": {
+  "width": 1440,
+  "height": 900,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/ai-product-intelligence/a1-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/ai-product-intelligence/a1-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/ai-product-intelligence/a1-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/ai-product-intelligence/a1-1440.webp"
+   }
+  ]
+ },
+ "ai-product-intelligence/a2": {
+  "width": 1440,
+  "height": 900,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/ai-product-intelligence/a2-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/ai-product-intelligence/a2-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/ai-product-intelligence/a2-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/ai-product-intelligence/a2-1440.webp"
+   }
+  ]
+ },
+ "ai-product-intelligence/a3": {
+  "width": 1440,
+  "height": 900,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/ai-product-intelligence/a3-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/ai-product-intelligence/a3-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/ai-product-intelligence/a3-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/ai-product-intelligence/a3-1440.webp"
+   }
+  ]
+ },
+ "ai-product-intelligence/a4": {
+  "width": 750,
+  "height": 1624,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/ai-product-intelligence/a4-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/ai-product-intelligence/a4-720.webp"
+   },
+   {
+    "w": 750,
+    "file": "/media/ai-product-intelligence/a4-750.webp"
+   }
+  ]
+ },
+ "cursed-market/scene-market": {
+  "width": 1536,
+  "height": 1024,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/cursed-market/scene-market-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/cursed-market/scene-market-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/cursed-market/scene-market-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/cursed-market/scene-market-1440.webp"
+   }
+  ]
+ },
+ "cursed-market/ui-merchant-abilities": {
+  "width": 1440,
+  "height": 1411,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/cursed-market/ui-merchant-abilities-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/cursed-market/ui-merchant-abilities-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/cursed-market/ui-merchant-abilities-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/cursed-market/ui-merchant-abilities-1440.webp"
+   }
+  ]
+ },
+ "cursed-market/ui-portal-event": {
+  "width": 1440,
+  "height": 1000,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/cursed-market/ui-portal-event-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/cursed-market/ui-portal-event-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/cursed-market/ui-portal-event-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/cursed-market/ui-portal-event-1440.webp"
+   }
+  ]
+ },
+ "cursed-market/ui-portal-choice": {
+  "width": 1440,
+  "height": 900,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/cursed-market/ui-portal-choice-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/cursed-market/ui-portal-choice-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/cursed-market/ui-portal-choice-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/cursed-market/ui-portal-choice-1440.webp"
+   }
+  ]
+ },
+ "cursed-market/ui-commerce-desk": {
+  "width": 1440,
+  "height": 1000,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/cursed-market/ui-commerce-desk-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/cursed-market/ui-commerce-desk-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/cursed-market/ui-commerce-desk-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/cursed-market/ui-commerce-desk-1440.webp"
+   }
+  ]
+ },
+ "cursed-market/ui-price-before": {
+  "width": 1440,
+  "height": 1000,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/cursed-market/ui-price-before-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/cursed-market/ui-price-before-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/cursed-market/ui-price-before-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/cursed-market/ui-price-before-1440.webp"
+   }
+  ]
+ },
+ "cursed-market/ui-price-after": {
+  "width": 1440,
+  "height": 1000,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/cursed-market/ui-price-after-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/cursed-market/ui-price-after-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/cursed-market/ui-price-after-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/cursed-market/ui-price-after-1440.webp"
+   }
+  ]
+ },
+ "cursed-market/ui-coin-wager": {
+  "width": 1440,
+  "height": 1101,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/cursed-market/ui-coin-wager-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/cursed-market/ui-coin-wager-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/cursed-market/ui-coin-wager-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/cursed-market/ui-coin-wager-1440.webp"
+   }
+  ]
+ },
+ "cursed-market/scene-hall": {
+  "width": 1536,
+  "height": 1024,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/cursed-market/scene-hall-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/cursed-market/scene-hall-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/cursed-market/scene-hall-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/cursed-market/scene-hall-1440.webp"
+   }
+  ]
+ },
+ "cursed-market/scene-collector": {
+  "width": 1536,
+  "height": 1024,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/cursed-market/scene-collector-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/cursed-market/scene-collector-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/cursed-market/scene-collector-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/cursed-market/scene-collector-1440.webp"
+   }
+  ]
+ },
+ "cursed-market/catalog-gallery": {
+  "width": 1440,
+  "height": 3581,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/cursed-market/catalog-gallery-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/cursed-market/catalog-gallery-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/cursed-market/catalog-gallery-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/cursed-market/catalog-gallery-1440.webp"
+   }
+  ]
+ },
+ "cursed-market/concept-card": {
+  "width": 1672,
+  "height": 941,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/cursed-market/concept-card-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/cursed-market/concept-card-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/cursed-market/concept-card-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/cursed-market/concept-card-1440.webp"
+   }
+  ]
+ },
+ "relic-tide/atlantis-colour": {
+  "width": 1536,
+  "height": 1024,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/atlantis-colour-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/atlantis-colour-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/atlantis-colour-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/relic-tide/atlantis-colour-1440.webp"
+   }
+  ]
+ },
+ "relic-tide/atlantis-depth": {
+  "width": 1536,
+  "height": 1024,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/atlantis-depth-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/atlantis-depth-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/atlantis-depth-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/relic-tide/atlantis-depth-1440.webp"
+   }
+  ]
+ },
+ "relic-tide/web-atlantis-backdrop": {
+  "width": 1428,
+  "height": 695,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/web-atlantis-backdrop-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/web-atlantis-backdrop-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/web-atlantis-backdrop-960.webp"
+   },
+   {
+    "w": 1428,
+    "file": "/media/relic-tide/web-atlantis-backdrop-1428.webp"
+   }
+  ]
+ },
+ "relic-tide/web-chest-reward": {
+  "width": 1428,
+  "height": 695,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/web-chest-reward-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/web-chest-reward-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/web-chest-reward-960.webp"
+   },
+   {
+    "w": 1428,
+    "file": "/media/relic-tide/web-chest-reward-1428.webp"
+   }
+  ]
+ },
+ "relic-tide/web-furnished-archive": {
+  "width": 1440,
+  "height": 707,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/web-furnished-archive-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/web-furnished-archive-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/web-furnished-archive-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/relic-tide/web-furnished-archive-1440.webp"
+   }
+  ]
+ },
+ "relic-tide/native-lagoon": {
+  "width": 1440,
+  "height": 900,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/native-lagoon-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/native-lagoon-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/native-lagoon-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/relic-tide/native-lagoon-1440.webp"
+   }
+  ]
+ },
+ "relic-tide/native-catacombs": {
+  "width": 1440,
+  "height": 900,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/native-catacombs-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/native-catacombs-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/native-catacombs-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/relic-tide/native-catacombs-1440.webp"
+   }
+  ]
+ },
+ "relic-tide/native-hunter": {
+  "width": 1440,
+  "height": 900,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/native-hunter-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/native-hunter-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/native-hunter-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/relic-tide/native-hunter-1440.webp"
+   }
+  ]
+ },
+ "relic-tide/native-blackout": {
+  "width": 1440,
+  "height": 900,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/native-blackout-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/native-blackout-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/native-blackout-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/relic-tide/native-blackout-1440.webp"
+   }
+  ]
+ },
+ "relic-tide/native-water": {
+  "width": 1440,
+  "height": 900,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/native-water-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/native-water-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/native-water-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/relic-tide/native-water-1440.webp"
+   }
+  ]
+ },
+ "relic-tide/furniture-sheet": {
+  "width": 1254,
+  "height": 1254,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/furniture-sheet-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/furniture-sheet-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/furniture-sheet-960.webp"
+   },
+   {
+    "w": 1254,
+    "file": "/media/relic-tide/furniture-sheet-1254.webp"
+   }
+  ]
+ },
+ "relic-tide/sluice-sheet": {
+  "width": 1536,
+  "height": 1024,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/sluice-sheet-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/sluice-sheet-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/sluice-sheet-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/relic-tide/sluice-sheet-1440.webp"
+   }
+  ]
+ },
+ "relic-tide/brine-stalker-atlas": {
+  "width": 4026,
+  "height": 976,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/brine-stalker-atlas-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/brine-stalker-atlas-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/brine-stalker-atlas-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/relic-tide/brine-stalker-atlas-1440.webp"
+   }
+  ]
+ },
+ "relic-tide/explorer-atlas": {
+  "width": 4050,
+  "height": 2790,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/relic-tide/explorer-atlas-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/relic-tide/explorer-atlas-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/relic-tide/explorer-atlas-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/relic-tide/explorer-atlas-1440.webp"
+   }
+  ]
+ },
+ "scopeflow/logo": {
+  "width": 100,
+  "height": 100,
+  "variants": [
+   {
+    "w": 100,
+    "file": "/media/scopeflow/logo-100.webp"
+   }
+  ]
+ },
+ "the-fisher/canal-night-painting": {
+  "width": 1536,
+  "height": 1024,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/the-fisher/canal-night-painting-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/the-fisher/canal-night-painting-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/the-fisher/canal-night-painting-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/the-fisher/canal-night-painting-1440.webp"
+   }
+  ]
+ },
+ "the-fisher/moonlit-canal": {
+  "width": 1672,
+  "height": 941,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/the-fisher/moonlit-canal-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/the-fisher/moonlit-canal-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/the-fisher/moonlit-canal-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/the-fisher/moonlit-canal-1440.webp"
+   }
+  ]
+ },
+ "the-fisher/brand-mark": {
+  "width": 1254,
+  "height": 1254,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/the-fisher/brand-mark-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/the-fisher/brand-mark-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/the-fisher/brand-mark-960.webp"
+   },
+   {
+    "w": 1254,
+    "file": "/media/the-fisher/brand-mark-1254.webp"
+   }
+  ]
+ },
+ "the-fisher/spots-atlas": {
+  "width": 1536,
+  "height": 1024,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/the-fisher/spots-atlas-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/the-fisher/spots-atlas-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/the-fisher/spots-atlas-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/the-fisher/spots-atlas-1440.webp"
+   }
+  ]
+ },
+ "the-fisher/tactics-atlas": {
+  "width": 1983,
+  "height": 793,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/the-fisher/tactics-atlas-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/the-fisher/tactics-atlas-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/the-fisher/tactics-atlas-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/the-fisher/tactics-atlas-1440.webp"
+   }
+  ]
+ },
+ "the-fisher/canal-v2-backplate": {
+  "width": 1536,
+  "height": 1024,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/the-fisher/canal-v2-backplate-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/the-fisher/canal-v2-backplate-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/the-fisher/canal-v2-backplate-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/the-fisher/canal-v2-backplate-1440.webp"
+   }
+  ]
+ },
+ "the-fisher/fish-king": {
+  "width": 1448,
+  "height": 1086,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/the-fisher/fish-king-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/the-fisher/fish-king-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/the-fisher/fish-king-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/the-fisher/fish-king-1440.webp"
+   }
+  ]
+ },
+ "the-fisher/fish-iron-gar": {
+  "width": 1448,
+  "height": 1086,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/the-fisher/fish-iron-gar-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/the-fisher/fish-iron-gar-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/the-fisher/fish-iron-gar-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/the-fisher/fish-iron-gar-1440.webp"
+   }
+  ]
+ },
+ "the-fisher/fish-goldfish": {
+  "width": 1448,
+  "height": 1086,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/the-fisher/fish-goldfish-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/the-fisher/fish-goldfish-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/the-fisher/fish-goldfish-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/the-fisher/fish-goldfish-1440.webp"
+   }
+  ]
+ },
+ "the-fisher/fish-lotus-koi": {
+  "width": 1448,
+  "height": 1086,
+  "variants": [
+   {
+    "w": 480,
+    "file": "/media/the-fisher/fish-lotus-koi-480.webp"
+   },
+   {
+    "w": 720,
+    "file": "/media/the-fisher/fish-lotus-koi-720.webp"
+   },
+   {
+    "w": 960,
+    "file": "/media/the-fisher/fish-lotus-koi-960.webp"
+   },
+   {
+    "w": 1440,
+    "file": "/media/the-fisher/fish-lotus-koi-1440.webp"
+   }
+  ]
+ }
+}

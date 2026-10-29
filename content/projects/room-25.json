@@ -1,0 +1,334 @@
+{
+  "slug": "room-25",
+  "accession": "PK-2026-010",
+  "title": "Room 25 Ultimate (ห้องมรณะ 25)",
+  "kind": "game",
+  "tier": "B",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Browser adaptation of the Room 25 board game: Socket.IO online rooms with a sanitising server, plus a single-device offline mode.",
+  "summary": "A web adaptation of the sci-fi board game Room 25 with two modes: online rooms on Node, Express and Socket.IO, where the server holds the real board and secret roles and sends each player a filtered view, and an offline pass-and-play mode that runs in the browser from index.html and game.js. The README is in Thai. The repo's own REVIEW_PLAN.md says the project does not yet meet delivery criteria and lists 15 rule, security and session findings.",
+  "period": {
+    "start": "2026-10-08",
+    "end": "2026-10-09"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/escape-room",
+    "pinnedSha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+    "ownerCommits": 4,
+    "totalCommits": 4,
+    "languages": {
+      "JavaScript": 303463,
+      "CSS": 73004,
+      "HTML": 58932,
+      "Batchfile": 193
+    },
+    "checkedAt": "2026-10-25"
+  },
+  "stack": [
+    "JavaScript",
+    "Node.js",
+    "Express 5",
+    "Socket.IO 4",
+    "Web Audio API",
+    "node:test"
+  ],
+  "aiRole": {
+    "summary": "AGENTS.md is a repository-guidelines file for coding agents (E17), and section 6 of REVIEW_PLAN.md contains a ready-made instruction for handing the next slice of work to a developer or an AI (E13). No specific AI tool is named in AGENTS.md, README, RULES, REVIEW_PLAN or the UX plan. REVIEW_PLAN records its own review runs (Socket.IO clients, Chromium); those were not re-run here.",
+    "tools": []
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "server.js",
+      "lines": [
+        50,
+        52
+      ],
+      "note": "getSanitizedGameState delegates to the shared engine with the viewer's socket id."
+    },
+    {
+      "id": "E2",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "server.js",
+      "lines": [
+        54,
+        72
+      ],
+      "note": "sanitizePlayerName and getPublicPlayers (no sessionToken in the public list)."
+    },
+    {
+      "id": "E3",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "server.js",
+      "lines": [
+        826,
+        847
+      ],
+      "note": "playerActionInput gating."
+    },
+    {
+      "id": "E4",
+      "level": "reported",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "README.md",
+      "lines": [
+        27,
+        27
+      ],
+      "quote": "เซิร์ฟเวอร์เก็บข้อมูลจริงทั้งหมด",
+      "note": "Thai: the server holds all the real data (room 25 position, secret roles, traps)."
+    },
+    {
+      "id": "E5",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "public/game-engine.js",
+      "lines": [
+        436,
+        436
+      ],
+      "note": "getSanitizedGameState(game, roomCode, hostId, forSocketId)."
+    },
+    {
+      "id": "E6",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "package.json",
+      "lines": [
+        12,
+        16
+      ],
+      "note": "Dependencies: express, socket.io, socket.io-client."
+    },
+    {
+      "id": "E7",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "tests/rules.test.js",
+      "note": "Rules tests."
+    },
+    {
+      "id": "E8",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "tests/network.test.js",
+      "note": "Network tests."
+    },
+    {
+      "id": "E9",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "package.json",
+      "lines": [
+        7,
+        7
+      ],
+      "note": "npm test is node --test."
+    },
+    {
+      "id": "E10",
+      "level": "reported",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "README.md",
+      "lines": [
+        34,
+        34
+      ],
+      "quote": "ทำงานบนเบราว์เซอร์ 100% ผ่านไฟล์ `index.html` และ `game.js`",
+      "note": "Thai: the offline mode runs 100% in the browser from index.html and game.js."
+    },
+    {
+      "id": "E11",
+      "level": "reported",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "REVIEW_PLAN.md",
+      "lines": [
+        5,
+        5
+      ],
+      "quote": "โครงการยังไม่ผ่านเกณฑ์ส่งมอบ แม้การทดสอบเดิมจะผ่าน 7/7 รายการในรอบก่อน",
+      "note": "Thai: the project does not yet meet delivery criteria even though the earlier tests passed 7/7."
+    },
+    {
+      "id": "E12",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "REVIEW_PLAN.md",
+      "lines": [
+        19,
+        35
+      ],
+      "note": "Findings table R01 to R15 with severity P1 or P2 and proof type."
+    },
+    {
+      "id": "E13",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "REVIEW_PLAN.md",
+      "lines": [
+        216,
+        222
+      ],
+      "note": "Section 6: instruction text for handing work to a developer or AI."
+    },
+    {
+      "id": "E14",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "server.js",
+      "lines": [
+        509,
+        518
+      ],
+      "note": "createRoom rejects non-object payloads and validates mode and difficulty."
+    },
+    {
+      "id": "E15",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "server.js",
+      "lines": [
+        660,
+        670
+      ],
+      "note": "rematchRoom is host-only and only after game over."
+    },
+    {
+      "id": "E16",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "server.js",
+      "lines": [
+        520,
+        520
+      ],
+      "note": "Session token built with Math.random."
+    },
+    {
+      "id": "E17",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "AGENTS.md",
+      "lines": [
+        1,
+        1
+      ],
+      "note": "Repository Guidelines file; no agent is named."
+    },
+    {
+      "id": "E18",
+      "level": "source",
+      "repo": "phcaradanai/escape-room",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "path": "node_modules/.package-lock.json",
+      "note": "node_modules is tracked in git."
+    }
+  ],
+  "claims": [
+    {
+      "text": "Online play is server-authoritative by design: rooms live in server memory, each socket gets a state from getSanitizedGameState with its own socket id, and the lobby player list comes from getPublicPlayers, which leaves out each player's sessionToken. The README states the server holds all real data.",
+      "evidence": [
+        "E1",
+        "E2",
+        "E4",
+        "E5"
+      ]
+    },
+    {
+      "text": "Socket handlers validate input: createRoom rejects non-object payloads and limits mode and difficulty to known values; names have control characters stripped and are cut to 16 characters; rematch is host-only and only after game over; playerActionInput needs the current living player, a matching pending input, and an in-bounds integer target, and clears the pending input before applying.",
+      "evidence": [
+        "E2",
+        "E3",
+        "E14",
+        "E15"
+      ]
+    },
+    {
+      "text": "There are two modes: online (server.js with Socket.IO) and an offline pass-and-play mode that runs in the browser from index.html and game.js. The repo has two test files, tests/rules.test.js and tests/network.test.js, run by node --test. They were not run here.",
+      "evidence": [
+        "E6",
+        "E7",
+        "E8",
+        "E9",
+        "E10"
+      ]
+    },
+    {
+      "text": "REVIEW_PLAN.md says the project does not yet meet delivery criteria and lists 15 findings (R01 to R15, priorities P1 and P2) on session tokens in room data, unescaped nicknames, unvalidated payloads, replayed inputs, reconnect, win-condition and action-order rules, and offline sound.",
+      "evidence": [
+        "E11",
+        "E12"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "public-players",
+      "title": "Name sanitising and a public player list without tokens",
+      "path": "server.js",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "startLine": 54,
+      "endLine": 72,
+      "language": "javascript",
+      "code": "function sanitizePlayerName(name, fallback = 'Player') {\n    if (typeof name !== 'string') return fallback;\n    const trimmed = name.trim();\n    if (!trimmed) return fallback;\n    return trimmed.replace(/[\\u0000-\\u001F\\u007F-\\u009F]/g, '').slice(0, 16) || fallback;\n}\n\nfunction getPublicPlayers(players, hostId) {\n    if (!Array.isArray(players)) return [];\n    return players.map((p, idx) => ({\n        id: (typeof p.id === 'number') ? p.id : idx,\n        socketId: p.socketId,\n        name: p.name,\n        color: p.color,\n        ready: Boolean(p.ready),\n        connected: Boolean(p.connected),\n        isHost: Boolean(p.socketId === hostId)\n    }));\n}",
+      "why": "Names are type-checked, stripped of control characters and cut to 16 characters. The player list sent to a room is rebuilt field by field, so sessionToken is not copied into it. REVIEW_PLAN.md finding R01 describes the older behaviour of sending room.players with every token.",
+      "claimIndexes": [
+        0,
+        1
+      ]
+    },
+    {
+      "id": "action-input-gate",
+      "title": "Resolution-phase input must match the pending request",
+      "path": "server.js",
+      "sha": "e938aae71b646be90d4cdfa7c25f5d6ac6ed2212",
+      "startLine": 826,
+      "endLine": 847,
+      "language": "javascript",
+      "code": "    socket.on('playerActionInput', (data) => {\n        if (!data || typeof data !== 'object' || typeof data.type !== 'string') return;\n        const room = rooms.get(currentRoomCode);\n        if (!room || !room.game || room.game.phase !== 'resolution') return;\n        const g = room.game;\n        const player = g.players[g.currentPlayerIndex];\n        if (!player || !player.alive || player.socketId !== socket.id) return;\n        if (!g.waitingForInput) return;\n\n        const expectedInput = g.waitingForInput;\n        if (expectedInput.playerId !== undefined && expectedInput.playerId !== player.id) return;\n\n        if (data.type === 'peek') {\n            if (expectedInput.type !== 'peek-tile') return;\n            const { row, col } = data;\n            if (!Number.isInteger(row) || !Number.isInteger(col) || row < 0 || row > 4 || col < 0 || col > 4) return;\n            if (!isAdjacent(player.row, player.col, row, col)) return;\n            const targetTile = g.board[row][col];\n            if (!targetTile || targetTile.revealed) return;\n\n            // Atomically consume waitingForInput\n            g.waitingForInput = null;",
+      "why": "Input is ignored unless it is the resolution phase, the sender is the current living player, and a request of the expected type and player is pending. A peek target must be an integer in range, adjacent and unrevealed; the pending request is cleared before any state changes, which blocks a second submission for the same request.",
+      "claimIndexes": [
+        1
+      ]
+    }
+  ],
+  "captures": [],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Runs locally with node server.js; the offline mode opens index.html. The README documents a temporary Cloudflare quick tunnel for friends; no permanent public deployment."
+  },
+  "limitations": [
+    "REVIEW_PLAN.md says the project does not yet pass delivery criteria (E11) and lists P1 findings including: session tokens sent to all room members (R01), nickname inserted with innerHTML (R02), malformed payloads crashing the server (R03), replayed inputs (R04), rematch crash (R05), broken reconnect (R06), a win from Room 25 on the edge without checking that CONTROL pushed it (R07), peek knowledge not following slid rooms (R08), differing action order online and offline (R10), trap timing (R11) and future actions leaking at resolution (R12). P2 items cover an online board with no player tokens drawn, UI round counts (8/10/7) that differ from RULES.md (10/8/6), abilities with no gameplay path, and offline sound not loaded (E12).",
+    "The plan says it is a work plan, not a report of fixes. The code at this commit already differs in the areas of R01 to R05: createRoom validation, a token-free public player list, host-only rematch and consumed pending input (E14, E15, E2, E3). REVIEW_PLAN.md was not updated to say so, nothing was re-run here, and R06 to R15 and the client-side nickname rendering were not re-checked.",
+    "Reading the source, session tokens are made with Math.random (E16); this was not assessed beyond that observation.",
+    "The review plan's own earlier passing test count (7/7) is the repo's statement. Tests were not run here, and the plan notes one test copies an implementation instead of calling production code.",
+    "Repo hygiene: node_modules is tracked in git (E18), and a Windows cloudflared.exe binary and a tunnel.log are committed; the log was not opened.",
+    "Room 25 is a commercial board game; the repo is an adaptation. No artwork is shown here and the README gives a LAN example address that is not reproduced."
+  ],
+  "contribution": "All 4 commits are attributed to the owner's identities: 3 under a local author name that uses the owner's email and 1 under the author name phcaradanai. First commit 2026-10-08, last 2026-10-09. No other contributors.",
+  "lastVerified": "2026-10-25"
+}

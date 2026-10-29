@@ -1,0 +1,13 @@
+{
+  "id": "ai-kingdom-source-counts",
+  "repo": "phcaradanai/AI_Kingdom",
+  "sha": "cc498040b57bd4dd177cff08f7bb05f326ddbace",
+  "cwd": ".",
+  "command": "printf 'apps/api test files: '; git ls-tree -r --name-only cc498040b57bd4dd177cff08f7bb05f326ddbace -- apps/api | grep -c '\\.test\\.ts$'; printf 'apps/runner test files: '; git ls-tree -r --name-only cc498040b57bd4dd177cff08f7bb05f326ddbace -- apps/runner | grep -c '\\.test\\.ts$'; printf 'apps/web test files: '; git ls-tree -r --name-only cc498040b57bd4dd177cff08f7bb05f326ddbace -- apps/web | grep -c '\\.test\\.tsx\\{0,1\\}$'; printf 'Prisma migrations: '; git ls-tree -r --name-only cc498040b57bd4dd177cff08f7bb05f326ddbace -- apps/api/prisma/migrations | grep -c 'migration\\.sql$'; printf 'API service files (not tests): '; git ls-tree -r --name-only cc498040b57bd4dd177cff08f7bb05f326ddbace -- apps/api/src/services | grep -vc '\\.test\\.ts$'; printf 'ADR files: '; git ls-tree -r --name-only cc498040b57bd4dd177cff08f7bb05f326ddbace | grep -ic 'adr'",
+  "capturedAt": "2026-10-25T05:24:04.817Z",
+  "exitCode": 1,
+  "durationMs": 439,
+  "output": "apps/api test files: 105\napps/runner test files: 12\napps/web test files: 35\nPrisma migrations: 58\nAPI service files (not tests): 93\nADR files: 0",
+  "truncated": false,
+  "environment": "macOS (Darwin 25.5.0) arm64, git 2.55.0, /bin/sh; read-only git; git status --porcelain empty before and after"
+}

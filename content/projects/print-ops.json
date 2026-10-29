@@ -1,0 +1,1251 @@
+{
+  "slug": "print-ops",
+  "accession": "PK-2026-003",
+  "title": "PrintOps",
+  "kind": "system",
+  "tier": "A",
+  "maturity": "production-style",
+  "visibility": "public",
+  "tagline": "Print gateway: external systems POST jobs; a Go runner registers and heartbeats; one React UI serves browser and Tauri desktop.",
+  "summary": "PrintOps is a print gateway: an external integration program sends print requests to a Fastify API, which authenticates, deduplicates, validates and queues them. The repo's own docs state it does not connect to HIS or any clinical or business system. A Go runner registers, sends heartbeats and syncs printer discovery; in the packaged Windows desktop the API's local worker executes jobs. One React source builds the browser UI and the Tauri desktop UI. Jobs keep traces and audit logs, and unconfirmed output is recorded as UNVERIFIED.",
+  "period": {
+    "start": "2026-07-06",
+    "end": "2026-09-15"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/print_ops",
+    "pinnedSha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+    "ownerCommits": 499,
+    "totalCommits": 499,
+    "languages": {
+      "TypeScript": 3222440,
+      "JavaScript": 2877809,
+      "Go": 373517,
+      "CSS": 295489,
+      "Rust": 45318,
+      "C#": 39583,
+      "PowerShell": 27801,
+      "NSIS": 5015,
+      "HTML": 3010,
+      "Dockerfile": 99
+    },
+    "checkedAt": "2026-10-25"
+  },
+  "stack": [
+    "TypeScript",
+    "Fastify",
+    "React + Vite",
+    "Go (runner)",
+    "Rust (Tauri v2 desktop shell)",
+    "C# (WebView2 print helper)",
+    "SQLite via sql.js",
+    "NATS JetStream"
+  ],
+  "aiRole": {
+    "summary": "AI tooling appears in the repository in four ways. Commit trailers name Claude models as co-authors (captured with a read-only git count: Claude Fable 5 17, Claude Opus 5 13, Claude Sonnet 4.6 9, Claude Sonnet 5 6, plus 2 for github-actions[bot]). An Impeccable skill folder and nine Impeccable critique records are checked in, as is an AgentsRoom configuration file. Task briefs under .hermes are written as instructions to an AI coding agent. The repo also records test suites and verification reports, but this page does not claim that each AI-assisted change was reviewed step by step, because no per-change review record was found. Test results are the repo's reports; none was re-run here.",
+    "tools": [
+      {
+        "name": "Claude (Co-Authored-By commit trailers)",
+        "use": "Named as co-author in commit trailers: Claude Fable 5, Claude Opus 5, Claude Sonnet 4.6 and Claude Sonnet 5, with the counts shown in the capture.",
+        "evidence": "E11"
+      },
+      {
+        "name": "Impeccable (design skill and critique records)",
+        "use": "A skill folder at .agents/skills/impeccable and nine dated critique records under .impeccable/critique (the one inspected opens with front matter giving target, score and timestamp).",
+        "evidence": "E47"
+      },
+      {
+        "name": "AgentsRoom",
+        "use": "A project configuration file whose companion .gitignore describes local cache and personal files that are not committed.",
+        "evidence": "E49"
+      },
+      {
+        "name": "Task briefs for an AI coding agent (.hermes)",
+        "use": "Markdown briefs such as the installer-hook fix are written as imperative instructions to an AI agent. They are repository text, not instructions to this review.",
+        "evidence": "E48"
+      }
+    ]
+  },
+  "narrative": {
+    "problem": "The README describes PrintOps as a generic print gateway: an external integration program reads from its own source system, builds a print request and calls the PrintOps API, and PrintOps routes the job to a printer on the local network. It states that PrintOps does not connect directly to HIS or any clinical or business system.\n\nThe repo's product document names the hard part as honest outcomes. A print that reached the spooler may or may not have produced a page, and a blind retry could duplicate a label, so the job model needs more than success and failure.",
+    "approach": "The docs fix a layered design: interface, application, domain and infrastructure, with printer protocols resolved at runtime through an adapter registry. Jobs move through a documented state machine, intake is idempotent on request id and source system, and terminal results are reported back to the caller.\n\nThe operator UI is written once in apps/web/src. The desktop application is a Tauri shell that starts the bundled API and Go runner and displays a compiled copy of the same web UI, so the browser and the desktop shell share one interface source.",
+    "architecture": "The repo is an npm-workspace monorepo: apps/api (Fastify), apps/web (React), apps/runner-go (Go), apps/desktop (Tauri v2), a C# print helper, and packages/domain, packages/adapters and packages/shared. Persistence is SQLite through sql.js; an unapplied PostgreSQL schema sits in infra/migrations.\n\nIn the packaged desktop the Tauri shell supervises two sidecars: the API, which serves the web UI and runs a local print worker, and the Go runner, which does discovery and heartbeat only. Elsewhere the runner can register, poll for jobs, execute them and report events and results.",
+    "implementation": "Claiming is a single conditional write. The SQLite repository runs UPDATE ... WHERE status IN (...) and treats zero modified rows as a lost race; the runner endpoint tries up to five queued candidates in priority order. A terminal result is likewise accepted only while the job is DISPATCHED or PRINTING.\n\nVerdicts are decided with the device in mind. For the Windows spooler path the API requires both device confirmation and an exact printer-side IPP job, otherwise the job ends UNVERIFIED; a silent timeout after spooler acceptance ends TIMEOUT. Both statuses are non-executable, and restart recovery closes in-flight jobs as UNVERIFIED instead of replaying them.\n\nThree layers keep the packaged desktop to one executor: the runner's PRINTOPS_JOBS_ENABLED flag, an API startup invariant that throws if two executor paths are enabled, and an authenticate hook that limits runner credentials to registration, heartbeat and discovery.",
+    "outcome": "At the pinned commit the repo holds the API, web dashboard, Go runner, Tauri shell and domain packages above, 499 commits from 2026-07-06 to 2026-09-15, and test suites that its status document reports as passing on 2026-08-03 (counts in the claims, not re-run here).\n\nIts own production documents mark the Windows desktop package as the supported boundary and list physical-printer, clean-install and cross-machine acceptance as outstanding. There is no public deployment.",
+    "lessons": "What the repo's records say is still open or was learned.\n\nOpen: acceptance on a clean Windows installation, physical UI, HTTP and NATS prints through a real printer, the physical failure matrix, cross-machine NATS runs, and the upgrade, rollback and uninstall matrix are listed as outstanding. The runner's service installation commands are stubs. CUPS, raw TCP 9100, ZPL/TSPL execution and remote runners are deferred.\n\nLearned, as recorded: the executor comments say spooler acceptance alone is not proof of output, that TIMEOUT belongs with UNVERIFIED as a may-have-printed class (a 2026-08-03 product decision noted in code), and that two claimants on one queue would double-print, which is why the single-executor invariant exists. Some older documents disagree with the code, and the repo's product document says the code wins."
+  },
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "README.md",
+      "lines": [
+        3,
+        4
+      ],
+      "quote": "PrintOps is a generic print gateway for sending print jobs from an external integration program to printers on a local network."
+    },
+    {
+      "id": "E2",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "README.md",
+      "lines": [
+        6,
+        8
+      ],
+      "quote": "It does not connect directly to HIS or any clinical/business system. The external integration program is responsible for reading from that system, building a print request, and calling the PrintOps API."
+    },
+    {
+      "id": "E3",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "README.md",
+      "lines": [
+        25,
+        28
+      ],
+      "quote": "`apps/web/src` is the **single source of truth for the PrintOps user interface**. The desktop application does not have a second React application. It is a Tauri shell that runs the PrintOps API/runner locally and displays a compiled copy of the same web UI."
+    },
+    {
+      "id": "E4",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "README.md",
+      "lines": [
+        14,
+        14
+      ],
+      "quote": "Statically compiled binary that registers with the API, polls jobs, sends heartbeats, executes print jobs, and syncs printer discovery."
+    },
+    {
+      "id": "E5",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/status/current-status.md",
+      "lines": [
+        12,
+        12
+      ],
+      "quote": "The only runner. In the packaged desktop it runs **discovery + heartbeat only**."
+    },
+    {
+      "id": "E6",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/status/current-status.md",
+      "lines": [
+        49,
+        51
+      ],
+      "quote": "Spooler acceptance is **not** treated as proof of output. The Windows adapter seeks device-side evidence (SNMP page counter, or a correlated printer-side IPP job); without it the job ends `UNVERIFIED`, never `SUCCESS`."
+    },
+    {
+      "id": "E7",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/status/current-status.md",
+      "lines": [
+        87,
+        90
+      ],
+      "quote": "Automated loopback E2E covers the transport × callback matrix (`docs/testing/print-e2e-results.md`). It is **not** a substitute for the physical, clean-install and cross-machine gates tracked in `docs/production/PROD-01-gap-table.md`, which remain outstanding."
+    },
+    {
+      "id": "E8",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/architecture/job-lifecycle.md",
+      "lines": [
+        62,
+        63
+      ],
+      "quote": "Idempotency on `(request_id, source_system)`: a repeat submission returns the original job as `DUPLICATE_RETURNED` and prints nothing."
+    },
+    {
+      "id": "E9",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/architecture/job-lifecycle.md",
+      "lines": [
+        68,
+        70
+      ],
+      "quote": "A conditional `claim()`, not a read-then-write. Two racing claimants (a double-clicked Print button, the local worker and a runner drawing on the same queue) cannot both proceed; the loser gets a conflict."
+    },
+    {
+      "id": "E10",
+      "level": "ran",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "captureId": "print-ops-shortlog",
+      "note": "git shortlog -sn: 499 commits, all under the author name phcaradanai."
+    },
+    {
+      "id": "E11",
+      "level": "ran",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "captureId": "print-ops-claude-trailers",
+      "note": "git shortlog --group=trailer:co-authored-by: Claude Fable 5 (17), Claude Opus 5 (13), Claude Sonnet 4.6 (9), Claude Sonnet 5 (6), github-actions[bot] (2)."
+    },
+    {
+      "id": "E12",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/production/PROD-01-known-limitations.md",
+      "lines": [
+        34,
+        34
+      ],
+      "quote": "Physical UI, HTTP, and NATS prints through a real installed printer."
+    },
+    {
+      "id": "E13",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "packages/domain/src/models/job.ts",
+      "lines": [
+        5,
+        22
+      ],
+      "note": "JOB_STATUSES: canonical status vocabulary with UNVERIFIED and the comment explaining it."
+    },
+    {
+      "id": "E14",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/services/execute-job.service.ts",
+      "lines": [
+        17,
+        38
+      ],
+      "note": "NON_EXECUTABLE_STATUSES: statuses that must not be executed again, TIMEOUT included."
+    },
+    {
+      "id": "E15",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/infra/repos/sqlite/sqlite-job.repo.ts",
+      "lines": [
+        212,
+        233
+      ],
+      "note": "claim(): one conditional UPDATE ... WHERE status IN (...); empty patch is not a claim."
+    },
+    {
+      "id": "E16",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "packages/domain/src/ports/repositories.port.ts",
+      "lines": [
+        67,
+        78
+      ],
+      "note": "JobRepositoryPort.claim doc comment: read-then-update leaves a window for double printing."
+    },
+    {
+      "id": "E17",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/services/accept-external-job.service.ts",
+      "lines": [
+        135,
+        148
+      ],
+      "note": "Idempotency check on request_id and source_system returns DUPLICATE_RETURNED."
+    },
+    {
+      "id": "E18",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/routes/v1/runner-jobs.routes.ts",
+      "lines": [
+        53,
+        83
+      ],
+      "note": "jobs/next: up to five candidates, each claimed with a conditional write."
+    },
+    {
+      "id": "E19",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/routes/v1/runner-jobs.routes.ts",
+      "lines": [
+        400,
+        427
+      ],
+      "note": "enforceWindowsSpoolerConfirmation and normalizeStatus: the API re-derives the verdict."
+    },
+    {
+      "id": "E20",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/infra/runtime-architecture.ts",
+      "lines": [
+        27,
+        49
+      ],
+      "note": "Packaged mode refuses to start unless exactly one executor path is enabled."
+    },
+    {
+      "id": "E21",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/app.ts",
+      "lines": [
+        259,
+        276
+      ],
+      "note": "authenticate hook: runner identities may only register, heartbeat and sync discovery."
+    },
+    {
+      "id": "E22",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/runner-go/cmd/printops-runner/main.go",
+      "lines": [
+        127,
+        176
+      ],
+      "note": "Runner startup: discovery loop, heartbeat goroutine, job loop gated by JobsEnabled."
+    },
+    {
+      "id": "E23",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/runner-go/internal/jobs/jobs.go",
+      "lines": [
+        264,
+        294
+      ],
+      "note": "Runner maps an unverified executor result to UNVERIFIED rather than FAILED."
+    },
+    {
+      "id": "E24",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/runner-go/internal/heartbeat/heartbeat.go",
+      "lines": [
+        53,
+        68
+      ],
+      "note": "Heartbeat tick bounded by a 10 s timeout; failures are logged, loop continues."
+    },
+    {
+      "id": "E25",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/services/register-runner.service.ts",
+      "lines": [
+        17,
+        45
+      ],
+      "note": "Re-registration of a runner with the same name and hostname reuses the record."
+    },
+    {
+      "id": "E26",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/runner-go/internal/api/client.go",
+      "lines": [
+        177,
+        188
+      ],
+      "note": "NextJob: POST /api/v1/runners/:id/jobs/next."
+    },
+    {
+      "id": "E27",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/runner-go/internal/api/client.go",
+      "lines": [
+        98,
+        127
+      ],
+      "note": "Register at /runners/register, Heartbeat at /runners/:id/heartbeat, SyncDiscovery at /api/v1/runners/:id/printers/discovery."
+    },
+    {
+      "id": "E28",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/desktop/src-tauri/src/lib.rs",
+      "lines": [
+        695,
+        719
+      ],
+      "note": "restart_exited_child: respawns a sidecar whose process has exited."
+    },
+    {
+      "id": "E29",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/web/src/tauri.ts",
+      "lines": [
+        1,
+        17
+      ],
+      "note": "Same web bundle runs in the desktop webview and in a plain browser; Tauri calls are guarded."
+    },
+    {
+      "id": "E30",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "packages/domain/src/ports/printer-adapter.port.ts",
+      "lines": [
+        18,
+        29
+      ],
+      "note": "PrinterAdapterPort interface."
+    },
+    {
+      "id": "E31",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "packages/adapters/src/registry/adapter-registry.ts",
+      "lines": [
+        3,
+        20
+      ],
+      "note": "AdapterRegistry: protocol string to adapter lookup."
+    },
+    {
+      "id": "E32",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "packages/domain/src/models/audit.ts",
+      "lines": [
+        1,
+        76
+      ],
+      "note": "AuditAction union and AuditLog shape."
+    },
+    {
+      "id": "E33",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/routes/v1/runner-jobs.routes.ts",
+      "lines": [
+        322,
+        333
+      ],
+      "note": "orderQueuedCandidates: priority first, FIFO within a priority."
+    },
+    {
+      "id": "E34",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/routes/v1/runner-jobs.routes.ts",
+      "lines": [
+        225,
+        231
+      ],
+      "note": "Terminal result applied only while DISPATCHED or PRINTING."
+    },
+    {
+      "id": "E35",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/runner-go/internal/jobs/jobs.go",
+      "lines": [
+        37,
+        165
+      ],
+      "note": "Poll loop: bounded in-flight slots, exponential backoff on errors."
+    },
+    {
+      "id": "E36",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/runner-go/internal/service/service.go",
+      "lines": [
+        43,
+        50
+      ],
+      "note": "install-service and uninstall-service return ErrNotImplemented."
+    },
+    {
+      "id": "E37",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/architecture/adapter-system.md",
+      "lines": [
+        37,
+        37
+      ],
+      "quote": "| WindowsSpoolerAdapter | windows_spooler | 🔲 Placeholder |",
+      "note": "Older doc; current-status.md and the code treat the Windows spooler path as the production executor."
+    },
+    {
+      "id": "E38",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "README.md",
+      "lines": [
+        21,
+        21
+      ],
+      "quote": "Draft local Docker stack. The referenced Dockerfiles are not present in this repo yet"
+    },
+    {
+      "id": "E39",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/production/PROD-01-known-limitations.md",
+      "lines": [
+        20,
+        20
+      ],
+      "quote": "CUPS, raw TCP 9100, ZPL/TSPL direct execution, and remote/headless runners."
+    },
+    {
+      "id": "E40",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/status/current-status.md",
+      "lines": [
+        75,
+        75
+      ],
+      "quote": "| `apps/api` (vitest) | 55 files, 438 tests — pass |",
+      "note": "Table headed 'Test evidence (2026-08-03, this workstation)'."
+    },
+    {
+      "id": "E41",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/status/current-status.md",
+      "lines": [
+        76,
+        76
+      ],
+      "quote": "| `apps/web` (vitest) | 54 files, 635 tests — pass |"
+    },
+    {
+      "id": "E42",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/production/PROD-01-known-limitations.md",
+      "lines": [
+        49,
+        50
+      ],
+      "quote": "Losing the only OWNER password currently requires a controlled database recovery procedure; there is no insecure password-reset backdoor."
+    },
+    {
+      "id": "E43",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/status/current-status.md",
+      "lines": [
+        24,
+        27
+      ],
+      "quote": "The store has an OS-owned exclusive process lock, atomic replace-on-save, versioned migration with a pre-migration backup, and a retention sweep (default 14-day hot window) that archives every pruned row to `<db dir>/archive` before deleting it."
+    },
+    {
+      "id": "E44",
+      "level": "ran",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "captureId": "print-ops-git-history",
+      "note": "git rev-list --count, first and last author dates, and a count of commits by author-address category (addresses not recorded)."
+    },
+    {
+      "id": "E45",
+      "level": "ran",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "captureId": "print-ops-source-counts",
+      "note": "File counts at the pinned sha: 135 TypeScript test files, 22 Go test files, 24 files in docs/architecture, 4 in docs/decisions, 9 in .impeccable/critique."
+    },
+    {
+      "id": "E46",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/services/execute-job.service.ts",
+      "lines": [
+        337,
+        350
+      ],
+      "note": "On success the executor writes an audit entry job.succeeded with adapter and evidence."
+    },
+    {
+      "id": "E47",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": ".impeccable/critique/2026-07-31T17-25-41Z__apps-web-src-app-tsx.md",
+      "lines": [
+        1,
+        10
+      ],
+      "note": "Impeccable critique record (front matter)."
+    },
+    {
+      "id": "E48",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": ".hermes/claude-fix-nsis.md",
+      "lines": [
+        1,
+        1
+      ],
+      "note": "A task brief written as instructions to an AI coding agent (installer hook fix)."
+    },
+    {
+      "id": "E49",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": ".agentsroom/project.json",
+      "lines": [
+        1,
+        7
+      ],
+      "note": "AgentsRoom project configuration file."
+    },
+    {
+      "id": "E50",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": ".agents/skills/impeccable/SKILL.md",
+      "lines": [
+        1,
+        5
+      ],
+      "note": "Installed Impeccable skill folder."
+    },
+    {
+      "id": "E51",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/architecture/job-lifecycle.md",
+      "lines": [
+        112,
+        112
+      ],
+      "quote": "Closed as `UNVERIFIED` with `RECOVERY_PRINT_STATUS_UNKNOWN`, **not replayed**, and a terminal event is emitted so waiting callers are released."
+    },
+    {
+      "id": "E52",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/runner-go/internal/jobs/jobs.go",
+      "lines": [
+        27,
+        35
+      ],
+      "note": "executionTimeout 180 s, with the reasoning for the value."
+    },
+    {
+      "id": "E53",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "README.md",
+      "lines": [
+        12,
+        12
+      ],
+      "quote": "`apps/api` - Fastify REST API for jobs, printers, runners, auth, audit logs, and exports."
+    },
+    {
+      "id": "E54",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/services/execute-job.service.ts",
+      "lines": [
+        453,
+        462
+      ],
+      "note": "handleFailure: UNVERIFIABLE_ERROR_CODE maps to UNVERIFIED, RESULT_TIMEOUT to TIMEOUT, else FAILED."
+    },
+    {
+      "id": "E55",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/status/current-status.md",
+      "lines": [
+        65,
+        68
+      ],
+      "quote": "Terminal results are delivered over HTTP (`ACKNOWLEDGED` on 2xx) and/or NATS (currently Core publish, `BEST_EFFORT`) with durable delivery records, bounded retry, crash recovery, HMAC signing, and an SSRF guard on caller-supplied URLs."
+    },
+    {
+      "id": "E56",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/desktop/src-tauri/src/lib.rs",
+      "lines": [
+        43,
+        87
+      ],
+      "note": "Windows job object for sidecars: create, configure, assign child process."
+    },
+    {
+      "id": "E57",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "README.md",
+      "lines": [
+        16,
+        16
+      ],
+      "quote": "`packages/domain` - Domain models, ports, and events."
+    },
+    {
+      "id": "E58",
+      "level": "source",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "apps/api/src/services/execute-job.service.ts",
+      "lines": [
+        62,
+        74
+      ],
+      "note": "Execution watchdog: 180 000 ms default, PRINTOPS_EXECUTE_TIMEOUT_MS override."
+    },
+    {
+      "id": "E59",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "docs/status/current-status.md",
+      "lines": [
+        11,
+        11
+      ],
+      "quote": "Windows desktop shell. Single instance, supervises and restarts the `server.exe` and `printops-runner.exe` sidecars, owns per-installation secrets and NATS settings."
+    },
+    {
+      "id": "E60",
+      "level": "reported",
+      "repo": "phcaradanai/print_ops",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "path": "PRODUCT.md",
+      "lines": [
+        64,
+        64
+      ],
+      "quote": "`infra/docker/docker-compose.yml` exists alongside `infra/docker/Dockerfile.{api,web,runner-go}`"
+    }
+  ],
+  "claims": [
+    {
+      "text": "The README describes PrintOps as a generic print gateway for sending print jobs from an external integration program to printers on a local network, and says it does not connect directly to HIS or any clinical or business system.",
+      "evidence": [
+        "E1",
+        "E2"
+      ]
+    },
+    {
+      "text": "The web UI has one source, apps/web/src. The desktop application has no second React application: it is a Tauri shell that displays a compiled copy of the same bundle, and the bridge module guards every Tauri call so the bundle also runs in a plain browser.",
+      "evidence": [
+        "E3",
+        "E29"
+      ]
+    },
+    {
+      "text": "The monorepo splits into apps/api (Fastify), apps/web (React), apps/runner-go (Go), apps/desktop (Tauri) and packages/domain, packages/adapters and packages/shared; the domain package holds models, ports and events.",
+      "evidence": [
+        "E53",
+        "E57",
+        "E4",
+        "E30"
+      ]
+    },
+    {
+      "text": "The canonical job-status vocabulary is the JOB_STATUSES constant: ACCEPTED, VALIDATED, QUEUED, DISPATCHED, PRINTING, SUCCESS, UNVERIFIED, FAILED, TIMEOUT, CANCELLED and DUPLICATE_RETURNED. A code comment says UNVERIFIED is distinct from FAILED because a page may exist.",
+      "evidence": [
+        "E13"
+      ]
+    },
+    {
+      "text": "Intake is idempotent: the service looks up request_id plus source_system first and, if a job exists, returns it with status DUPLICATE_RETURNED and duplicate true without creating a second job.",
+      "evidence": [
+        "E17",
+        "E8"
+      ]
+    },
+    {
+      "text": "Claiming a job is one conditional write: the port documents that read-then-update lets two callers print the same document, the SQLite claim() issues UPDATE ... WHERE id = ? AND status IN (...), and a claim with an empty patch returns undefined.",
+      "evidence": [
+        "E16",
+        "E15",
+        "E9"
+      ]
+    },
+    {
+      "text": "The runner claim endpoint fetches up to five QUEUED candidates, ordered by priority and then queue time, and tries a conditional claim on each until one succeeds; losing the race returns an idle response, not an error.",
+      "evidence": [
+        "E18",
+        "E33"
+      ]
+    },
+    {
+      "text": "A terminal result from a runner is applied only while the job is DISPATCHED or PRINTING; a late or duplicate result gets HTTP 409 and cannot overwrite a SUCCESS with a stale FAILED.",
+      "evidence": [
+        "E34"
+      ]
+    },
+    {
+      "text": "The API does not take a runner's SUCCESS at face value for the Windows spooler path: it downgrades to UNVERIFIED unless the evidence has both device confirmation and an exact printer-side IPP job confirmation.",
+      "evidence": [
+        "E19",
+        "E6"
+      ]
+    },
+    {
+      "text": "The in-process executor refuses to run DISPATCHED, PRINTING, SUCCESS, UNVERIFIED, TIMEOUT, CANCELLED or DUPLICATE_RETURNED jobs, applies a 180 s default watchdog (PRINTOPS_EXECUTE_TIMEOUT_MS) and maps an unconfirmable print to UNVERIFIED and a silent timeout after spooler acceptance to TIMEOUT.",
+      "evidence": [
+        "E14",
+        "E58",
+        "E54"
+      ]
+    },
+    {
+      "text": "The Go runner authenticates, registers with the API, then runs a discovery loop, a heartbeat loop and, when enabled, a job loop. Its client calls /runners/register, /runners/:id/heartbeat, /api/v1/runners/:id/printers/discovery and /api/v1/runners/:id/jobs/next.",
+      "evidence": [
+        "E22",
+        "E27",
+        "E26"
+      ]
+    },
+    {
+      "text": "Each heartbeat call is bounded by a 10 s timeout; a failed heartbeat is logged and the loop continues. Registering again with the same name and hostname reuses the runner record and writes a runner.reconnected audit entry.",
+      "evidence": [
+        "E24",
+        "E25"
+      ]
+    },
+    {
+      "text": "The runner's job loop never busy-loops: it holds at most 8 in-flight slots by default, backs off exponentially on API errors up to a 10 s ceiling, and bounds one execution to 180 s.",
+      "evidence": [
+        "E35",
+        "E52"
+      ]
+    },
+    {
+      "text": "When an executor returns an unverified result the runner reports UNVERIFIED, not FAILED, so that an operator is not invited to retry a print that may already exist.",
+      "evidence": [
+        "E23"
+      ]
+    },
+    {
+      "text": "Job polling in the runner is gated by PRINTOPS_JOBS_ENABLED. When false it logs 'discovery only', advertises no supported protocols and keeps only discovery and heartbeat running; the status document says this is the packaged-desktop setting.",
+      "evidence": [
+        "E22",
+        "E5"
+      ]
+    },
+    {
+      "text": "In packaged Windows mode the API throws DESKTOP_EXECUTOR_INVARIANT at startup unless PRINTOPS_LOCAL_WORKER is true and PRINTOPS_DISCOVERY_RUNNER_JOBS_ENABLED is false, so two executors cannot draw from one queue.",
+      "evidence": [
+        "E20"
+      ]
+    },
+    {
+      "text": "The API's authenticate hook gives runner-kind credentials a 403 for everything except runner registration, heartbeat and printer-discovery sync, so a discovery runner cannot claim jobs even if misconfigured.",
+      "evidence": [
+        "E21"
+      ]
+    },
+    {
+      "text": "The Tauri shell restarts a sidecar (API or runner) whose process has exited, and the status document lists the shell as supervising both. Sidecars are assigned to a Windows job object so they do not outlive the app.",
+      "evidence": [
+        "E28",
+        "E56",
+        "E59"
+      ]
+    },
+    {
+      "text": "Printers are reached only through PrinterAdapterPort (detect, getStatus, getCapabilities, executeCommand, printTestPage, listQueue, cancelJob); AdapterRegistry resolves an adapter from the printer's protocol string and throws if none is registered.",
+      "evidence": [
+        "E30",
+        "E31"
+      ]
+    },
+    {
+      "text": "The production boundary is narrow: the known-limitations document lists packaged Windows with the Windows spooler path as supported and defers CUPS, raw TCP 9100, ZPL/TSPL direct execution and remote or headless runners.",
+      "evidence": [
+        "E39"
+      ]
+    },
+    {
+      "text": "The audit vocabulary is a typed union of actions such as job.created, job.dispatched, job.succeeded, job.failed, runner.registered, runner.reconnected, user.login, service_account.key_rotated and permission.denied; the executor writes job.succeeded with adapter and evidence.",
+      "evidence": [
+        "E32",
+        "E46"
+      ]
+    },
+    {
+      "text": "Terminal results are delivered to the caller over HTTP and/or NATS with durable delivery records, bounded retry, HMAC signing and an SSRF guard, according to the status document.",
+      "evidence": [
+        "E55"
+      ]
+    },
+    {
+      "text": "After a restart, jobs that were DISPATCHED or PRINTING are closed as UNVERIFIED and not replayed, per the lifecycle document.",
+      "evidence": [
+        "E51"
+      ]
+    },
+    {
+      "text": "Persistence is SQLite through sql.js with an exclusive process lock, atomic replace-on-save, versioned migration with a pre-migration backup and a retention sweep that archives pruned rows, as the status document describes.",
+      "evidence": [
+        "E43"
+      ]
+    },
+    {
+      "text": "The repo reports 55 API test files with 438 passing tests and 54 web test files with 635 passing tests on 2026-08-03; this review did not re-run them. At the pinned sha git lists 135 TypeScript and 22 Go test files.",
+      "evidence": [
+        "E40",
+        "E41",
+        "E45"
+      ]
+    },
+    {
+      "text": "The repo's own documents say loopback E2E is not a substitute for the physical, clean-install and cross-machine gates, and list physical prints through a real installed printer as outstanding.",
+      "evidence": [
+        "E7",
+        "E12"
+      ]
+    },
+    {
+      "text": "Two documented gaps are visible in the tree: the Go runner's install-service and uninstall-service commands return a not-implemented error, and the README still says the Dockerfiles are absent although a later document lists Dockerfile.api, Dockerfile.web and Dockerfile.runner-go.",
+      "evidence": [
+        "E36",
+        "E38",
+        "E60"
+      ]
+    },
+    {
+      "text": "All 499 commits carry the author name phcaradanai, between 2026-07-06 and 2026-09-15; 287 use the owner's address and 212 a GitHub no-reply address. Co-Authored-By trailers name Claude Fable 5 (17), Claude Opus 5 (13), Claude Sonnet 4.6 (9), Claude Sonnet 5 (6) and github-actions[bot] (2).",
+      "evidence": [
+        "E44",
+        "E10",
+        "E11"
+      ]
+    },
+    {
+      "text": "AI tooling is visible in the tree beyond commit trailers: an installed Impeccable skill folder, nine Impeccable critique records, an AgentsRoom configuration file, and task briefs under .hermes addressed to an AI coding agent.",
+      "evidence": [
+        "E50",
+        "E47",
+        "E45",
+        "E49",
+        "E48"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "job-status",
+      "title": "The job-status vocabulary, with UNVERIFIED",
+      "path": "packages/domain/src/models/job.ts",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "startLine": 5,
+      "endLine": 22,
+      "language": "typescript",
+      "code": "export const JOB_STATUSES = [\r\n  'ACCEPTED',\r\n  'VALIDATED',\r\n  'QUEUED',\r\n  'DISPATCHED',\r\n  'PRINTING',\r\n  'SUCCESS',\r\n  /**\r\n   * Sent, and nothing reported a fault, but no device channel could confirm a\r\n   * page came out. Distinct from FAILED on purpose: a page may well exist, so\r\n   * reprinting is an operator decision rather than a safe automatic retry.\r\n   */\r\n  'UNVERIFIED',\r\n  'FAILED',\r\n  'TIMEOUT',\r\n  'CANCELLED',\r\n  'DUPLICATE_RETURNED',\r\n] as const;\r",
+      "why": "One constant is the source of truth for every status. The comment on UNVERIFIED states the design rule: sent with no fault reported, but unconfirmed, is not FAILED, because a page may exist.",
+      "claimIndexes": [
+        3
+      ]
+    },
+    {
+      "id": "claim-write",
+      "title": "Claiming a job as one conditional write",
+      "path": "apps/api/src/infra/repos/sqlite/sqlite-job.repo.ts",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "startLine": 212,
+      "endLine": 233,
+      "language": "typescript",
+      "code": "  async claim(id: string, fromStatuses: JobStatus[], patch: Partial<Job>): Promise<Job | undefined> {\r\n    const { fields, values, callerFieldCount } = buildJobPatch(patch);\r\n    // An empty patch would otherwise issue UPDATE ... SET updated_at=? WHERE\r\n    // id=? AND status IN (...), match the row, report rowsModified===1, and\r\n    // hand back a \"successfully claimed\" job that changed no status. That is\r\n    // not a claim. Guarding on the caller's own field count (updated_at is\r\n    // always appended, so fields.length alone would never be 0) closes that.\r\n    if (callerFieldCount === 0) return undefined;\r\n\r\n    // One conditional write. A caller that reads the status first and updates\r\n    // second leaves a window in which a second caller sees the same status —\r\n    // and both then print the same document.\r\n    const db = getDb();\r\n    const placeholders = fromStatuses.map(() => '?').join(', ');\r\n    db.run(\r\n      `UPDATE jobs SET ${fields.join(', ')} WHERE id = ? AND status IN (${placeholders})`,\r\n      [...values, id as SqlValue, ...(fromStatuses as SqlValue[])]\r\n    );\r\n\r\n    if (db.getRowsModified() === 0) return undefined;\r\n    return await this.findById(id);\r\n  }\r",
+      "why": "The status check lives inside the UPDATE's WHERE clause, and zero modified rows means the caller lost. The first comment closes a subtle hole: an empty patch would otherwise look like a successful claim.",
+      "claimIndexes": [
+        5
+      ]
+    },
+    {
+      "id": "idempotent-intake",
+      "title": "Idempotent intake on request id and source system",
+      "path": "apps/api/src/services/accept-external-job.service.ts",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "startLine": 135,
+      "endLine": 148,
+      "language": "typescript",
+      "code": "    // Idempotency check\n    const existing = await this.jobs.findByRequestId(req.request_id, req.source_system);\n    if (existing) {\n      return {\n        print_job_id: existing.id,\n        request_id: req.request_id,\n        status: 'DUPLICATE_RETURNED',\n        trace_id: existing.traceId,\n        accepted_at: existing.createdAt,\n        queued_at: existing.queuedAt ?? existing.createdAt,\n        duplicate: true,\n        existing_job_id: existing.id,\n      };\n    }",
+      "why": "A repeat submission returns the original job id and trace id with status DUPLICATE_RETURNED, and no second job is created, so an integration can retry safely.",
+      "claimIndexes": [
+        4
+      ]
+    },
+    {
+      "id": "server-verdict",
+      "title": "The API re-derives the verdict from evidence",
+      "path": "apps/api/src/routes/v1/runner-jobs.routes.ts",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "startLine": 400,
+      "endLine": 427,
+      "language": "typescript",
+      "code": "/**\r\n * A Windows queue completion and a printer-global SNMP delta cannot identify\r\n * which host produced a page. Preserve SUCCESS only when the runner also\r\n * supplies exact printer-side IPP job confirmation.\r\n */\r\nexport function enforceWindowsSpoolerConfirmation(\r\n  status: 'SUCCESS' | 'UNVERIFIED' | 'FAILED',\r\n  input: WindowsSpoolerExecutionInput,\r\n): 'SUCCESS' | 'UNVERIFIED' | 'FAILED' {\r\n  if (status !== 'SUCCESS' || !isWindowsSpoolerExecution(input)) return status;\r\n  return hasDeviceConfirmation(input.evidence) && hasIppJobConfirmation(input.evidence)\r\n    ? 'SUCCESS'\r\n    : 'UNVERIFIED';\r\n}\r\n\r\nfunction normalizeStatus(raw: string): 'SUCCESS' | 'UNVERIFIED' | 'FAILED' {\r\n  const upper = (raw ?? '').toUpperCase();\r\n  if (upper === 'SUCCESS' || upper === 'SUCCEEDED' || upper === 'DONE' || upper === 'OK') return 'SUCCESS';\r\n  // UNVERIFIED is a distinct terminal status, not FAILED: a page may have come\r\n  // out, so re-running the job risks a duplicate. The Go runner reports it on\r\n  // the result line, and PRINTER_NOT_VERIFIABLE / PRINT_NOT_VERIFIABLE arrive\r\n  // through the evidence error_code from both runners — collapse both spellings\r\n  // to the same status so an operator is never invited to blind-retry.\r\n  if (upper === 'UNVERIFIED' || upper === 'NOT_VERIFIABLE' || upper === 'PRINT_NOT_VERIFIABLE') {\r\n    return 'UNVERIFIED';\r\n  }\r\n  return 'FAILED';\r\n}\r",
+      "why": "For the Windows spooler path a runner's SUCCESS stands only with both device confirmation and an exact IPP job; otherwise it becomes UNVERIFIED. normalizeStatus keeps the unverified spellings from collapsing into FAILED.",
+      "claimIndexes": [
+        8
+      ]
+    },
+    {
+      "id": "single-executor",
+      "title": "Startup refuses two executors",
+      "path": "apps/api/src/infra/runtime-architecture.ts",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "startLine": 27,
+      "endLine": 49,
+      "language": "typescript",
+      "code": "/**\n * Resolve and validate ownership before any repository, queue, or worker starts.\n *\n * The desktop shell launches both child processes and injects both sides of\n * this contract. If the discovery runner is accidentally allowed to poll jobs,\n * refusing API startup is safer than racing two executors against one queue.\n */\nexport function runtimeArchitectureFromEnv(\n  env: NodeJS.ProcessEnv = process.env,\n): RuntimeArchitecture {\n  const packaged = env['PRINTOPS_RUNTIME_MODE'] === 'packaged-windows-desktop';\n  const localWorkerEnabled = enabled(env['PRINTOPS_LOCAL_WORKER']);\n  const discoveryRunnerJobsEnabled = enabled(\n    env['PRINTOPS_DISCOVERY_RUNNER_JOBS_ENABLED'],\n  );\n\n  if (packaged && (!localWorkerEnabled || discoveryRunnerJobsEnabled)) {\n    throw new Error(\n      'DESKTOP_EXECUTOR_INVARIANT: packaged Windows mode requires ' +\n      'PRINTOPS_LOCAL_WORKER=true and PRINTOPS_DISCOVERY_RUNNER_JOBS_ENABLED=false. ' +\n      'Refusing startup because two executor paths could claim or print the same job.',\n    );\n  }",
+      "why": "The invariant is checked before any repository or worker starts, and the error says why: two executor paths could claim and print the same job.",
+      "claimIndexes": [
+        15
+      ]
+    },
+    {
+      "id": "runner-scope",
+      "title": "Runner credentials limited to three operations",
+      "path": "apps/api/src/app.ts",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "startLine": 259,
+      "endLine": 276,
+      "language": "typescript",
+      "code": "  app.decorate('authenticate', async function (req: FastifyRequest, reply: FastifyReply) {\r\n    try {\r\n      await req.jwtVerify();\r\n      const identity = req.user as { kind?: string };\r\n      if (identity.kind === 'runner') {\r\n        const path = new URL(req.url, 'http://localhost').pathname;\r\n        const allowed =\r\n          (req.method === 'POST' && path === '/runners/register')\r\n          || (req.method === 'POST' && /^\\/runners\\/[^/]+\\/heartbeat$/.test(path))\r\n          || (req.method === 'POST' && /^\\/api\\/v1\\/runners\\/[^/]+\\/printers\\/discovery$/.test(path));\r\n        if (!allowed) {\r\n          return reply.status(403).send({ error: 'Runner credentials are restricted to discovery and heartbeat operations' });\r\n        }\r\n      }\r\n    } catch (err) {\r\n      reply.send(err);\r\n    }\r\n  });\r",
+      "why": "A token whose kind is runner is rejected with 403 on every route except register, heartbeat and discovery sync. The same rule is enforced by credential, not only by runner configuration.",
+      "claimIndexes": [
+        16
+      ]
+    },
+    {
+      "id": "runner-loops",
+      "title": "Runner startup: discovery, heartbeat, optional job loop",
+      "path": "apps/runner-go/cmd/printops-runner/main.go",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "startLine": 127,
+      "endLine": 156,
+      "language": "go",
+      "code": "\t// Initial immediate discovery, then periodic loop.\n\tsyncDiscoveryOnce(ctx, client, discoverer, runnerID, cfg.Hostname, cfg.OS, metrics, log)\n\tgo runDiscoveryLoop(ctx, client, discoverer, runnerID, cfg.Hostname, cfg.OS, cfg.DiscoveryInterval, metrics, log)\n\n\t// Jobs loop runs in the foreground; heartbeat runs in a goroutine.\n\tjobLooper := jobs.New(client, executor, metrics, log, runnerID, string(discoveryMode), string(cfg.ExecutorMode), jobs.DefaultConfig(cfg.PollInterval))\n\n\thb := &heartbeat.Looper{\n\t\tClient:   client,\n\t\tMetrics:  metrics,\n\t\tLog:      log,\n\t\tRunnerID: runnerID,\n\t\tInterval: cfg.HeartbeatInterval,\n\t\tState:    jobLooper,\n\t}\n\tgo hb.Run(ctx)\n\n\tlog.Info(\"runner ready\", \"poll_interval_ms\", cfg.PollInterval.Milliseconds(), \"executor\", executor.Name())\n\n\t// The job poll/claim loop is gated by PRINTOPS_JOBS_ENABLED. Some\n\t// deployments (the desktop app) run this runner for printer discovery\n\t// only: the API executes jobs in-process via its own executor, so a\n\t// second claimant on the same queue would double-claim/double-print.\n\t// Heartbeat and discovery already run as goroutines above regardless.\n\tif cfg.JobsEnabled {\n\t\tjobLooper.Run(ctx)\n\t} else {\n\t\tlog.Info(\"job polling disabled (PRINTOPS_JOBS_ENABLED=false) — discovery only\")\n\t\t<-ctx.Done()\n\t}",
+      "why": "Discovery and heartbeat always run; the job loop runs only if JobsEnabled. The comment records the reason: a second claimant on the same queue would double-print.",
+      "claimIndexes": [
+        10,
+        14
+      ]
+    },
+    {
+      "id": "web-desktop-bridge",
+      "title": "One bundle, browser or desktop webview",
+      "path": "apps/web/src/tauri.ts",
+      "sha": "4ea6cdd76f19f2f4babdc2a7de0311dd0a6fec51",
+      "startLine": 1,
+      "endLine": 17,
+      "language": "typescript",
+      "code": "// Thin bridge to the Tauri desktop shell commands. The same web bundle runs\r\n// inside the desktop webview (where `@tauri-apps/api` resolves) and in a plain\r\n// browser during development (where it does not). Guard every call so the\r\n// Settings page degrades gracefully to a clear message instead of crashing.\r\n\r\nlet invokeFn: ((cmd: string, args?: Record<string, unknown>) => Promise<unknown>) | null = null;\r\n\r\nasync function getInvoke(): Promise<((cmd: string, args?: Record<string, unknown>) => Promise<unknown>) | null> {\r\n  if (invokeFn !== null) return invokeFn;\r\n  try {\r\n    const mod = await import('@tauri-apps/api/core');\r\n    invokeFn = (cmd: string, args?: Record<string, unknown>) => mod.invoke(cmd, args);\r\n  } catch {\r\n    invokeFn = null;\r\n  }\r\n  return invokeFn;\r\n}\r",
+      "why": "The Tauri API is imported dynamically inside try/catch, so the same compiled bundle degrades to a clear message in a plain browser instead of crashing.",
+      "claimIndexes": [
+        1
+      ]
+    }
+  ],
+  "captures": [
+    "print-ops-shortlog",
+    "print-ops-claude-trailers",
+    "print-ops-git-history",
+    "print-ops-source-counts"
+  ],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Runs locally: Vite dev server for the web UI, API on loopback, or a packaged Windows desktop installer built with the repo's scripts. No public deployment is documented."
+  },
+  "limitations": [
+    "Physical-printer, clean-Windows-install and cross-machine acceptance gates are listed as outstanding in the repo's own documents; loopback E2E is not a substitute.",
+    "The supported production boundary is the packaged Windows desktop with the Windows spooler path; CUPS, raw TCP 9100, ZPL/TSPL direct execution, IPP execution and remote or headless runners are deferred (PROD-01-known-limitations.md).",
+    "Test counts and passing suites are the repo's own statements dated 2026-08-03; this review re-ran none of them and did not run go test.",
+    "The Go runner's install-service and uninstall-service commands are stubs that return a not-implemented error.",
+    "Documents disagree with each other in places: adapter-system.md still marks the Windows spooler adapter a placeholder, and the README says the Dockerfiles are absent while the tree contains three. The repo's product document says the code wins.",
+    "infra/migrations holds an unapplied PostgreSQL schema and the Docker compose file contains Postgres and Redis scaffolding that the application does not use; the repo marks this path unverified.",
+    "Losing the only OWNER password needs a controlled database recovery; there is no password-reset backdoor (by design, per the repo).",
+    "No public deployment, customer, benchmark or uptime figure is documented. No UI screenshots or diagrams exist in the repo, so none are shown; the only images are application icons."
+  ],
+  "contribution": "git shows 499 commits, all with the author name phcaradanai, from 2026-07-06 to 2026-09-15: 287 with the address phcaradanai@gmail.com and 212 with a GitHub no-reply address. No other author name appears. Two Co-Authored-By trailers name github-actions[bot].",
+  "lastVerified": "2026-10-25",
+  "diagram": {
+    "nodes": [
+      {
+        "id": "integ",
+        "label": "External integration program",
+        "group": "outside repo",
+        "note": "Reads its own source system; calls the API"
+      },
+      {
+        "id": "web",
+        "label": "apps/web (React)",
+        "group": "ui",
+        "note": "Single UI source"
+      },
+      {
+        "id": "desktop",
+        "label": "apps/desktop (Tauri v2)",
+        "group": "ui",
+        "note": "Shows compiled web UI; supervises sidecars"
+      },
+      {
+        "id": "api",
+        "label": "apps/api (Fastify)",
+        "group": "server",
+        "note": "Intake, queue, executor, audit, callbacks"
+      },
+      {
+        "id": "domain",
+        "label": "packages/domain",
+        "group": "core",
+        "note": "Models, ports, events"
+      },
+      {
+        "id": "adapters",
+        "label": "packages/adapters",
+        "group": "core",
+        "note": "PrinterAdapterPort implementations, registry"
+      },
+      {
+        "id": "db",
+        "label": "SQLite (sql.js)",
+        "group": "storage",
+        "note": "Jobs, traces, audit"
+      },
+      {
+        "id": "runner",
+        "label": "apps/runner-go",
+        "group": "runner",
+        "note": "Register, heartbeat, discovery, optional job loop"
+      },
+      {
+        "id": "printer",
+        "label": "Printers",
+        "group": "device",
+        "note": "Via spooler or network protocols"
+      }
+    ],
+    "edges": [
+      {
+        "from": "integ",
+        "to": "api",
+        "label": "POST print job (API key)"
+      },
+      {
+        "from": "api",
+        "to": "integ",
+        "label": "result callback (HTTP / NATS)"
+      },
+      {
+        "from": "web",
+        "to": "api",
+        "label": "REST, JWT"
+      },
+      {
+        "from": "desktop",
+        "to": "web",
+        "label": "loads compiled bundle"
+      },
+      {
+        "from": "desktop",
+        "to": "api",
+        "label": "spawns, restarts"
+      },
+      {
+        "from": "desktop",
+        "to": "runner",
+        "label": "spawns, restarts"
+      },
+      {
+        "from": "runner",
+        "to": "api",
+        "label": "register, heartbeat, discovery"
+      },
+      {
+        "from": "api",
+        "to": "domain",
+        "label": "ports"
+      },
+      {
+        "from": "adapters",
+        "to": "domain",
+        "label": "implements ports"
+      },
+      {
+        "from": "api",
+        "to": "adapters",
+        "label": "registry by protocol"
+      },
+      {
+        "from": "api",
+        "to": "db",
+        "label": "claim, trace, audit"
+      },
+      {
+        "from": "adapters",
+        "to": "printer",
+        "label": "print, status"
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "scopeflow-git-history",
+  "repo": "phcaradanai/ScopeFlow",
+  "sha": "160aabf4a2b2d97b191de0536bc8dd30fff2ddfd",
+  "cwd": ".",
+  "command": "git rev-list --count HEAD && git shortlog -sn HEAD && git log --format=%ad --date=short | sort | sed -n '1p;$p'",
+  "capturedAt": "2026-10-24T12:22:46.010Z",
+  "exitCode": 0,
+  "durationMs": 943,
+  "output": "518\n   518\tphcaradanai\n2026-06-23\n2026-07-02",
+  "truncated": false,
+  "environment": "macOS 26.5.2 x86_64, node v26.12.0, git version 2.55.0"
+}

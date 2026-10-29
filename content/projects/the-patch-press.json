@@ -1,0 +1,55 @@
+{
+  "slug": "the-patch-press",
+  "accession": "PK-2026-016",
+  "title": "The Patch Press",
+  "kind": "web",
+  "tier": "B",
+  "maturity": "prototype",
+  "visibility": "public-site-private-repo",
+  "tagline": "Thai-language tech and open-source news dashboard in a comic-newspaper style, compiled automatically from GitHub and Hacker News.",
+  "summary": "A Thai-language dashboard of AI, open-source and developer-tools news laid out like a comic newspaper, with category filters, search and a time-range selector. The page says its items are compiled automatically from GitHub and Hacker News, are not editor-verified analysis, and link back to the source. Per the owner it is plain HTML, CSS and JavaScript plus one serverless function. The source repository is private and was not read; this entry rests on the public site and owner-supplied facts.",
+  "period": { "start": "2026-10-22", "end": "2026-10-25" },
+  "repo": null,
+  "stack": ["HTML", "CSS", "JavaScript", "Serverless function", "Vercel (hosting, from the site address)"],
+  "aiRole": {
+    "summary": "The source repository is private and was not inspected, so whether AI tooling was used to build the site is not known. The public page covers AI news as a topic only.",
+    "tools": []
+  },
+  "narrative": null,
+  "evidence": [
+    { "id": "E1", "level": "private", "repo": "private", "note": "Observed on the public site 2026-10-25: Thai-language page titled THE PATCH PRESS; category chips for AI / Agents, Open Source, Security, Dev Tools, Local AI and Saved; a search box and a time-range selector." },
+    { "id": "E2", "level": "private", "repo": "private", "note": "Observed on the public site 2026-10-25: a disclaimer says the items are compiled automatically from GitHub and Hacker News, are not editor-verified analysis, and should be checked at the source before use." },
+    { "id": "E3", "level": "private", "repo": "private", "note": "Observed on the public site 2026-10-25: a status line says the feed is re-checked every 15 minutes while the page is open; the footer links to GitHub and Hacker News." },
+    { "id": "E4", "level": "private", "repo": "private", "note": "Supplied by the owner for this entry and not checked against the repository: plain HTML, CSS and JavaScript plus one serverless function; repository created 2026-10-22; 3 commits." },
+    { "id": "E5", "level": "private", "repo": "private", "note": "Observed on the public site 2026-10-25: one request to the site address returned HTTP 200." }
+  ],
+  "claims": [
+    {
+      "text": "The public page is a Thai-language news dashboard styled as a comic newspaper, with category filters (AI / Agents, Open Source, Security, Dev Tools, Local AI, Saved), a search box and a time-range selector.",
+      "evidence": ["E1"]
+    },
+    {
+      "text": "The page itself says its items are compiled automatically from GitHub and Hacker News, are not editor-verified analysis, and should be checked at the source. It also says the feed is re-checked every 15 minutes while the page is open.",
+      "evidence": ["E2", "E3"]
+    },
+    {
+      "text": "Owner-supplied facts, not checked against the repository: the site is plain HTML, CSS and JavaScript plus one serverless function; the repository was created on 2026-10-22 and has 3 commits.",
+      "evidence": ["E4"]
+    }
+  ],
+  "excerpts": [],
+  "captures": [],
+  "assets": [],
+  "demo": {
+    "url": "https://the-patch-press.vercel.app",
+    "note": "The site answered HTTP 200 to one request on 2026-10-25 (E5). It was fetched once and not exercised in a browser."
+  },
+  "limitations": [
+    "The source repository is private and was not read. No code, architecture detail or screenshots are shown; claims are limited to what the public page states plus owner-supplied facts.",
+    "The page says its news items are machine-compiled and not editor-verified. Their accuracy and freshness were not assessed, and the 15-minute refresh, the filters, search and saving were read from the page text, not tested.",
+    "How the serverless function works is not known beyond the owner's statement that there is one.",
+    "The period end (2026-10-25) is the date the site was observed, not a commit date; the three commit dates were not seen."
+  ],
+  "contribution": "Per the owner, the repository was created on 2026-10-22 and has 3 commits. Authorship and commit dates were not checked because the repository is private.",
+  "lastVerified": "2026-10-25"
+}

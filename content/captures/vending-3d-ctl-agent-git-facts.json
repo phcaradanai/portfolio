@@ -1,0 +1,13 @@
+{
+  "id": "vending-3d-ctl-agent-git-facts",
+  "repo": "phcaradanai/vending-3d-ctl-agent",
+  "sha": "870be695f1b901d67d8c2d7ab131c43f97f8ad10",
+  "cwd": ".",
+  "command": "echo \"total commits: $(git rev-list --count HEAD)\"; echo \"commits whose author matches phcaradanai: $(git rev-list --count --author=phcaradanai HEAD)\"; echo \"commits by other authors: $(( $(git rev-list --count HEAD) - $(git rev-list --count --author=phcaradanai HEAD) ))\"; echo \"first commit date: $(git log --format=%ad --date=short | sort | head -1)\"; echo \"last commit date: $(git log --format=%ad --date=short | sort | tail -1)\"; echo \"test files under test/: $(git ls-files test | wc -l | tr -d ' ')\"",
+  "capturedAt": "2026-10-25T05:30:16Z",
+  "exitCode": 0,
+  "durationMs": 661,
+  "output": "total commits: 55\ncommits whose author matches phcaradanai: 37\ncommits by other authors: 18\nfirst commit date: 2026-05-07\nlast commit date: 2026-07-31\ntest files under test/: 8",
+  "truncated": false,
+  "environment": "macOS (Darwin 25.5.0) x86_64, git 2.55.0"
+}

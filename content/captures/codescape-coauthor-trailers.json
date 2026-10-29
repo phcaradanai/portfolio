@@ -1,0 +1,13 @@
+{
+  "id": "codescape-coauthor-trailers",
+  "repo": "phcaradanai/Project-Explorer",
+  "sha": "fa9459fb482a321cafa32f8413eeb636711cd52b",
+  "cwd": ".",
+  "command": "git shortlog -sn --group=trailer:co-authored-by HEAD",
+  "capturedAt": "2026-10-24T17:58:18.650Z",
+  "exitCode": 0,
+  "durationMs": 325,
+  "output": "    18\tClaude Opus 5",
+  "truncated": false,
+  "environment": "macOS 26.5.2 x86_64, node v26.12.0, git version 2.55.0"
+}

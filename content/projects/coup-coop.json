@@ -1,0 +1,321 @@
+{
+  "slug": "coup-coop",
+  "accession": "PK-2026-011",
+  "title": "Coup Co-op",
+  "kind": "game",
+  "tier": "B",
+  "maturity": "prototype",
+  "visibility": "public",
+  "tagline": "Real-time online version of the Coup bluffing card game: Socket.IO rooms, scripted bots, and a server that sends each player a masked state.",
+  "summary": "A multiplayer web version of the card game Coup for up to 6 players, with an optional Inquisitor role set, built with React, Vite, Express and Socket.IO. server.ts keeps rooms in memory and sends each connected player a copy of the state with other players' cards hidden; rules live in a GameRoom class in src/server/game.ts, and scripted bots take turns. The repo has no README and no tests; AGENTS.md records the masking and rules invariants it was built against.",
+  "period": {
+    "start": "2026-09-07",
+    "end": "2026-09-09"
+  },
+  "repo": {
+    "url": "https://github.com/phcaradanai/coup_coop",
+    "pinnedSha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+    "ownerCommits": 12,
+    "totalCommits": 12,
+    "languages": {
+      "TypeScript": 317787,
+      "CSS": 6056,
+      "HTML": 311
+    },
+    "checkedAt": "2026-10-25"
+  },
+  "stack": [
+    "TypeScript",
+    "React 19",
+    "Vite",
+    "Express",
+    "Socket.IO",
+    "Tailwind CSS",
+    "Web Audio API"
+  ],
+  "aiRole": {
+    "summary": "AGENTS.md is a rules-and-architecture file written for coding agents (E14), and metadata.json plus an assets/.aistudio folder point to a Google AI Studio scaffold (E13, E17). The package declares @google/genai (E12) but no use of it was found in server.ts or src. The only verification standard recorded is a lint and build instruction (E11); no review records or run results are in the repo.",
+    "tools": [
+      {
+        "name": "Google AI Studio",
+        "use": "metadata.json declares an AI Studio server-side Gemini capability and an assets/.aistudio folder exists; this shows the project's origin only.",
+        "evidence": "E13"
+      }
+    ]
+  },
+  "narrative": null,
+  "evidence": [
+    {
+      "id": "E1",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "server.ts",
+      "lines": [
+        68,
+        105
+      ],
+      "note": "getMaskedStateForPlayer."
+    },
+    {
+      "id": "E2",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "server.ts",
+      "lines": [
+        107,
+        133
+      ],
+      "note": "broadcastGameState sends a per-player masked state, and a spectator-masked state to non-players."
+    },
+    {
+      "id": "E3",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "server.ts",
+      "lines": [
+        606,
+        606
+      ],
+      "note": "uid taken from the socket handshake query, falling back to socket.id."
+    },
+    {
+      "id": "E4",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "server.ts",
+      "lines": [
+        659,
+        679
+      ],
+      "note": "joinRoom: a player already in the room under the same uid is rejoined."
+    },
+    {
+      "id": "E5",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "src/server/game.ts",
+      "lines": [
+        227,
+        235
+      ],
+      "note": "takeAction guards: alive, own turn, no pending action, forced Coup at 10 coins."
+    },
+    {
+      "id": "E6",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "server.ts",
+      "lines": [
+        794,
+        804
+      ],
+      "note": "takeAction socket handler passes the uid fixed at connect time from the handshake query (not a per-message player id) to GameRoom."
+    },
+    {
+      "id": "E7",
+      "level": "reported",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "AGENTS.md",
+      "lines": [
+        4,
+        4
+      ],
+      "quote": "Never broadcast unmasked `GameState` directly to sockets."
+    },
+    {
+      "id": "E8",
+      "level": "reported",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "AGENTS.md",
+      "lines": [
+        17,
+        17
+      ],
+      "quote": "3 coins are paid to the court treasury immediately upon declaring the action (before challenge or block phases)."
+    },
+    {
+      "id": "E9",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "src/server/game.ts",
+      "lines": [
+        274,
+        283
+      ],
+      "note": "Assassinate deducts 3 coins on declaration; Steal is refused against a target with 0 coins."
+    },
+    {
+      "id": "E10",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "server.ts",
+      "lines": [
+        286,
+        286
+      ],
+      "note": "getRandomDelay defaults to 1200 to 2200 ms; used when scheduling bot actions."
+    },
+    {
+      "id": "E11",
+      "level": "reported",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "AGENTS.md",
+      "lines": [
+        24,
+        24
+      ],
+      "quote": "Any code changes must compile cleanly with `npm run lint` and `npm run build` with 0 errors."
+    },
+    {
+      "id": "E12",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "package.json",
+      "lines": [
+        15,
+        15
+      ],
+      "note": "@google/genai dependency."
+    },
+    {
+      "id": "E13",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "metadata.json",
+      "lines": [
+        1,
+        6
+      ],
+      "note": "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API."
+    },
+    {
+      "id": "E14",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "AGENTS.md",
+      "lines": [
+        1,
+        1
+      ],
+      "note": "Project rules and architecture guidelines file; no agent is named."
+    },
+    {
+      "id": "E15",
+      "level": "reported",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "public/fx/README.md",
+      "lines": [
+        5,
+        5
+      ],
+      "quote": "Supported Cinematic FX Files (15 Assets)"
+    },
+    {
+      "id": "E16",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "server.ts",
+      "lines": [
+        794,
+        903
+      ],
+      "note": "Socket.IO gameplay events: takeAction, challenge, block, pass, resolve."
+    },
+    {
+      "id": "E17",
+      "level": "source",
+      "repo": "phcaradanai/coup_coop",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "path": "assets/.aistudio/.gitignore",
+      "note": "Folder name only."
+    }
+  ],
+  "claims": [
+    {
+      "text": "The server holds the authoritative state and masks it per recipient: the deck and other players' cards become role Unknown, and exchange cards and the Inquisitor's examined card are real only for the acting player. broadcastGameState sends each player their own masked copy and non-players a fully masked one. AGENTS.md states this as a strict invariant.",
+      "evidence": [
+        "E1",
+        "E2",
+        "E7"
+      ]
+    },
+    {
+      "text": "Gameplay commands are Socket.IO events that the server maps to the connection's uid and passes to GameRoom, which refuses an action unless the player is alive, it is their turn and nothing is pending, forces Coup at 10 coins, charges Assassinate's 3 coins on declaration and refuses Steal against a 0-coin target, as AGENTS.md specifies.",
+      "evidence": [
+        "E5",
+        "E6",
+        "E8",
+        "E9",
+        "E16"
+      ]
+    },
+    {
+      "text": "Bots act through a server-side scheduler with a random delay of 1200 to 2200 ms by default, so bot turns run in the same room flow as human ones.",
+      "evidence": [
+        "E10"
+      ]
+    }
+  ],
+  "excerpts": [
+    {
+      "id": "masked-state",
+      "title": "Masking the state per recipient",
+      "path": "server.ts",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "startLine": 68,
+      "endLine": 105,
+      "language": "typescript",
+      "code": "function getMaskedStateForPlayer(state: GameState, recipientUid: string): GameState {\n  return {\n    ...state,\n    // Mask deck cards so no one can cheat by inspecting upcoming deck cards\n    deck: state.deck.map((c, i) => ({\n      id: `deck_card_${i}`,\n      role: \"Unknown\" as Role\n    })),\n    // Mask players' private cards (influences)\n    players: state.players.map(p => {\n      if (p.id === recipientUid) {\n        return p; // Recipient sees their own cards\n      }\n      return {\n        ...p,\n        influences: p.influences.map(c => ({\n          id: c.id,\n          role: \"Unknown\" as Role\n        }))\n      };\n    }),\n    // Mask exchange cards in currentAction if recipient is not the exchanging player\n    currentAction: state.currentAction ? {\n      ...state.currentAction,\n      exchangeCards: state.currentAction.exchangeCards ? (\n        state.currentAction.playerId === recipientUid\n          ? state.currentAction.exchangeCards\n          : state.currentAction.exchangeCards.map(c => ({ id: c.id, role: \"Unknown\" as Role }))\n      ) : undefined,\n      // Mask examined card: only the Inquisitor (actor) sees the card's real role\n      examinedCard: state.currentAction.examinedCard ? (\n        state.currentAction.playerId === recipientUid\n          ? state.currentAction.examinedCard\n          : { id: state.currentAction.examinedCard.id, role: \"Unknown\" as Role }\n      ) : undefined\n    } : null\n  };\n}",
+      "why": "Every outgoing state is rebuilt: deck cards are replaced by Unknown, other players' influences keep their ids but lose their roles, and exchange and examined cards are shown only when the recipient is the acting player. The player objects are spread with ...p, so every player's id stays in the payload (see the limitations).",
+      "claimIndexes": [
+        0
+      ]
+    },
+    {
+      "id": "take-action-guards",
+      "title": "Turn and phase guards in GameRoom.takeAction",
+      "path": "src/server/game.ts",
+      "sha": "0213077c4acafa1bb51ff3d4406e3217a03d1b41",
+      "startLine": 227,
+      "endLine": 235,
+      "language": "typescript",
+      "code": "  takeAction(playerId: string, actionType: ActionType, targetId?: string) {\n    const player = this.getPlayer(playerId);\n    if (!player || !player.isAlive || this.state.players[this.state.turnIndex].id !== playerId) return false;\n    if (this.state.status !== \"PLAYING\" || this.state.currentAction !== null) return false;\n\n    if (player.coins >= 10 && actionType !== \"Coup\") {\n      this.log(`${player.name} มีเหรียญ 10 เหรียญขึ้นไป ต้องทำรัฐประหารเท่านั้น`);\n      return false; // must Coup\n    }",
+      "why": "The method returns false, changing nothing, unless the player is alive, holds the current turn index, the room is PLAYING and no action is pending. It also forces a Coup once a player holds 10 or more coins.",
+      "claimIndexes": [
+        1
+      ]
+    }
+  ],
+  "captures": [],
+  "assets": [],
+  "demo": {
+    "url": null,
+    "note": "Runs locally (npm run dev); no public deployment documented. The repo has no README."
+  },
+  "limitations": [
+    "Identity is client-supplied: the server takes the player id from the socket handshake query (E3), and joinRoom rejoins any player with that id (E4). The masked state still includes each player's id (E1). Reading the source, a client that presents another player's id would be treated as that player. This was not tested and no other check was found.",
+    "No README and no test files are in the repo. The only verification standard is the instruction to run lint and build (E11), which was not run here. Rules are checked only by reading code against AGENTS.md.",
+    "Rooms, chat and timers live in server memory only; a restart ends all games.",
+    "@google/genai is a dependency and metadata.json declares a Gemini capability (E12, E13), but no use was found in server.ts or src.",
+    "public/fx/README.md catalogues 15 effect assets under public/fx (E15), but only that README is in the folder at this commit; ten mp4 files sit under public/video. Provenance of the videos and card SVGs is not recorded, so no media is shown.",
+    "Coup is a commercial board game and this is an adaptation; no card art is reproduced here."
+  ],
+  "contribution": "All 12 commits are attributed to the owner's identities: 7 under a local author name that uses the owner's email and 5 under the author name phcaradanai. First commit 2026-09-07, last 2026-09-09. No other contributors.",
+  "lastVerified": "2026-10-25"
+}

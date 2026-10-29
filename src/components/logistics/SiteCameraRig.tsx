@@ -40,7 +40,8 @@ export function SiteCameraRig() {
     const [W, D] = site.size;
     c.setBoundary(new THREE.Box3(new THREE.Vector3(ox - W / 2, 0, oz - D / 2), new THREE.Vector3(ox + W / 2, 0, oz + D / 2)));
     const [dx, dy, dz] = CAMERA_OFFSET.map((n) => n * pull) as [number, number, number];
-    c.setLookAt(ox + dx, dy, oz + dz, ox, 0, oz, !first.current);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    c.setLookAt(ox + dx, dy, oz + dz, ox, 0, oz, !first.current && !reduced);
     first.current = false;
   }, [activeSiteId, pull]);
 

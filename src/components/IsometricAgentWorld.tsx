@@ -2408,31 +2408,11 @@ export function IsometricAgentWorld({
 
   return (
     <div className="iso-world" id="command-table">
-      {/* Primary Room Exhibition Header & Action Controls */}
-      <div className="iso-hero-intro">
-        <p className="iso-eyebrow">INTERACTIVE 3D ISOMETRIC STUDIO · {monuments.length} MONUMENTS</p>
-        <h1 className="vinyl vinyl--l iso-hero-h1">Agent Command</h1>
-        <p className="iso-hero-lead">
-          Directing, bounding, and verifying AI agents across {totalFiles.toLocaleString("en-US")} files and {totalTests} test suites—plus private &amp; enterprise works available on direct inquiry.
-        </p>
-        <div className="iso-hero-cta">
-          <button type="button" className="btn btn--small iso-btn-pulse" onClick={triggerAgentPulse}>
-            Pulse Agents {pulseCount > 0 ? `(${pulseCount})` : "[Space]"}
-          </button>
-          <button type="button" className="btn btn--small iso-btn-breeze" onClick={triggerBreezeAndGlint}>
-            Breeze &amp; Glint {breezeCount > 0 ? `(${breezeCount})` : "[B]"}
-          </button>
-          <a className="btn btn--small iso-btn-vault" href="#vault-desk">
-            More Works &amp; Inquire <IconArrow />
-          </a>
-        </div>
-      </div>
-
       {/* ───────── 100% Full-Width Panoramic 3D Isometric Viewport Hero ───────── */}
       <div className="frame iso-viewport-card">
           <div className="frame__mat iso-viewport-stage">
             {/* Dedicated Top HUD Bar (Sitting cleanly above the canvas) */}
-            <div className="iso-hud-bar" role="region" aria-label="Isometric camera and shader controls">
+            <div className="iso-hud-bar" role="region" aria-label="Island camera zones">
               <div className="iso-zone-bar" role="group" aria-label="Scroll-driven camera zones">
                 {SCROLL_ZONES.map((z) => (
                   <button
@@ -2447,79 +2427,6 @@ export function IsometricAgentWorld({
                 ))}
               </div>
 
-              <div className="iso-tool-bar" role="group" aria-label="Shader and environment toggles">
-                <button
-                  type="button"
-                  className="iso-hud-btn"
-                  aria-pressed={renderTheme === "holo"}
-                  onClick={() => setRenderTheme((t) => (t === "holo" ? "studio" : "holo"))}
-                >
-                  {renderTheme === "holo" ? "Shader: Holo" : "Shader: Studio"}
-                </button>
-                <button
-                  type="button"
-                  className="iso-hud-btn"
-                  aria-pressed={specularEnabled}
-                  onClick={() => setSpecularEnabled((v) => !v)}
-                >
-                  {specularEnabled ? "PBR: On" : "PBR: Off"}
-                </button>
-                <button
-                  type="button"
-                  className="iso-hud-btn"
-                  aria-pressed={natureEnabled}
-                  onClick={() => setNatureEnabled((v) => !v)}
-                >
-                  {natureEnabled ? "Nature: On" : "Nature: Off"}
-                </button>
-                <button
-                  type="button"
-                  className="iso-hud-btn"
-                  aria-pressed={postFx}
-                  onClick={() => setPostFx((f) => !f)}
-                >
-                  {postFx ? "FX: Bloom" : "FX: Clean"}
-                </button>
-                <button
-                  type="button"
-                  className="iso-hud-btn"
-                  aria-pressed={dragMode === "orbit"}
-                  onClick={() => setDragMode((m) => (m === "orbit" ? "pan" : "orbit"))}
-                >
-                  {dragMode === "orbit" ? "Drag: Orbit" : "Drag: Pan"}
-                </button>
-                <button
-                  type="button"
-                  className="iso-hud-btn"
-                  aria-pressed={soundEnabled}
-                  onClick={toggleSound}
-                >
-                  {soundEnabled ? "Audio: On" : "Audio: Mute"}
-                </button>
-                <button
-                  type="button"
-                  className="iso-hud-btn"
-                  onClick={() => setRotIndex((r) => (r + 1) % 4)}
-                  aria-label="Rotate isometric camera 90 degrees"
-                >
-                  Rotate 90°
-                </button>
-                <button
-                  type="button"
-                  className="iso-hud-btn"
-                  onClick={() => {
-                    setZoom(1.04);
-                    setRotIndex(0);
-                    simRef.current.customOrbitOffset = 0;
-                    simRef.current.panX = -48;
-                    simRef.current.panY = 22;
-                    simRef.current.glintSweepBoost = 1.0;
-                  }}
-                  aria-label="Reset isometric camera view"
-                >
-                  Reset
-                </button>
-              </div>
             </div>
 
             {/* 3D Canvas Viewport Box with Bottom Corner Widgets */}
@@ -2852,10 +2759,9 @@ export function IsometricAgentWorld({
       </div>
 
       {/* Accessible Quick-Dock Monument Selector Strip */}
-      <div className="iso-dock-strip" role="region" aria-label="Quick dock monument selector">
-        <p className="iso-dock-strip__label">
-          Direct Dock Selector ({visibleMonuments.length} monuments active on grid):
-        </p>
+      {/* Keyboard and screen-reader route to every work; folded so the island leads. */}
+      <details className="iso-dock-strip">
+        <summary className="iso-dock-strip__label">Index of works ({visibleMonuments.length})</summary>
         <div className="iso-dock-buttons">
           {visibleMonuments.map((m) => (
             <button
@@ -2871,21 +2777,7 @@ export function IsometricAgentWorld({
             </button>
           ))}
         </div>
-      </div>
-
-      {/* Live Conservation & Agent Telemetry Log */}
-      <div className="capture iso-telemetry" role="region" aria-label="Live command table telemetry log">
-        <div className="capture__head">
-          <span className="capture__cmd">agent-command://octane-iso-telemetry</span>
-          <span>21 repositories + 5 enterprise CV records</span>
-          <span>Director: P. Kanyapan ({email})</span>
-        </div>
-        <pre>
-          {telemetryLog.map((line, idx) => (
-            <div key={idx}>{line}</div>
-          ))}
-        </pre>
-      </div>
+      </details>
     </div>
   );
 }

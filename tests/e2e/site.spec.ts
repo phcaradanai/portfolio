@@ -7,7 +7,7 @@ type P = { slug: string; tier: "A" | "B" | "C"; excerpts: unknown[]; assets: unk
 const dir = path.join(process.cwd(), "content/projects");
 const projects: P[] = readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => JSON.parse(readFileSync(path.join(dir, f), "utf8")));
 const shown = projects.filter((p) => p.tier !== "C");
-const ROUTES = ["/", "/works/", "/agents/", "/lab/", "/gallery/", "/studio/", "/journey/", "/resume/", ...shown.map((p) => `/works/${p.slug}/`)];
+const ROUTES = ["/", "/works/", "/agents/", "/logistics/", "/lab/", "/gallery/", "/studio/", "/journey/", "/resume/", ...shown.map((p) => `/works/${p.slug}/`)];
 const PHONE = /9\D{0,3}2\D{0,3}5\D{0,3}4\D{0,3}6\D{0,3}3\D{0,3}9\D{0,3}5\D{0,3}2/;
 
 async function visit(page: Page, url: string) {
@@ -147,6 +147,7 @@ test("mobile rooms menu opens from the keyboard", async ({ page, isMobile }) => 
 test("agents isometric world docks monuments, filters pipeline stages, and updates inquiry brief", async ({ page }) => {
   await page.goto("/agents/");
   await expect(page.locator("canvas.iso-canvas")).toBeVisible();
+  await page.locator(".iso-dock-strip > summary").click();
   const relicBtn = page.locator(".iso-dock-btn", { hasText: "Relic Tide" });
   await relicBtn.click();
   await expect(relicBtn).toHaveAttribute("aria-pressed", "true");

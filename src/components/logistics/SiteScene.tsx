@@ -16,6 +16,10 @@ const TICK_MS = 2000;
 /** Drives the sim: one tick every 2 s, each worth playbackSpeed sim minutes. */
 function SimClock() {
   useEffect(() => {
+    // Reduced motion: the sim waits for an explicit Play instead of running on its own.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) useLogisticsStore.setState({ playbackState: "paused" });
+  }, []);
+  useEffect(() => {
     const id = setInterval(() => useLogisticsStore.getState().tick(), TICK_MS);
     return () => clearInterval(id);
   }, []);
@@ -29,6 +33,8 @@ export function SiteScene() {
   const pal = PALETTES[timeOfDay];
   const [ox, oz] = SITE_BY_ID[activeSiteId].origin;
   const sunTarget = useMemo(() => new THREE.Object3D(), []);
+  // Falling snow and rain are pure motion; reduced motion keeps the snowy ground but drops the particles.
+  const [reducedMotion] = React.useState(() => window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   const [sx, sy, sz] = pal.sunDir as [number, number, number];
 
   return (
@@ -60,9 +66,11 @@ export function SiteScene() {
       <SiteWorld pal={pal} snowy={weather === "snow"} autumn={weather === "autumn"} />
       <Fleet />
       <LabelProjector />
-      <group position={[ox, 0, oz]}>
-        <WeatherEcosystem />
-      </group>
+      {!reducedMotion && (
+        <group position={[ox, 0, oz]}>
+          <WeatherEcosystem />
+        </group>
+      )}
     </>
   );
 }

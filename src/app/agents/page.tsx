@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { Room } from "@/components/Room";
 import { WallLabel } from "@/components/WallLabel";
+import type { ReactNode } from "react";
 import { Blueprint } from "@/components/Blueprint";
 import { XRay } from "@/components/XRay";
 import { Doorway } from "@/components/Doorway";
 import { Chip } from "@/components/Evidence";
 import { IconArrow, IconExternal, IconPrivate } from "@/components/icons";
+import { FLEET, SITES } from "@/data/logistics/seed";
 import { LogisticsStage } from "@/components/logistics/LogisticsStage";
 import {
   IsometricAgentWorld,
@@ -22,9 +24,9 @@ import { SITE } from "@/lib/site";
 import { heroAsset, KIND, MATURITY, period, sha7 } from "@/lib/view";
 
 export const metadata: Metadata = {
-  title: "Agent command & isometric studio",
+  title: "Agent command",
   description:
-    "Interactive isometric exhibition of Phatcharadanai Kanyapan's AI agent orchestration harness, 21 verified repositories, and the private vault of additional works available on direct inquiry.",
+    "A walk through how Phatcharadanai Kanyapan directs AI agents: the island of verified works, the harness that keeps agents honest, a live logistics twin, and the private works available on request.",
 };
 
 type PracticeRepo = {
@@ -227,7 +229,7 @@ const HARNESS_DIAGRAM = {
     { id: "council", label: "Role Split (Claude + Codex)" },
     { id: "forge", label: "PixelLab + Depth-Anything-V2" },
     { id: "runner", label: "Sandbox Runner (No Auto-Push)" },
-    { id: "verify", label: "757 Test Files + Playwright Axe" },
+    { id: "verify", label: "Test Gate + Playwright Axe" },
     { id: "shipped", label: "Pinned 40-char SHA Ledger" },
   ],
   edges: [
@@ -263,6 +265,18 @@ export default function AgentCommandPage() {
   const totalPracticeFiles = Object.values(practice.repos).reduce((acc, r) => acc + r.files, 0);
   const totalPracticeTests = Object.values(practice.repos).reduce((acc, r) => acc + r.testFiles, 0);
   const totalProjectCommits = projects.reduce((acc, p) => acc + (p.repo?.totalCommits ?? 0), 0);
+
+  // Logistics twin facts, read from this repository rather than written by hand.
+  const countIn = (dir: string, re: RegExp) => readdirSync(path.join(process.cwd(), dir)).filter((f) => re.test(f)).length;
+  const fleetTotals = Object.values(FLEET).reduce((t, [tr, fl, am]) => [t[0] + tr, t[1] + fl, t[2] + am], [0, 0, 0]);
+  const twin = {
+    sites: SITES.length,
+    trucks: fleetTotals[0]!,
+    forklifts: fleetTotals[1]!,
+    amrs: fleetTotals[2]!,
+    files: countIn("src/components/logistics", /\.tsx?$/) + countIn("src/data/logistics", /\.ts$/),
+    tests: countIn("tests/unit", /^logistics.*\.test\.ts$/),
+  };
 
   // Build Isometric Monuments from real verified project JSONs
   const projectMonuments: IsoMonument[] = projects.map((p) => {
@@ -359,7 +373,7 @@ export default function AgentCommandPage() {
       },
       {
         name: "Deterministic Gate",
-        use: "757 test files, verify-content.ts, secret scanning, and Playwright WCAG 2.2 AA checks before acceptance.",
+        use: `${totalPracticeTests} test files, verify-content.ts, secret scanning, and Playwright WCAG 2.2 AA checks before acceptance.`,
       },
     ],
     practiceDocs: ["PRODUCT.md", "DESIGN.md", "AGENTS.md", "CLAUDE.md", "ARCHITECTURE.md", "VERIFICATION.md"],
@@ -377,52 +391,42 @@ export default function AgentCommandPage() {
   const logisticsMonument: IsoMonument = {
     slug: "logistics-twin",
     accession: "PK-2026-NURI",
-    title: "Autonomous Logistics Digital Twin (NuriTrack / REA)",
+    title: "Logistics Digital Twin (NuriTrack study)",
     shortTitle: "Logistics Twin 3D",
     kind: "ai",
     tier: "A",
     maturity: "Live Simulation",
-    tagline:
-      "3D multi-modal logistics control room reverse-engineered via REA: AI Interprets, Code Decides.",
-    summary:
-      "Full-scale real-time 3D simulation running React 19, Three.js, React Three Fiber, and Zustand. Orchestrates high-bay warehouse AMRs, high-speed cross-belt sorters, highway platooning trucks, Boeing 777F cargo freighters, container ships, and last-mile delivery drones across 7 journey stages.",
+    tagline: "A rebuild of the NuriTrack demo: three sites, one seeded simulation, and a control room that reads every number from it.",
+    summary: `Built with React 19, Three.js, React Three Fiber, drei and Zustand. ${twin.sites} sites, ${twin.trucks} trucks, ${twin.forklifts} forklifts and ${twin.amrs} AMRs run on a deterministic, seeded simulation; dock assignment, yard holds and late flags are plain rules logged as they happen.`,
     period: "2026",
-    stack: [
-      "React 19",
-      "Three.js 0.186",
-      "@react-three/fiber",
-      "@react-three/drei",
-      "Zustand",
-      "TypeScript",
-      "Reverse Engineer Anything (REA)",
-    ],
-    commits: 48,
-    files: 18,
-    testFiles: 4,
+    stack: ["React 19", "Three.js", "@react-three/fiber", "@react-three/drei", "Zustand", "TypeScript"],
+    commits: 0,
+    files: twin.files,
+    testFiles: twin.tests,
     aiSummary:
-      "Multi-agent autonomous logistics twin: natural-language AI routing constraints are evaluated by deterministic state machines and 60 FPS physics.",
+      "Studied from the NuriTrack walkthrough video and built with an AI coding agent working in reviewed steps: data model first, the 3D scene as a view of it, then inspection and the control room.",
     aiTools: [
       {
-        name: "REA Architecture",
-        use: "Reverse Engineer Anything analysis: 5 decoupled subsystems running on shared Zustand state bus.",
+        name: "Data first, 3D as a view",
+        use: "Sites, docks, vehicles and parcels are typed records; every object in the scene is placed from them.",
       },
       {
-        name: "Zero-Re-render Bridge",
-        use: "Zustand hook directly into Three.js useFrame loop to guarantee 60 FPS without React DOM re-renders.",
+        name: "Deterministic simulation",
+        use: "A seeded RNG and pure step function: the same seed replays the same day, checked by unit tests.",
       },
       {
-        name: "Deterministic State Gate",
-        use: "Strict safety invariants: AMR obstacle avoidance, gantry clearance, and cryptographic proof-of-delivery.",
+        name: "Frame loop outside React",
+        use: "Vehicle motion runs in useFrame; React re-renders only on the two-second simulation tick.",
       },
     ],
-    practiceDocs: ["PRODUCT.md", "DESIGN.md", "AGENTS.md", "ARCHITECTURE.md"],
+    practiceDocs: ["docs/superpowers/plans/2026-10-29-nuritrack-3d-upgrade.md"],
     gridX: -1.2,
     gridY: -0.8,
     height: 2.15,
     district: "command",
     stages: [1, 2, 3, 4, 5, 6],
     image: null,
-    href: "#logistics-stage",
+    href: "#twin",
     repoUrl: SITE.github,
     pinnedSha: null,
   };
@@ -487,11 +491,19 @@ export default function AgentCommandPage() {
 
   return (
     <>
-      {/* ───────── ROOM 1: 16:9 ISOMETRIC AGENT COMMAND HERO & STUDIO ───────── */}
-      <Room id="lab" label="Agent command">
+      {/* Room 1: the island of works */}
+      <Room id="lab" label="Agent command" className="walk">
+        <Thread />
         <div className="wall">
-          {/* Interactive 16:9 3D/2.5D Isometric Hero World with Overlaid Clean UI */}
-          <div style={{ gridColumn: "1 / -1" }}>
+          <header className="walk-head">
+            <h1 className="vinyl walk-head__title">Agent command</h1>
+            <p className="wall-text walk-head__thesis">
+              I direct AI agents inside a harness of written contracts, confined tools and test gates. Each claim on these walls is
+              tied to the evidence behind it.
+            </p>
+          </header>
+
+          <div className="walk-work">
             <IsometricAgentWorld
               monuments={allMonuments}
               totalCommits={totalProjectCommits}
@@ -501,122 +513,56 @@ export default function AgentCommandPage() {
             />
           </div>
 
-          {/* 4 Monumental Studio Telemetry Plinths */}
-          <dl className="iso-kpi-strip" style={{ gridColumn: "1 / -1" }} aria-label="Verified studio scale">
-            <div className="iso-kpi">
-              <dt>Catalogued Works &amp; Vaults</dt>
-              <dd className="tabular">{projects.length} repos + {profile.cvProjectLabels.length} CV</dd>
-              <span>{A.length} Tier A case studies · {B.length} Tier B · {C.length} private crates · plus more on inquiry</span>
-            </div>
-            <div className="iso-kpi">
-              <dt>AI-Directed Repositories</dt>
-              <dd className="tabular">{aiEnabledProjects.length} public works</dd>
-              <span>Governed via AGENTS.md, CLAUDE.md, Rust MCP, Graft, PixelLab &amp; Depth-Anything-V2</span>
-            </div>
-            <div className="iso-kpi">
-              <dt>Audited Files &amp; Test Suites</dt>
-              <dd className="tabular">{totalPracticeTests} test files</dd>
-              <span>Across {totalPracticeFiles.toLocaleString("en-US")} source files verified in content/practice.json</span>
-            </div>
-            <div className="iso-kpi">
-              <dt>GitHub Account Record</dt>
-              <dd className="tabular">{journey.totals.counted} repositories</dd>
-              <span>{journey.totals.public} public + {journey.totals.private} private counted ({totalProjectCommits} pinned commits here)</span>
-            </div>
-          </dl>
+          <ul className="claims" aria-label="What the island holds">
+            <Claim href="/works/" proof="Every case study">
+              <b className="tabular">{projects.length}</b> repositories hang on this island, and {profile.cvProjectLabels.length} more deliveries are
+              named on the CV.
+            </Claim>
+            <Claim href="#ledger" proof="Tooling ledger">
+              <b className="tabular">{aiEnabledProjects.length}</b> public works were built with AI agents; the ledger lists the tools or agent brief each
+              repository records.
+            </Claim>
+            <Claim href="#ledger" proof="Test counts per work">
+              <b className="tabular">{totalPracticeTests}</b> test files across {totalPracticeFiles.toLocaleString("en-US")} source files, counted at
+              each pinned commit.
+            </Claim>
+            <Claim href={SITE.github} proof="GitHub profile" external>
+              <b className="tabular">{journey.totals.counted}</b> repositories on the account: {journey.totals.public} public, {journey.totals.private} private.
+            </Claim>
+          </ul>
         </div>
       </Room>
 
-      {/* ───────── ROOM 2: THE AGENTIC HARNESS & X-RAY ───────── */}
-      <Room id="works" label="The agentic harness">
-        <div className="wall" id="harness-xray">
-          <div style={{ gridColumn: "1 / span 7" }}>
+      {/* Room 2: the harness */}
+      <Room id="works" label="The agentic harness" className="walk">
+        <Thread />
+        <div className="wall" id="harness">
+          <div className="walk-statement">
             <h2 className="vinyl vinyl--l">Why my agents ship working systems</h2>
-            <p className="wall-text" style={{ marginTop: "var(--s-4)", maxInlineSize: "44ch" }}>
-              Prompting alone produces brittle demos. Across these repositories, agents operate inside a strict engineering
-              harness: human-authored contracts, path-confined Rust MCP bridges, role-split councils, and deterministic test gates.
+            <p className="wall-text">
+              Prompting alone produces brittle demos. Here, agents work inside a harness: human-written contracts, path-confined Rust MCP
+              tools, separate roles for separate agents, and test gates no patch skips.
             </p>
           </div>
-
-          <div style={{ gridColumn: "8 / span 5", alignSelf: "end" }}>
+          <div className="walk-label">
             <WallLabel
               accession="PK-2026-HRN"
-              title="Harness vs. Unbounded Prompting"
+              title="The harness, in practice"
               year="2026"
               fields={[
-                { k: "Control plane", v: "AI Kingdom (PK-2026-004): Decree -> Council -> Work Order -> Sandbox Runner -> Accept & Learn." },
-                { k: "Bridge", v: "ChatGPT MCP (PK-2026-013): 9 path-confined Rust tools (exact-match patch, TOML check runner)." },
-                { k: "Design & QA", v: "Impeccable surface contracts, Ego Browser verification, and Playwright + Axe WCAG 2.2 AA suites." },
+                { k: "Control plane", v: "AI Kingdom (PK-2026-004): Decree, Council, Work Order, Sandbox Runner, Accept & Learn." },
+                { k: "Bridge", v: "ChatGPT MCP (PK-2026-013): 9 path-confined Rust tools, exact-match patching, a TOML check runner." },
+                { k: "Design & QA", v: "Impeccable surface contracts, browser verification, Playwright + Axe WCAG 2.2 AA suites." },
               ]}
               label="Harness summary"
             />
           </div>
 
-          {/* Featured Live 3D Logistics Simulation Twin Banner */}
-          <div style={{ gridColumn: "1 / -1", background: "oklch(0.12 0.016 262)", border: "1px solid rgba(124, 245, 230, 0.35)", borderRadius: "2px", padding: "var(--s-4)", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "var(--s-3)", marginTop: "var(--s-4)" }}>
-            <div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "#7cf5e6", fontFamily: "var(--font-mono)", fontSize: "0.75rem", fontWeight: 700 }}>
-                <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#7cf5e6", boxShadow: "0 0 6px #7cf5e6" }} />
-                <span>EXHIBITED BELOW IN ROOM 3 · 3D TWIN</span>
-              </div>
-              <h3 style={{ fontFamily: "var(--font-vinyl)", fontSize: "1.25rem", color: "var(--vinyl)", margin: "4px 0 2px" }}>
-                NuriTrack 3D Autonomous Logistics Twin (REA Architecture)
-              </h3>
-              <p style={{ color: "var(--vinyl-soft)", fontSize: "0.875rem", margin: 0 }}>
-                React 19, Three.js, React Three Fiber, TypeScript &amp; Zustand simulation of multi-modal warehouse AMRs, cross-belt sorters, and drone deliveries.
-              </p>
-            </div>
-            <div style={{ display: "flex", gap: "var(--s-2)", flexWrap: "wrap" }}>
-              <a className="btn" href="#logistics-stage">
-                Scroll to 3D Stage ↓
-              </a>
-              <Link className="btn btn--ghost" href="/logistics/">
-                Full Screen View <IconArrow />
-              </Link>
-            </div>
-          </div>
-
-          {/* Side-by-side Discipline Comparison + Signature X-Ray Blueprint Lens */}
-          <div className="harness-surface" style={{ gridColumn: "1 / -1" }}>
-            <div className="harness-surface__col">
-              <p className="harness-surface__tag">WITHOUT A HARNESS (COMMON FAILURE MODE)</p>
-              <h3>Unbounded Vibe-Coding</h3>
-              <ul className="caveats">
-                <li>Whole-repository context dumps burn tokens and hallucinate module boundaries.</li>
-                <li>Single-agent sessions overwrite UI and backend state simultaneously without arbitration.</li>
-                <li>Unverified AI patches push straight to main without deterministic test or accessibility gates.</li>
-                <li>Generated art ships as flat, unlabelled files with no shader integration or provenance record.</li>
-              </ul>
-            </div>
-            <div className="harness-surface__col harness-surface__col--governed">
-              <p className="harness-surface__tag">P. KANYAPAN&apos;S STUDIO HARNESS (VERIFIED IN GIT)</p>
-              <h3>Contract-Bound Agent Engineering</h3>
-              <ul className="harness-checks">
-                <li>
-                  <strong>Explicit Context Binding:</strong> <code>PRODUCT.md</code>, <code>DESIGN.md</code>, <code>AGENTS.md</code>,
-                  and <code>CLAUDE.md</code> lock scope before execution.
-                </li>
-                <li>
-                  <strong>Precision Tooling:</strong> Rust <code>mcp-bridge</code> and <code>Graft</code> symbol graphs confine edits to
-                  registered paths and exact-match diffs.
-                </li>
-                <li>
-                  <strong>Multi-Agent Role Split:</strong> <code>WORK_IN_PROGRESS.md</code> and Grand Vizier councils separate Codex (UX/UI),
-                  Claude Opus/Sonnet (Core), and Hermes (Security).
-                </li>
-                <li>
-                  <strong>Hard Verification Gate:</strong> Sandboxed runners refuse auto-push; 757 test files + Playwright &amp; Axe verify
-                  the build before human acceptance.
-                </li>
-              </ul>
-            </div>
-          </div>
-
           {xrayHero && xrayMedia && (
-            <div style={{ gridColumn: "1 / -1" }}>
+            <div className="walk-work">
               <XRay
-                surfaceLabel="Shipped Surface (CodeScape)"
-                beneathLabel="Agent Harness Blueprint"
+                surfaceLabel="Shipped surface (CodeScape)"
+                beneathLabel="Agent harness blueprint"
                 initial={45}
                 surface={
                   /* eslint-disable-next-line @next/next/no-img-element -- static export */
@@ -631,28 +577,61 @@ export default function AgentCommandPage() {
                     decoding="async"
                   />
                 }
-                beneath={<Blueprint diagram={HARNESS_DIAGRAM} title="Studio Agent Orchestration Harness" />}
+                beneath={<Blueprint diagram={HARNESS_DIAGRAM} title="Studio agent orchestration harness" />}
               />
             </div>
           )}
 
-          {/* Paper Catalogue Sheet: Full 15-Repository Agent Tooling & Verification Matrix */}
-          <section className="paper" style={{ gridColumn: "1 / -1" }} aria-labelledby="agent-ledger-heading">
-            <h3 id="agent-ledger-heading" className="paper__h">
-              Verified Agent Tooling &amp; Governance Ledger ({aiEnabledProjects.length} Public Works)
-            </h3>
-            <p className="measure" style={{ marginBottom: "var(--s-5)" }}>
-              Every tool listed below is recorded in the project&apos;s repository at its pinned commit—in commit trailers, checked-in agent
-              instruction files, prompt histories, or asset pipelines. Nothing is claimed from memory.
+          <ul className="claims" aria-label="How the harness holds agents to account">
+            <Claim href="/works/chatgpt-mcp/" proof="ChatGPT MCP case study">
+              Agents edit through path-confined tools and exact-match diffs, not whole-repository dumps.
+            </Claim>
+            <Claim href="/works/ai-kingdom/" proof="AI Kingdom case study">
+              A sandbox runner refuses to push; a person accepts or rejects each work order.
+            </Claim>
+            <Claim href="#ledger" proof="Ledger below">
+              <code>PRODUCT.md</code>, <code>DESIGN.md</code>, <code>AGENTS.md</code> and <code>CLAUDE.md</code> fix scope before an agent writes a line.
+            </Claim>
+          </ul>
+
+          <section className="paper walk-compare" aria-labelledby="compare-heading">
+            <h3 id="compare-heading" className="paper__h">With and without a harness</h3>
+            <div className="walk-compare__cols">
+              <div>
+                <h4>Unbounded prompting</h4>
+                <ul className="caveats">
+                  <li>Whole-repository context dumps burn tokens and invent module boundaries.</li>
+                  <li>One agent rewrites UI and backend at once, with nobody arbitrating.</li>
+                  <li>Unverified patches land on main without test or accessibility gates.</li>
+                  <li>Generated art ships as unlabelled files with no provenance.</li>
+                </ul>
+              </div>
+              <div>
+                <h4>Contract-bound agents</h4>
+                <ul className="harness-checks">
+                  <li><strong>Context is written down.</strong> Product, design and agent contracts are checked into each repository.</li>
+                  <li><strong>Tools are confined.</strong> Rust MCP bridges and Graft symbol graphs limit edits to registered paths.</li>
+                  <li><strong>Roles are split.</strong> <code>WORK_IN_PROGRESS.md</code> keeps UX, core and security work in separate sessions.</li>
+                  <li><strong>The gate is hard.</strong> {totalPracticeTests} test files plus Playwright and Axe run before a person accepts.</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+
+          <section className="paper walk-ledger" id="ledger" aria-labelledby="ledger-heading">
+            <h3 id="ledger-heading" className="paper__h">Agent tooling ledger: {aiEnabledProjects.length} public works</h3>
+            <p className="measure">
+              Every tool below is recorded in the project&apos;s repository at its pinned commit: commit trailers, checked-in agent
+              instructions, prompt histories or asset pipelines. Nothing is claimed from memory.
             </p>
-            <div style={{ overflowX: "auto" }}>
+            <div className="walk-ledger__scroll">
               <table className="practice">
                 <thead>
                   <tr>
                     <th scope="col">Work</th>
                     <th scope="col">Domain</th>
-                    <th scope="col">Documented AI &amp; Agent Tools</th>
-                    <th scope="col">Contracts in Git</th>
+                    <th scope="col">Documented AI &amp; agent tools</th>
+                    <th scope="col">Contracts in git</th>
                     <th scope="col">Tests</th>
                     <th scope="col">Evidence</th>
                   </tr>
@@ -671,17 +650,14 @@ export default function AgentCommandPage() {
                     return (
                       <tr key={p.slug}>
                         <th scope="row">
-                          <Link href={`/works/${p.slug}/`}>{p.title}</Link>{" "}
-                          <span className="practice__sha">{p.accession}</span>
+                          <Link href={`/works/${p.slug}/`}>{p.title}</Link> <span className="practice__sha">{p.accession}</span>
                         </th>
                         <td>{KIND[p.kind]}</td>
-                        <td style={{ whiteSpace: "normal", minWidth: "18rem", maxWidth: "28rem" }}>{toolNames}</td>
+                        <td className="walk-ledger__tools">{toolNames}</td>
                         <td>{docs.length > 0 ? docs.join(", ") : "Repo docs"}</td>
                         <td className="tabular">{pr ? pr.testFiles : "–"}</td>
                         <td>
-                          <Link href={`/works/${p.slug}/`}>
-                            Case study {p.repo ? `(@${sha7(p.repo.pinnedSha)})` : ""}
-                          </Link>
+                          <Link href={`/works/${p.slug}/`}>Case study {p.repo ? `(@${sha7(p.repo.pinnedSha)})` : ""}</Link>
                         </td>
                       </tr>
                     );
@@ -693,204 +669,76 @@ export default function AgentCommandPage() {
         </div>
       </Room>
 
-      {/* ───────── ROOM 3: AUTONOMOUS LOGISTICS DIGITAL TWIN (REA ARCHITECTURE) ───────── */}
-      <Room id="lab" label="3D Logistics Twin">
-        <div className="wall" id="logistics-stage">
-          <div style={{ gridColumn: "1 / span 8" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                color: "#7cf5e6",
-                fontFamily: "var(--font-mono)",
-                fontSize: "0.75rem",
-                fontWeight: 700,
-                marginBottom: "var(--s-2)",
-              }}
-            >
-              <span
-                style={{
-                  width: "8px",
-                  height: "8px",
-                  borderRadius: "50%",
-                  background: "#7cf5e6",
-                  boxShadow: "0 0 8px #7cf5e6",
-                }}
-              />
-              <span>LIVE MULTI-MODAL REA SIMULATION</span>
-            </div>
-            <h2 className="vinyl vinyl--xl">Autonomous Logistics Digital Twin</h2>
-            <p className="wall-text" style={{ marginTop: "var(--s-3)" }}>
-              A high-performance 3D multi-modal supply chain control room reverse-engineered via{" "}
-              <strong>REA (Reverse Engineer Anything)</strong> and inspired by{" "}
-              <strong>NuriTrack</strong> (<em>바이브 코딩 — 김동학</em>).
+      {/* Room 3: the logistics twin */}
+      <Room id="studio" label="Logistics twin" className="walk">
+        <Thread />
+        <div className="wall" id="twin">
+          <div className="walk-statement">
+            <h2 className="vinyl vinyl--l">The logistics twin</h2>
+            <p className="wall-text">
+              A rebuild of the NuriTrack demo, studied from its walkthrough video. Pick a site, follow a truck from the gate to a dock,
+              and read the rule log: every decision in it is plain code, made by a simulation that replays the same way from the same seed.
             </p>
-            <p className="wall-text wall-text--soft" style={{ marginTop: "var(--s-2)" }}>
-              Embodying the studio decree: <em>&ldquo;AI Interprets, Code Decides&rdquo;</em>. Autonomous
-              agent routing constraints are deterministically verified across high-bay AMR retrieval,
-              cross-belt sorters, highway line-hauls, air cargo freighters, container ships, and last-mile
-              hexacopter drones.
-            </p>
-            <div className="btn-row" style={{ marginTop: "var(--s-4)" }}>
-              <a
-                className="btn btn--ghost"
-                href="https://www.youtube.com/watch?v=Lt8XH8HJU_M"
-                target="_blank"
-                rel="noreferrer"
-              >
-                NuriTrack Reference Video <IconExternal />
-              </a>
-              <Link className="btn btn--ghost" href="/logistics/">
-                Dedicated Full-Screen View <IconArrow />
-              </Link>
-            </div>
           </div>
-
-          <div style={{ gridColumn: "9 / span 4", alignSelf: "end" }}>
+          <div className="walk-label">
             <WallLabel
               accession="PK-2026-NURI"
-              title="NuriTrack Logistics Twin"
+              title="Logistics twin"
               year="2026"
               fields={[
-                { k: "Medium", v: "React 19, Three.js, React Three Fiber, Zustand" },
-                { k: "Methodology", v: "REA (Reverse Engineer Anything) Architecture Pass" },
-                { k: "Core Rule", v: "AI Interprets, Code Decides (TypeSafe State Bus)" },
-                { k: "Status", v: "Active Interactive Simulation / 60 FPS Digital Twin" },
-                { k: "Original Demo", v: "NuriTrack by 김동학 (바이브 코딩)" },
+                { k: "Medium", v: "React 19, Three.js, React Three Fiber, drei, Zustand" },
+                { k: "Scope", v: `${twin.sites} sites, ${twin.trucks} trucks, ${twin.forklifts} forklifts, ${twin.amrs} AMRs` },
+                { k: "Simulation", v: `Seeded and deterministic; ${twin.tests} unit test files` },
+                { k: "After", v: "NuriTrack by 김동학 (바이브 코딩)" },
               ]}
               chips={
-                <>
-                  <span className="chip chip--live">Active 3D Twin</span>
-                  <Chip level="source" href="https://www.youtube.com/watch?v=Lt8XH8HJU_M">
-                    NuriTrack Demo
-                  </Chip>
-                </>
+                <Chip level="source" href="https://www.youtube.com/watch?v=Lt8XH8HJU_M">
+                  Reference video
+                </Chip>
               }
-              label="Digital Twin Wall Label"
+              label="Logistics twin label"
             />
           </div>
 
-          {/* 3D Multi-modal Interactive Simulation Stage */}
-          <div style={{ gridColumn: "1 / -1", marginTop: "var(--s-5)" }}>
+          <div className="walk-work walk-work--bleed">
             <LogisticsStage />
           </div>
 
-          {/* Architectural Breakdown Grid */}
-          <div
-            style={{
-              gridColumn: "1 / -1",
-              marginTop: "var(--s-5)",
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              gap: "var(--s-4)",
-            }}
-          >
-            <div className="crate" style={{ padding: "var(--s-4)" }}>
-              <p className="label__acc" style={{ color: "#7cf5e6" }}>
-                01 · MULTI-FACILITY TOPOLOGY
-              </p>
-              <h4
-                style={{
-                  fontFamily: "var(--font-vinyl)",
-                  fontSize: "1.0625rem",
-                  color: "var(--vinyl)",
-                  margin: "4px 0 8px",
-                }}
-              >
-                5 Connected Logistics Nodes
-              </h4>
-              <p
-                style={{
-                  color: "var(--vinyl-soft)",
-                  fontSize: "0.875rem",
-                  lineHeight: 1.5,
-                  margin: 0,
-                }}
-              >
-                Icheon Automated Warehouse, Gonjiam Cross-Belt Mega Hub, Arterial Highway Corridor, Incheon
-                Aerotropolis &amp; Container Port, and Bangkok Urban Smart Locker.
-              </p>
-            </div>
-            <div className="crate" style={{ padding: "var(--s-4)" }}>
-              <p className="label__acc" style={{ color: "#38bdf8" }}>
-                02 · AUTONOMOUS MACHINERY AGENTS
-              </p>
-              <h4
-                style={{
-                  fontFamily: "var(--font-vinyl)",
-                  fontSize: "1.0625rem",
-                  color: "var(--vinyl)",
-                  margin: "4px 0 8px",
-                }}
-              >
-                AMRs, Semis &amp; AeroDrones
-              </h4>
-              <p
-                style={{
-                  color: "var(--vinyl-soft)",
-                  fontSize: "0.875rem",
-                  lineHeight: 1.5,
-                  margin: 0,
-                }}
-              >
-                Lidar-guided AMR grid retrieval, platooning line-haul semi trucks on oval circuit, Boeing
-                777F freighter cross-docking, and hexacopters with altitude stabilization.
-              </p>
-            </div>
-            <div className="crate" style={{ padding: "var(--s-4)" }}>
-              <p className="label__acc" style={{ color: "#fbbf24" }}>
-                03 · ZERO-RE-RENDER STATE BRIDGE
-              </p>
-              <h4
-                style={{
-                  fontFamily: "var(--font-vinyl)",
-                  fontSize: "1.0625rem",
-                  color: "var(--vinyl)",
-                  margin: "4px 0 8px",
-                }}
-              >
-                Zustand 60 FPS R3F Loop
-              </h4>
-              <p
-                style={{
-                  color: "var(--vinyl-soft)",
-                  fontSize: "0.875rem",
-                  lineHeight: 1.5,
-                  margin: 0,
-                }}
-              >
-                Dynamic camera director, real-time weather ecosystem (Rain/Snow/Autumn), and Day/Sunset/Cyber
-                Night lighting cycle without cascading React DOM re-renders.
-              </p>
-            </div>
-          </div>
+          <ul className="claims" aria-label="What the twin proves">
+            <Claim href="/logistics/" proof="Full-screen twin">
+              The 3D scene is a view of typed records: sites, docks, vehicles and parcels. Nothing is placed by hand.
+            </Claim>
+            <Claim href="/logistics/" proof="Rule log, full screen">
+              Dock assignments, yard holds and late flags are logged as the rules make them, with the simulation clock.
+            </Claim>
+            <Claim href="https://www.youtube.com/watch?v=Lt8XH8HJU_M" proof="NuriTrack walkthrough" external>
+              Rebuilt after the original NuriTrack demo, from its walkthrough video.
+            </Claim>
+          </ul>
         </div>
       </Room>
 
-      {/* ───────── ROOM 4: BEYOND THE PUBLIC WALL (CARTIER VAULT & INQUIRY DESK) ───────── */}
-      <Room id="storage" label="Beyond the public wall">
-        <div className="wall">
-          <div style={{ gridColumn: "1 / span 8" }}>
-            <p className="iso-eyebrow">PRIVATE ARCHIVE &amp; COMMISSIONING SALON</p>
+      {/* Room 4: the vault */}
+      <Room id="storage" label="Beyond the public wall" className="walk">
+        <Thread />
+        <div className="wall" id="vault">
+          <div className="walk-statement">
             <h2 className="vinyl vinyl--l">Beyond the public wall</h2>
-            <p className="wall-text" style={{ marginTop: "var(--s-4)", maxInlineSize: "46ch" }}>
-              The 17 public repositories hanging in this exhibition are only the open-source surface. I have built many more
-              systems—commercial backend services in Go and Rust, hospital and airport hardware integrations, enterprise management
-              portals, and internal AI agent harnesses. Because client and commercial repositories stay private, I invite you to
-              reach out directly to ask questions or request a live architectural walkthrough.
+            <p className="wall-text">
+              The {A.length + B.length} public works on this island are the open part. The rest are commercial backends in Go and Rust,
+              hospital and airport hardware integrations, enterprise portals and internal agent harnesses, and they stay private. Ask, and
+              I will walk you through the architecture.
             </p>
           </div>
-
-          <div style={{ gridColumn: "9 / span 4", alignSelf: "end" }}>
+          <div className="walk-label">
             <WallLabel
               accession="PK-2026-VLT"
               title="Why works are held in the vault"
               year="2020–2026"
               fields={[
-                { k: "Policy", v: "Client confidentiality and commercial NDAs are strictly honoured: no private source code, internal URLs, or screenshots are leaked." },
-                { k: "What you can ask", v: "Architecture decisions, agent orchestration patterns, hardware serial/MQTT protocols, or a guided live demo." },
-                { k: "Direct contact", v: <a href={`mailto:${SITE.email}`}>{SITE.email}</a> },
+                { k: "Policy", v: "Client confidentiality is kept: no private source, internal URLs or screenshots." },
+                { k: "What you can ask", v: "Architecture decisions, agent orchestration, hardware serial and MQTT protocols, or a live demo." },
+                { k: "Contact", v: <a href={`mailto:${SITE.email}`}>{SITE.email}</a> },
               ]}
               chips={
                 <span className="chip chip--private">
@@ -902,93 +750,94 @@ export default function AgentCommandPage() {
             />
           </div>
 
-          {/* 3 High-Craft Archival Vault Cases */}
-          <div className="vault-cases" style={{ gridColumn: "1 / -1" }}>
+          <div className="vault-cases walk-shelf">
             <article className="crate vault-case">
-              <p className="label__acc">VAULT CASE I · PRIVATE REPOSITORIES IN STORAGE</p>
-              <h3 className="crate__title">Redacted Systems &amp; Games ({C.length + 1} Works)</h3>
-              <p className="crate__meta">Verified from GitHub metadata &amp; live deployment records</p>
+              <h3 className="crate__title">Private systems and games ({C.length + 1})</h3>
+              <p className="crate__meta">From GitHub metadata and deployment records</p>
               <ul className="vault-list">
                 {C.map((c) => (
                   <li key={c.slug}>
-                    <strong>{c.title}</strong> ({c.accession}) — {c.stack.join(", ")}. {c.contribution}
+                    <strong>{c.title}</strong> ({c.accession}): {c.stack.join(", ")}. {c.contribution}
                   </li>
                 ))}
                 <li>
-                  <strong>The Patch Press</strong> (PK-2026-016) — Live custom-domain web deployment; source repository kept private.
+                  <strong>The Patch Press</strong> (PK-2026-016): a live custom-domain site; the source stays private.
                 </li>
               </ul>
               <p className="crate__seal">
                 <span className="chip chip--private">
                   <IconPrivate />
-                  Not on public view · Ask for architecture details
+                  Not on view · ask for the architecture
                 </span>
               </p>
             </article>
 
             <article className="crate vault-case">
-              <p className="label__acc">VAULT CASE II · ENTERPRISE &amp; HARDWARE RECORD</p>
-              <h3 className="crate__title">Enterprise &amp; Kiosk Deliveries ({profile.cvProjectLabels.length} Named on CV)</h3>
+              <h3 className="crate__title">Enterprise and kiosk work ({profile.cvProjectLabels.length} on the CV)</h3>
               <p className="crate__meta">Source: {profile.cvSource}</p>
               <ul className="vault-list">
-                <li>
-                  <strong>PTT UI concept</strong> — Enterprise user-interface concept and interactive front-end system design.
-                </li>
-                <li>
-                  <strong>SCG web management</strong> — Industrial web management application and workflow portal.
-                </li>
-                <li>
-                  <strong>SIPH auto dispense machine</strong> — Hospital automated dispensing machine software and hardware integration.
-                </li>
-                <li>
-                  <strong>ETRAN web management</strong> — Electric fleet and operations web management platform.
-                </li>
-                <li>
-                  <strong>AOT kiosk</strong> — Airport terminal interactive passenger kiosk interface and system integration.
-                </li>
+                {profile.cvProjectLabels.map((label) => (
+                  <li key={label}>
+                    <strong>{label}</strong>
+                  </li>
+                ))}
               </ul>
               <p className="crate__seal">
                 <span className="chip chip--private">
                   <IconPrivate />
-                  Listed as written on CV · Discuss in interview
+                  As written on the CV · discuss in interview
                 </span>
               </p>
             </article>
 
             <article className="crate vault-case">
-              <p className="label__acc">VAULT CASE III · BESPOKE AGENT HARNESSES &amp; R&amp;D</p>
-              <h3 className="crate__title">Custom Agent Workflows &amp; Full-Stack Capabilities</h3>
-              <p className="crate__meta">Available for consulting, team enablement, or engineering roles</p>
+              <h3 className="crate__title">Agent harnesses and full-stack work</h3>
+              <p className="crate__meta">For consulting, team enablement or engineering roles</p>
               <ul className="vault-list">
-                <li>
-                  <strong>Multi-Agent Control Planes:</strong> State-machine orchestration, provider fallback routing, cost accounting, and human-gated review loops.
-                </li>
-                <li>
-                  <strong>Local MCP &amp; Context Tooling:</strong> Rust and TypeScript Model Context Protocol servers confining agents to safe, deterministic operations.
-                </li>
-                <li>
-                  <strong>Hardware &amp; Real-Time Protocols:</strong> RS-232 serial, IPP print gateways, MQTT, NATS JetStream, and authoritative WebSocket game servers.
-                </li>
-                <li>
-                  <strong>AI-Assisted Visual &amp; WebGL Pipelines:</strong> Depth-Anything-V2 local inference, raw WebGL shaders, and automated Playwright/Axe verification.
-                </li>
+                <li><strong>Multi-agent control planes:</strong> state-machine orchestration, provider fallback, cost accounting, human-gated review.</li>
+                <li><strong>Local MCP and context tooling:</strong> Rust and TypeScript servers that confine agents to safe operations.</li>
+                <li><strong>Hardware and real-time protocols:</strong> RS-232 serial, IPP print gateways, MQTT, NATS JetStream, authoritative WebSocket game servers.</li>
+                <li><strong>AI-assisted visual pipelines:</strong> local Depth-Anything-V2, raw WebGL shaders, Playwright and Axe verification.</li>
               </ul>
               <p className="crate__seal">
-                <span className="chip chip--ai">Ready for technical walkthrough &amp; live Q&amp;A</span>
+                <span className="chip chip--ai">Walkthrough and Q&amp;A on request</span>
               </p>
             </article>
           </div>
 
-          {/* Interactive Bilingual Inquiry & Walkthrough Composer */}
-          <div style={{ gridColumn: "1 / -1" }}>
+          <div className="walk-work">
             <VaultInquiryDesk email={SITE.email} github={SITE.github} city={SITE.city} />
           </div>
 
-          <div style={{ gridColumn: "1 / span 6" }}>
-            <Doorway to="works" hint="Inspect every public case study and its evidence ledger." />
+          <div className="walk-exit">
+            <Doorway to="works" hint="Every public case study, with its evidence." />
           </div>
         </div>
       </Room>
     </>
+  );
+}
+
+/** The red thread: a plumb line down the wall's left edge that draws itself as the room scrolls by. */
+function Thread() {
+  return (
+    <svg className="thread" viewBox="0 0 12 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <line x1="6" y1="0" x2="6" y2="100" />
+    </svg>
+  );
+}
+
+/** One claim knotted to the thread, with a red hairline out to its evidence. */
+function Claim({ children, href, proof, external = false }: { children: ReactNode; href: string; proof: string; external?: boolean }) {
+  const ext = external ? { target: "_blank", rel: "noreferrer" } : {};
+  return (
+    <li className="claim">
+      <span className="claim__text">{children}</span>
+      <span className="claim__line" aria-hidden="true" />
+      <a className="claim__proof" href={href} {...ext}>
+        {proof}
+        {external ? <IconExternal /> : <IconArrow />}
+      </a>
+    </li>
   );
 }
